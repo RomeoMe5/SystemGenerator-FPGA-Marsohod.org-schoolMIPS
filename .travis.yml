@@ -1,0 +1,57 @@
+os: linux
+dist: trusty
+sudo: false
+language: node_js
+node_js:
+  - "lts/6"
+  - "6"
+cache:
+  directories:
+    - "node_modules"
+# before_cache: {action}
+
+# blocklist
+# branches:
+#   except:
+#   - /^develop/.*$/
+
+# safelist
+branches:
+  only:
+  - develop
+  - master
+  # - /^v\d+\.\d+(\.\d+)?(-\S*)?$/ # v1.0
+
+git:
+  depth: 3 # specify how much commits to store in travis
+  # submodules: false
+
+notifications:
+  email:
+    recipients:
+      - hell03end@outlook.com
+    on_success: never
+    on_failure: always
+    on_start: never
+
+env:
+matrix:
+  allow_failures:
+  - node_js: "node"
+
+# before_install: {action}
+install:
+  - npm install
+# after_install: {action}
+
+# before_script: {action}
+script:
+  - npm test
+# after_success: {action}
+# after_failure: {action}
+# before_deploy: {action}
+# deploy:
+#   skip_cleanup: true
+# after_deploy:
+#   - git stash --all # remove all changes
+# after_script: {action}
