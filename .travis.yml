@@ -38,7 +38,10 @@ notifications:
 env:
 matrix:
   allow_failures:
-  - node_js: "node"
+  - node_js:
+    - "node"
+    - "lts/6"
+    - "6"
 
 # before_install: {action}
 # install:
