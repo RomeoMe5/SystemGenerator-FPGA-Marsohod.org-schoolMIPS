@@ -3,6 +3,7 @@ dist: trusty
 sudo: false
 language: node_js
 node_js:
+  - "node"
   - "lts/6"
   - "6"
 cache:
@@ -18,7 +19,7 @@ cache:
 # safelist
 branches:
   only:
-  - develop
+  - develop/main
   - master
   # - /^v\d+\.\d+(\.\d+)?(-\S*)?$/ # v1.0
 
@@ -40,13 +41,13 @@ matrix:
   - node_js: "node"
 
 # before_install: {action}
-install:
-  - npm install
+# install:
+#   - npm install
 # after_install: {action}
 
 # before_script: {action}
-script:
-  - npm test
+# script:
+#   - npm test
 # after_success: {action}
 # after_failure: {action}
 # before_deploy: {action}
