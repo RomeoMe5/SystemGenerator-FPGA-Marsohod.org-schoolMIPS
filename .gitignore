@@ -1,0 +1,47 @@
+etc/*
+
+### Quartus
+!etc/LabsQuartus
+etc/LabsQuartus/*
+!etc/LabsQuartus/Lab*
+etc/LabsQuartus/Lab*/*
+!etc/LabsQuartus/Lab*/*.bdf
+!etc/LabsQuartus/Lab*/*.vwf
+!etc/LabsQuartus/Lab*/*.qpf
+
+### Verilog (especially for SoC)
+!etc/LabsSoC
+etc/LabsSoC/*
+
+### General
+# Byte-compiled / optimized / DLL
+*.log*
+*.data*
+*.dll
+*.o
+*.a
+
+# Resources:
+*.xml
+*.html
+*.bak
+*.JSON
+*.log
+*.db
+*bootstrap*
+*npm*
+*glyphicons*
+
+# Specific PATHs:
+.vscode/
+.idea/
+db_repository/
+downloads/
+bak/
+rsc/
+tmp/
+bin/
+
+# Translations
+*.mo
+*.pot
