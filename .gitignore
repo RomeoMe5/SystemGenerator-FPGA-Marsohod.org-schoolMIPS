@@ -16,14 +16,23 @@ etc/LabsSoC/*
 ### General
 # Byte-compiled / optimized / DLL
 *.log*
-*.data*
+*.*data*
 *.dll
 *.o
 *.a
 
+# Media
+*.doc
+*.docx
+*.xml
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.html
+
 # Resources:
 *.xml
-*.html
 *.bak
 *.JSON
 *.log
