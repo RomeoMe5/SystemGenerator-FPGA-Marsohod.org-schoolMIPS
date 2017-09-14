@@ -1,8 +1,10 @@
 etc/*
+!etc/*.sh
 
 ### Quartus
 !etc/LabsQuartus
 etc/LabsQuartus/*
+!etc/LabsQuartus/*.sh
 !etc/LabsQuartus/Lab*
 etc/LabsQuartus/Lab*/*
 !etc/LabsQuartus/Lab*/*.bdf
@@ -12,6 +14,7 @@ etc/LabsQuartus/Lab*/*
 ### Verilog (especially for SoC)
 !etc/LabsSoC
 etc/LabsSoC/*
+!etc/LabsSoC/*.sh
 
 ### General
 # Byte-compiled / optimized / DLL
