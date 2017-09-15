@@ -2,6 +2,11 @@ etc/*
 !etc/*.sh
 
 ### Quartus
+!*.bdf
+!*.vwf
+!*.qpf
+!*.qsf
+!*.bsf
 !etc/LabsQuartus
 etc/LabsQuartus/*
 !etc/LabsQuartus/*.sh
@@ -11,6 +16,7 @@ etc/LabsQuartus/Lab*/*
 !etc/LabsQuartus/Lab*/*.vwf
 !etc/LabsQuartus/Lab*/*.qpf
 !etc/LabsQuartus/Lab*/*.qsf
+!etc/LabsQuartus/Lab*/*.bsf
 
 ### Verilog (especially for SoC)
 !etc/LabsSoC

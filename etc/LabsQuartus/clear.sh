@@ -6,6 +6,7 @@
 #    * .qsf - settings for Quartus II project
 #    * .bdf - file to store block diagram/scheme for elements topology
 #    * .vwf - file to store vector waveforms for input signal
+#    * .bsf - symbol files for block diagram/scheme (module)
 #    * .v   - Verilog HDL file
 #    * .sh  - scripting files
 
@@ -13,7 +14,7 @@ set -e
 # set -x # debug
 # set -v # verbose output
 
-REMOVING_PATTERN="(.(vwf|bdf|qpf|qsf|v|sh)|^(.|..)$)"
+REMOVING_PATTERN="(.(vwf|bdf|qpf|qsf|v|sh|bsf)|^(.|..)$)"
 
 function show_help {
     echo "remove extra files left from Quartus II exectution"
