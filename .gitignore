@@ -10,6 +10,7 @@ etc/LabsQuartus/Lab*/*
 !etc/LabsQuartus/Lab*/*.bdf
 !etc/LabsQuartus/Lab*/*.vwf
 !etc/LabsQuartus/Lab*/*.qpf
+!etc/LabsQuartus/Lab*/*.qsf
 
 ### Verilog (especially for SoC)
 !etc/LabsSoC
