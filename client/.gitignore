@@ -1,5 +1,6 @@
 !package.json
 !src
+!*.html
 
 node_modules
 build
