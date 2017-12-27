@@ -1,0 +1,19 @@
+DE1SoC_configs/
+Quartus/
+Soc/
+
+### Quartus
+LabsQuartus/*
+!LabsQuartus/*.sh
+!LabsQuartus/Lab*
+LabsQuartus/Lab*/*
+!LabsQuartus/Lab*/*.bdf
+!LabsQuartus/Lab*/*.vwf
+!LabsQuartus/Lab*/*.qpf
+!LabsQuartus/Lab*/*.qsf
+!LabsQuartus/Lab*/*.bsf
+
+### Verilog (especially for SoC)
+!LabsSoC
+LabsSoC/*
+!LabsSoC/*.sh
