@@ -1,5 +1,5 @@
 {% extends "base" %}
-{% block body %}
+{%- block body %}
 module {{ project_name }}(
 );
 
@@ -12,4 +12,4 @@ module {{ project_name }}(
 //=======================================================
 
 endmodule
-{% endblock %}
+{%- endblock %}

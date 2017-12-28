@@ -1,9 +1,10 @@
+{# TODO #}
 {% extends "base" %}
-{% block message %}
+{%- block message %}
 # Users are recommended to modify this file to match users logic.
 {% endblock %}
 
-{% block body %}
+{%- block body %}
 #**************************************************************
 # Create Clock
 #**************************************************************

@@ -1,19 +1,19 @@
 {% extends "base" %}
-{% block body %}
-{% if global_assignments %}
-    {% for key, value in global_assignments %}
+{%- block body %}
+{%- if global_assignments %}
+    {%- for key, value in global_assignments.items() %}
 set_global_assignment -name {{ key|upper }} {{ value }}
     {% endfor %}
 {% endif %}
-{% if user_assignments %}
-    {% for part_name, assignments in user_assignments %}
+{%- if user_assignments %}
+    {%- for part_name, assignments in user_assignments.items() %}
 #============================================================
 # {{ part_name|upper }}
 #============================================================
-        {% for instance in assignments['instance'] %}
+        {%- for instance in assignments['instance'] %}
 set_instance_assignment -name {{ instance[0]|upper }} {{ instance[1]|upper }} -to {{ instance[2]|upper }}
         {% endfor %}
-        {% for location in assignments['location'] %}
+        {%- for location in assignments['location'] %}
 set_location_assignment {{ location[0]|upper }} -to {{ location[1]|upper }}
         {% endfor %}
     {% endfor %}
