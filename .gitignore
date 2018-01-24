@@ -3,3 +3,5 @@ __pycache__/
 .cache/
 .idea/
 tmp/
+
+*.py[cod]
