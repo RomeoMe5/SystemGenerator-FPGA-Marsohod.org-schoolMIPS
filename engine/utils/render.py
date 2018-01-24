@@ -2,8 +2,8 @@ import os
 from functools import partial
 from jinja2 import Environment, FileSystemLoader
 
-from app import ROOT_DIR
-from app.utils.decorators import default_args_for_render, load_template
+from engine import ROOT_DIR
+from engine.utils.decorators import default_args_for_render, load_template
 
 TEMPL_ENV = Environment()
 TEMPL_ENV.loader = FileSystemLoader(os.path.join(ROOT_DIR, "templates"))

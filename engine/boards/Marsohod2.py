@@ -1,8 +1,8 @@
 import json
 import os
 
-from app import ROOT_DIR
-from app.render import Render
+from engine import ROOT_DIR
+from engine.utils.render import Render
 
 M2_STATIC_PATH = os.path.join(ROOT_DIR, "static", "m2.json")
 
