@@ -1,5 +1,8 @@
+""" Additional methods for preparing engine workflow. """
+
 import logging
 import os
+import shutil
 import tarfile
 import zipfile
 
@@ -37,7 +40,7 @@ class Compressor(object):
 
     @staticmethod
     def _to_zip(path: str, *files, mode: str=zipfile.ZIP_STORED) -> int:
-        count_files = 0
+        successfully_added_count = 0
         with zipfile.ZipFile(path, 'w', compression=mode) as zf_out:
             for filename in files:
                 if not isinstance(filename, str):
@@ -54,7 +57,7 @@ class Compressor(object):
                             for file in files:
                                 filepath = os.path.join(dirname, file)
                                 zf_out.write(filepath)
-                                count_files += 1
+                                successfully_added_count += 1
                                 logging.debug(
                                     "Add file '%s' to '%s'.",
                                     filepath,
@@ -65,17 +68,17 @@ class Compressor(object):
                 elif os.path.exists(filename):
                     try:
                         zf_out.write(filename)
-                        count_files += 1
+                        successfully_added_count += 1
                         logging.debug("Add file '%s' to '%s'.", filename, path)
                     except tarfile.TarError as err:
                         logging.error("'%s' wasn't added!\n%s", filename, err)
                 else:
                     logging.warning("File isn't exists: '%s'.", filename)
-        return count_files
+        return successfully_added_count
 
     @staticmethod
     def _to_tar(path: str, *files, mode: str="w") -> int:
-        count_files = 0
+        successfully_added_count = 0
         with tarfile.open(path, mode) as tar_fout:
             for filename in files:
                 if not isinstance(filename, str):
@@ -83,13 +86,13 @@ class Compressor(object):
                 elif os.path.exists(filename):
                     try:
                         tar_fout.add(filename)
-                        count_files += 1
+                        successfully_added_count += 1
                         logging.debug("Add file '%s' to '%s'.", filename, path)
                     except tarfile.TarError as err:
                         logging.error("'%s' wasn't added!\n%s", filename, err)
                 else:
                     logging.warning("File isn't exists: '%s'.", filename)
-        return count_files
+        return successfully_added_count
 
     @staticmethod
     def archive(destination: str, *filenames, rewrite: bool=True) -> int:
@@ -148,3 +151,31 @@ class Compressor(object):
         # but was hidden until method will be finished
         method, compression = path.lower().split('.')[-2:]
         raise NotImplementedError
+
+
+def create_dirs(*paths, rewrite: bool=False) -> int:
+    """ Create folders. """
+    successfully_created_count = 0
+    for path in paths:
+        if not isinstance(path, str):
+            logging.error("Wrong path specified: '%s'", type(path))
+            continue
+        elif os.path.exists(path) and rewrite:
+            try:
+                shutil.rmtree(path)
+                logging.debug("Remove '%s'.", path)
+            except BaseException as err:
+                logging.error("Can't remove '%s'!\n%s", path, err)
+                continue
+        elif os.path.exists(path):
+            logging.info("Skip '%s' as it's exists.")
+            continue
+
+        try:
+            os.mkdir(path)
+            successfully_created_count += 1
+            logging.debug("Create '%s' folder.", path)
+        except BaseException as err:
+            logging.error("Can't create '%s'!\n%s", path, err)
+
+        return successfully_created_count
