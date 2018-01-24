@@ -1,17 +1,5 @@
-# Resources:
-*.xml
-*.bak
-*.log
-*.db
-
-# Specific PATHs:
-.vscode/
-.idea/
-db_repository/
-downloads/
 __pycache__/
+.vscode/
 .cache/
-bak/
-rsc/
+.idea/
 tmp/
-bin/
