@@ -1,0 +1,13 @@
+{%- macro print(dict, use_else='') -%}
+    {%- if not use_else -%}
+        {%- for key, value in dict.items() -%}
+            {{ caller(key, value) }}
+        {%- endfor -%}
+    {%- else -%}
+        {%- for key, value in dict.items() -%}
+            {{ caller(key, value) }}
+        {%- else -%}
+{{ use_else }}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endmacro -%}

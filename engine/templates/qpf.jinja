@@ -1,0 +1,16 @@
+{%- extends "base_.jinja" -%}
+{%- import "_PrintDict.jinja" as PrintDict -%}
+{%- block body -%}
+{%- if meta_info -%}
+    {%- call(key, val) PrintDict.print(meta_info, use_else="# Place project meta information here") -%}
+{{ key|upper }} = {{ val }}
+    {%- endcall -%}
+{%- endif -%}
+
+{%- if revisions -%}
+# Revisions
+    {%- call(key, val) PrintDict.print(revisions) -%}
+{{ key|upper }} = {{ val }}
+    {%- endcall -%}
+{%- endif -%}
+{%- endblock body -%}

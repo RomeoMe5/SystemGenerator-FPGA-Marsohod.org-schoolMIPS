@@ -1,10 +1,11 @@
 {# TODO #}
-{% extends "base" %}
-{%- block message %}
+{%- extends "base_.jinja" -%}
+{%- block message -%}
 # Users are recommended to modify this file to match users logic.
-{% endblock %}
+{%- endblock message -%}
 
-{%- block body %}
+{%- block body -%}
+
 #**************************************************************
 # Create Clock
 #**************************************************************
@@ -57,4 +58,4 @@
 # Set Load
 #**************************************************************
 
-{% endblock %}
+{%- endblock body -%}
