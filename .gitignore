@@ -2,6 +2,9 @@ __pycache__/
 .vscode/
 .cache/
 .idea/
+logs/
+log/
 tmp/
 
 *.py[cod]
+*.log
