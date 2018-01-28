@@ -12,16 +12,11 @@ CONFIG = Config(
     LOG_BACKUPCOUNT=10,
     LOG_FORMAT="[%(asctime)s] %(levelname)s "
                "[%(name)s.{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s",
-    LOG_DATE_FMT="%H:%M:%S",
     LOG_LEVEL=logging.DEBUG,
-    LOG_RESULT=True,
-    LOG_ARGS=True,
-    LOG_KWARGS=True,
     FILE_ENCODING="utf-8",
-    STATIC_EXTENSION="json",
     COPYRIGHT="Moscow University of Electronics and Mathematics, "
               "Higher School for Economics University",
-    FALLBACK_EXTENSION="jinja"
+    DESTINATION_PATH="build"
 )
 
 logging.basicConfig(level=CONFIG.LOG_LEVEL,

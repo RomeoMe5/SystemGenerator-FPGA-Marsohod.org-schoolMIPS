@@ -12,13 +12,38 @@ import engine
 class Config(object):
     """ Configuration storage """
 
-    PATHS = {'root': os.path.dirname(engine.__file__)}
-    PATHS['static'] = os.path.join(PATHS['root'], "static")
-    PATHS['templ'] = os.path.join(PATHS['root'], "templates")
-
+    # this can be overwritten by user
     FILE_ENCODING = os.environ.get("FILE_ENCODING", "utf-8")
     FALLBACK_EXTENSION = os.environ.get("FALLBACK_EXTENSION", "jinja")
     COPYRIGHT = os.environ.get("COPYRIGHT", "MUEM (HSE University)")
+    DESTINATION_PATH = os.environ.get("DESTINATION_PATH", "build")
+    LOG_MAXBYTES = os.environ.get("LOG_MAXBYTES", 1024 * 10)
+    LOG_BACKUPCOUNT = os.environ.get("LOG_BACKUPCOUNT", 10)
+    LOG_FORMAT = os.environ.get(
+        "LOG_FORMAT",
+        "[%(asctime)s] %(levelname)s "
+        "[%(name)s.{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s"
+    )
+    LOG_DATE_FMT = os.environ.get("LOG_DATE_FMT", "%H:%M:%S")
+    LOG_LEVEL = os.environ.get("LOG_LEVEL", logging.DEBUG)
+    LOG_RESULT = os.environ.get("LOG_RESULT", True)
+    LOG_ARGS = os.environ.get("LOG_ARGS", True)
+    LOG_KWARGS = os.environ.get("LOG_KWARGS", True)
+    FILE_ENCODING = os.environ.get("FILE_ENCODING", "utf-8")
+    FILE_ERRORS = os.environ.get("FILE_ERRORS", "xmlcharrefreplace")
+    STATIC_EXTENSION = os.environ.get("STATIC_EXTENSION", "json")
+    COPYRIGHT = os.environ.get(
+        "COPYRIGHT",
+        "Moscow University of Electronics and Mathematics, "
+        "Higher School for Economics University"
+    )
+    FALLBACK_EXTENSION = os.environ.get("FALLBACK_EXTENSION", "jinja")
+    DESTINATION_PATH = os.environ.get("DESTINATION_PATH", "build")
+
+    # don't overwrite this params!
+    PATHS = {'root': os.path.dirname(engine.__file__)}
+    PATHS['static'] = os.path.join(PATHS['root'], "static")
+    PATHS['templ'] = os.path.join(PATHS['root'], "templates")
 
     ENV = Environment(
         loader=FileSystemLoader(PATHS['templ'], encoding=FILE_ENCODING),
