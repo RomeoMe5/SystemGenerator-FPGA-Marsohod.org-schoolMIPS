@@ -1,16 +1,18 @@
+""" Collection of decorators """
+
 import logging
 import os
 from functools import wraps
 from typing import Callable
 
-from jinja2.environment import Environment, Template
+from jinja2.environment import Environment
 
-from engine.utils import ENV
+from engine.utils import Config
 
 
 def load_template(template_path: str,
-                  env: Environment=ENV,
-                  fallback_format: str="jinja") -> Callable:
+                  env: Environment=Config.ENV,
+                  fallback_format: str=Config.FALLBACK_EXTENSION) -> Callable:
     """
         Load template and pass it as named argument 'template' to function
 
@@ -44,7 +46,7 @@ def default_args_for_render(func: Callable) -> Callable:
     """
     @wraps(func)
     def wrapper(*args,
-                company_name: str="HSE",  # @TODO: remove hardcoded HSE
+                company_name: str=Config.COPYRIGHT,
                 file_type: str=None,
                 **kwargs) -> object:
         if not file_type:
