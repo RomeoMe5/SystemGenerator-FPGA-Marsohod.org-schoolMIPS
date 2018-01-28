@@ -8,7 +8,7 @@ from engine.utils import Config
 
 
 def get_static_path(filename: str,
-                    extension: str="json",
+                    extension: str=Config.STATIC_EXTENSION,
                     path_to_static: str=Config.PATHS['static']) -> str:
     """ Return path for static object (if it exists) """
     path = os.path.join(path_to_static, filename)
@@ -26,7 +26,7 @@ def get_static_path(filename: str,
 
 def load_json(filepath: str,
               encoding: str=Config.FILE_ENCODING,
-              errors: str="xmlcharrefreplace") -> dict:
+              errors: str=Config.FILE_ERRORS) -> dict:
     """ Loads json contents """
     if not os.path.exists(filepath):
         logging.error("File isn't exists '%s'!", filepath)
@@ -39,7 +39,7 @@ def load_json(filepath: str,
 def load_plain_text(filepath: str,
                     as_str: bool=True,
                     encoding: str=Config.FILE_ENCODING,
-                    errors: str="xmlcharrefreplace") -> str or list:
+                    errors: str=Config.FILE_ERRORS) -> str or list:
     """ Loads plain text file contents as string or list of strings """
     if not os.path.exists(filepath):
         logging.error("File isn't exists '%s'!", filepath)
