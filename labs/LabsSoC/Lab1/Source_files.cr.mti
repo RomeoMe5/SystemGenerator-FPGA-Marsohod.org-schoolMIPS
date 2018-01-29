@@ -1,0 +1,8 @@
+C:/Files/Romanov/Labs/SoC/Lab1/mult_acc.v {1 {vlog -work Lab1 -stats=none C:/Files/Romanov/Labs/SoC/Lab1/mult_acc.v
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module mult_acc
+
+Top level modules:
+	mult_acc
+
+} {} {}}

@@ -1,6 +1,10 @@
 DE1SoC_configs/
+incremental_db/
+output_files/
+simulation/
 Quartus/
 Soc/
+db/
 
 ### Quartus
 LabsQuartus/*
@@ -12,8 +16,3 @@ LabsQuartus/Lab*/*
 !LabsQuartus/Lab*/*.qpf
 !LabsQuartus/Lab*/*.qsf
 !LabsQuartus/Lab*/*.bsf
-
-### Verilog (especially for SoC)
-!LabsSoC
-LabsSoC/*
-!LabsSoC/*.sh
