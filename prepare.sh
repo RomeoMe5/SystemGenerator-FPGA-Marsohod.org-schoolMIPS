@@ -1,4 +1,8 @@
 # ===== Activate environment =====
+# ===== Create virtual environment =====
+sudo python3 -m venv .env
+
+# ===== Activate environment =====
 source .env/bin/activate
 
 # ===== Install dependencies =====
