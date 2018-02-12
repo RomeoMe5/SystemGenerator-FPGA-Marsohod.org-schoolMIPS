@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>
+        {% if user %}
+            Hello, {{ user.username | capitalize }}!
+        {% else %}
+            {{ title | capitalize }} page
+        {% endif %}
+    </h1>
+    <hr>
+{% endblock content %}

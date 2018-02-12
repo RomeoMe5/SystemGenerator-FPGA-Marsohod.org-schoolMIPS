@@ -1,0 +1,13 @@
+bak/
+rsc/
+
+*.JSON
+*.db
+*.db.journal
+
+# specific
+set_env_vars*
+
+# Flask stuff:
+instance/
+.webassets-cache

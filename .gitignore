@@ -11,3 +11,5 @@ tmp/
 
 *.py[cod]
 *.log
+*$py.class
+*.bak

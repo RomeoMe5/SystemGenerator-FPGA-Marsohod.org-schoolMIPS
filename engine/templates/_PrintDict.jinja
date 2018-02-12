@@ -1,4 +1,6 @@
-{%- macro print(dict, use_else='') -%}
+{# TODO: fix use_else argument #}
+{# TODO: fix new lines #}
+{%- macro print(dict, use_else=None) -%}
     {%- if not use_else -%}
         {%- for key, value in dict.items() -%}
             {{ caller(key, value) }}
