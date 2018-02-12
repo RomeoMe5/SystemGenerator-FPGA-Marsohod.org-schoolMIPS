@@ -1,0 +1,19 @@
+module demult1_2(A,D,Q0,Q1);
+
+
+input wire	A, D;
+output wire	Q0, Q1;
+
+wire	SYNTHESIZED_WIRE_0;
+
+
+
+
+assign	Q0 = D & SYNTHESIZED_WIRE_0;
+
+assign	Q1 = D & A;
+
+assign	SYNTHESIZED_WIRE_0 =  ~A;
+
+
+endmodule
