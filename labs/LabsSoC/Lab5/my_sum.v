@@ -1,16 +1,14 @@
-module my_sum (Ain, Bin, Ci, Sout, Co);
-  input Ain, Bin, Ci;
-  output Sout, Co;
+module my_sum (a, b, s);
+  input a, b;
+  output s;
   
-  wire [3:0] Ain, Bin, Sout, C;
-  wire Ci, Co;
+  wire [3:0] a, b, s, c_wire;
+  wire c;
 
-bitsum sum1(Ain[0], Bin[0], Sout[0], Ci, C[0]);
-bitsum sum2(Ain[1], Bin[1], Sout[1], C[0], C[1]);    
-bitsum sum3(Ain[2], Bin[2], Sout[2], C[1], C[2]);
-bitsum sum4(Ain[3], Bin[3], Sout[3], C[2], C[3]);
-
-assign Co = C[3];
+  bitsum sum1(a[0], b[0], s[0], c, c_wire[0]);
+  bitsum sum2(a[1], b[1], s[1], c_wire[0], c_wire[1]);    
+  bitsum sum3(a[2], b[2], s[2], c_wire[1], c_wire[2]);
+  bitsum sum4(a[3], b[3], s[3], c_wire[2], c_wire[3]);
 
 endmodule
  
@@ -29,4 +27,3 @@ module bitsum (A, B, S, Cin, Cout);
   
 
 endmodule
-

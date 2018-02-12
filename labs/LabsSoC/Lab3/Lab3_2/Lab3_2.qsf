@@ -37,8 +37,8 @@
 # -------------------------------------------------------------------------- #
 
 
-set_global_assignment -name FAMILY "MAX 10"
-set_global_assignment -name DEVICE 10M08DAF484C8G
+set_global_assignment -name FAMILY "Cyclone V"
+set_global_assignment -name DEVICE 5CSEMA5F31C6
 set_global_assignment -name TOP_LEVEL_ENTITY Lab3_2
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.0.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "05:16:43  JANUARY 29, 2018"
@@ -54,4 +54,28 @@ set_global_assignment -name BDF_FILE Lab3_2.bdf
 set_global_assignment -name VECTOR_WAVEFORM_FILE Waveform.vwf
 set_global_assignment -name BDF_FILE demult1_16_Quartus.bdf
 set_global_assignment -name BDF_FILE digit16_to_7segm_Quartus.bdf
+set_location_assignment PIN_AB12 -to A0
+set_location_assignment PIN_AC12 -to A1
+set_location_assignment PIN_AF9 -to A2
+set_location_assignment PIN_AF10 -to A3
+set_location_assignment PIN_AE26 -to S0
+set_location_assignment PIN_AE27 -to S1
+set_location_assignment PIN_AE28 -to S2
+set_location_assignment PIN_AG27 -to S3
+set_location_assignment PIN_AF28 -to S4
+set_location_assignment PIN_AG28 -to S5
+set_location_assignment PIN_AH28 -to S6
+set_location_assignment PIN_AJ29 -to dp
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to A0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to A1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to A3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to A2
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S0
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dp
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S1
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S6
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S5
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S4
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S3
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to S2
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

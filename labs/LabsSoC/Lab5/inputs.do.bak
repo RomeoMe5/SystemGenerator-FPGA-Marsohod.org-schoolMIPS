@@ -1,0 +1,3 @@
+force clk 2#1 0ns, 2#0 {25ns} -repeat 50ns;
+force Ain 8#6 0ns;
+force Bin 8#3 0ns;
