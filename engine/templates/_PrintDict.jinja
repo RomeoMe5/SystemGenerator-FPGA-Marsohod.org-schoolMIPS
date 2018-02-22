@@ -1,5 +1,0 @@
-{%- macro print(dict, use_else=None) -%}
-    {%- for key, value in dict.items() -%}
-        {{ caller(key, value) }}
-    {%- endfor -%}
-{%- endmacro -%}

@@ -1,14 +1,15 @@
 {%- extends "base_.jinja" -%}
-{%- import "_PrintDict.jinja" as PrintDict -%}
 {%- block body -%}
 {%- if global_assignments -%}
-    {%- call(key, val) PrintDict.print(global_assignments, use_else="# Place GLOBAL assignments here") -%}
+    {%- for key, value in global_assignments.items() -%}
 set_global_assignment -name {{ key|upper }} {{ val }}
-    {%- endcall -%}
+    {%- endfor -%}
+{%- else -%}
+# Place GLOBAL assignments here
 {%- endif -%}
 
 {%- if user_assignments -%}
-    {%- call(part_name, assignments) PrintDict.print(user_assignments, use_else="# Place USER assignments here") -%}
+    {%- for part_name, assignments in user_assignments.items() -%}
 #============================================================
 # {{ part_name|upper }}
 #============================================================
@@ -21,6 +22,8 @@ set_instance_assignment -name {{ instance[0]|upper }} {{ instance[1]|upper }} -t
 set_location_assignment {{ location[0]|upper }} -to {{ location[1]|upper }}
         {%- endfor -%}
 
-    {%- endcall -%}
+    {%- endfor -%}
+{%- else -%}
+# Place USER assignments here
 {%- endif -%}
 {%- endblock body -%}
