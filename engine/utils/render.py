@@ -14,16 +14,16 @@ class Render(object):
 
     @staticmethod
     @log()
-    def _render(template: Template, **kwargs) -> list:
+    def _render(template: Template, **kwargs) -> str:
         logging.debug("Rendering '%s' template...", template.filename)
-        return [line + '\n' for line in template.generate(**kwargs)]
+        return "\n".join(template.generate(**kwargs))
 
     @staticmethod
     @load_template("qpf.jinja")
     @default_args_for_render
     def qpf(meta_info: dict=None,
             revisions: dict=None,
-            **kwargs) -> list:
+            **kwargs) -> str:
         """ Template rendering interface for .qpf files """
         return Render._render(
             meta_info=meta_info,
@@ -36,7 +36,7 @@ class Render(object):
     @default_args_for_render
     def qsf(global_assignments: dict=None,
             user_assignments: dict=None,
-            **kwargs) -> list:
+            **kwargs) -> str:
         """ Template rendering interface for .qsf files """
         return Render._render(
             global_assignments=global_assignments,
@@ -48,13 +48,13 @@ class Render(object):
     @staticmethod
     @load_template("sdc.jinja")
     @default_args_for_render
-    def sdc(**kwargs) -> list:
+    def sdc(**kwargs) -> str:
         """ Template rendering interface for .sdc files """
         return Render._render(**kwargs)
 
     @staticmethod
     @load_template("v.jinja")
     @default_args_for_render
-    def v(project_name: str, **kwargs) -> list:
+    def v(project_name: str, **kwargs) -> str:
         """ Template rendering interface for .v files """
         return Render._render(project_name=project_name, **kwargs)
