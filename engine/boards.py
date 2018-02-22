@@ -42,7 +42,7 @@ class GenericBoard(object):
         for extension, content in config_files_extensions.items():
             filename = ".".join((project_name, extension))
             config_files.update({filename: content})
-
+        config_files.update({"LICENSE": LICENSE})
         Archiver.to_tar_flow(config_files, project_name)
 
     def generate_files(self,
