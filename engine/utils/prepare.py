@@ -79,9 +79,7 @@ class Archiver(object):
 
     @staticmethod
     def get_tar_io(files: dict) -> io.BytesIO:
-        """
-        Get I/O of tar file
-        """
+        """ Returns tar file I/O """
         tar_io = io.BytesIO()
         with tarfile.open(fileobj=tar_io, mode="w") as tar_fout:
             for file_name, file_line in files.items():
@@ -99,9 +97,7 @@ class Archiver(object):
     def to_tar_flow(files: dict,
                     path: str,
                     in_memory=False) -> io.BytesIO:
-        """
-        Write tar I/O to tar file
-        """
+        """ Write tar I/O to tar file """
         tar_io = Archiver.get_tar_io(files)
         if not in_memory:
             with open(path + ".tar", 'wb') as tar_fout:
