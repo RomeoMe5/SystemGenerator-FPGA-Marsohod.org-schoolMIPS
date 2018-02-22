@@ -45,7 +45,7 @@ class Marsohod2(Render):
 
         for extension, content in config_files.items():
             with open(os.path.join(
-                    path, ".".join((project_name, extension))), 'w') as fout:
+                    path, ".".join((project_name, extension))), 'wt') as fout:
                 logging.info("Creating '%s'...", fout.name)
                 for line in content:
                     fout.write(line)

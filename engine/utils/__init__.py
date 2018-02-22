@@ -50,7 +50,7 @@ class Config(object):
         autoescape=select_autoescape(enabled_extensions=(), default=False),
         trim_blocks=True,
         lstrip_blocks=True,
-        newline_sequence="\r\n" if "win" in sys.platform else "\n",
+        newline_sequence="\n",
         keep_trailing_newline=True,
         auto_reload=False
     )
