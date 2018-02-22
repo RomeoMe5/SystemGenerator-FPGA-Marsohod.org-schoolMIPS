@@ -13,3 +13,4 @@ tmp/
 *.log
 *$py.class
 *.bak
+*.db
