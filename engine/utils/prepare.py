@@ -1,18 +1,19 @@
 """ Additional methods for preparing engine workflow. """
 
-import logging
+import io
 import os
 import shutil
 import tarfile
 import zipfile
-import io
+
+from engine.utils.log import LOGGER
 
 
 class Archiver(object):
     """
         Collection of methods of files' compression.
 
-        Needed to implements specific logging, for more common use
+        Needed to implements specific LOGGER, for more common use
         it's preferable to use shutil.make_archive.
     """
 
@@ -24,11 +25,11 @@ class Archiver(object):
                  **kwargs) -> int:
         """ Run checks and apply files' archiving. """
         if not isinstance(destination, str):
-            logging.error("Wrong destination value: '%s'!", type(destination))
+            LOGGER.error("Wrong destination value: '%s'!", type(destination))
             return -2
 
         if os.path.exists(destination) and not rewrite:
-            logging.warning("Destination isn't exists: '%s'!", destination)
+            LOGGER.warning("Destination isn't exists: '%s'!", destination)
             return -1
 
         if method[0] == "z":
@@ -36,7 +37,7 @@ class Archiver(object):
         elif method[0] == "t":
             return Archiver._to_tar(destination, *filenames, **kwargs)
 
-        logging.error("Wrong method specified: '%s'!", method)
+        LOGGER.error("Wrong method specified: '%s'!", method)
         raise ValueError("Wrong method specified: '{}'!".format(method))
 
     @staticmethod
@@ -45,12 +46,12 @@ class Archiver(object):
         with zipfile.ZipFile(path, 'w', compression=mode) as zf_out:
             for filename in files:
                 if not isinstance(filename, str):
-                    logging.error("Wrong filename: '%s'!", type(filename))
+                    LOGGER.error("Wrong filename: '%s'!", type(filename))
                 elif os.path.isdir(filename):
                     try:
                         for dirname, subdirs, files in os.walk(filename):
                             zf_out.write(dirname)
-                            logging.debug(
+                            LOGGER.debug(
                                 "Add dir '%s' to '%s'.",
                                 dirname,
                                 path
@@ -59,30 +60,29 @@ class Archiver(object):
                                 filepath = os.path.join(dirname, file)
                                 zf_out.write(filepath)
                                 successfully_added_count += 1
-                                logging.debug(
+                                LOGGER.debug(
                                     "Add file '%s' to '%s'.",
                                     filepath,
                                     path
                                 )
                     except BaseException as err:
-                        logging.error("'%s' wasn't added!\n%s", filename, err)
+                        LOGGER.error("'%s' wasn't added!\n%s", filename, err)
                 elif os.path.exists(filename):
                     try:
                         zf_out.write(filename)
                         successfully_added_count += 1
-                        logging.debug("Add file '%s' to '%s'.", filename, path)
+                        LOGGER.debug("Add file '%s' to '%s'.", filename, path)
                     except tarfile.TarError as err:
-                        logging.error("'%s' wasn't added!\n%s", filename, err)
+                        LOGGER.error("'%s' wasn't added!\n%s", filename, err)
                 else:
-                    logging.warning("File isn't exists: '%s'.", filename)
+                    LOGGER.warning("File isn't exists: '%s'.", filename)
         return successfully_added_count
 
     @staticmethod
     def get_tar_io(files: dict) -> io.BytesIO:
-        """
-        Get I/O of tar file
-        """
+        """ Returns tar file I/O """
         tar_io = io.BytesIO()
+        LOGGER.info("Create tar I/O")
         with tarfile.open(fileobj=tar_io, mode="w") as tar_fout:
             for file_name, file_line in files.items():
                 try:
@@ -90,22 +90,25 @@ class Archiver(object):
                     file_line_byte = io.BytesIO(file_line.encode('utf-8'))
                     tarinfo.size = io.StringIO().write(file_line)
                     tar_fout.addfile(tarinfo, fileobj=file_line_byte)
-                    logging.debug("Add file '%s' to tar I/O", file_name)
+                    LOGGER.debug(
+                        "   Add file '%s' to tar I/O, content(binary): '%s",
+                        file_name, file_line_byte)
                 except tarfile.TarError as err:
-                    logging.error("'%s' wasn't added!\n%s", file_name, err)
+                    LOGGER.error("'%s' wasn't added!\n%s", file_name, err)
+        LOGGER.debug("Return tar I/O")
         return tar_io
 
     @staticmethod
     def to_tar_flow(files: dict,
                     path: str,
                     in_memory=False) -> io.BytesIO:
-        """
-        Write tar I/O to tar file
-        """
+        """ Write tar I/O to tar file """
         tar_io = Archiver.get_tar_io(files)
         if not in_memory:
             with open(path + ".tar", 'wb') as tar_fout:
+                LOGGER.info("Create '%s'.tar file", path)
                 tar_fout.write(tar_io.getvalue())
+                LOGGER.debug("Adding tar I/O to '%s'.tar file", path)
 
     @staticmethod
     def _to_tar(path: str, *files, mode: str="w") -> int:
@@ -113,18 +116,18 @@ class Archiver(object):
         with tarfile.open(path, mode) as tar_fout:
             for filename in files:
                 if not isinstance(filename, str):
-                    logging.error("Wrong filename: '%s'!", type(filename))
+                    LOGGER.error("Wrong filename: '%s'!", type(filename))
                 elif os.path.exists(filename):
                     try:
                         tar_fout.add(filename)
                         successfully_added_count += 1
-                        logging.debug(
+                        LOGGER.debug(
                             "Add file '%s' to '%s'.", filename, path)
                     except tarfile.TarError as err:
-                        logging.error(
+                        LOGGER.error(
                             "'%s' wasn't added!\n%s", filename, err)
                 else:
-                    logging.warning("File isn't exists: '%s'.", filename)
+                    LOGGER.warning("File isn't exists: '%s'.", filename)
         return successfully_added_count
 
     @staticmethod
@@ -142,7 +145,7 @@ class Archiver(object):
 
         if method not in {"tar", "zip"}:
             method, compression = compression, None
-            logging.debug(
+            LOGGER.debug(
                 "'%s' archiving detected [without compression].",
                 method
             )
@@ -154,7 +157,7 @@ class Archiver(object):
         }
 
         if compression:
-            logging.debug(
+            LOGGER.debug(
                 "'%s' archiving detected [with %s compression].",
                 method,
                 compression
@@ -191,24 +194,24 @@ def create_dirs(*paths, rewrite: bool=False) -> int:
     successfully_created_count = 0
     for path in paths:
         if not isinstance(path, str):
-            logging.error("Wrong path specified: '%s'", type(path))
+            LOGGER.error("Wrong path specified: '%s'", type(path))
             continue
         elif os.path.exists(path) and rewrite:
             try:
                 shutil.rmtree(path)
-                logging.debug("Remove '%s'.", path)
+                LOGGER.debug("Remove '%s'.", path)
             except BaseException as err:
-                logging.error("Can't remove '%s'!\n%s", path, err)
+                LOGGER.error("Can't remove '%s'!\n%s", path, err)
                 continue
         elif os.path.exists(path):
-            logging.info("Skip '%s' as it's exists.")
+            LOGGER.info("Skip '%s' as it's exists.", path)
             continue
 
         try:
             os.mkdir(path)
             successfully_created_count += 1
-            logging.debug("Create '%s' folder.", path)
+            LOGGER.debug("Create '%s' folder.", path)
         except BaseException as err:
-            logging.error("Can't create '%s'!\n%s", path, err)
+            LOGGER.error("Can't create '%s'!\n%s", path, err)
 
         return successfully_created_count
