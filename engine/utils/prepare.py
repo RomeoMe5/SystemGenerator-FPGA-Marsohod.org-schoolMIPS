@@ -5,9 +5,10 @@ import os
 import shutil
 import tarfile
 import zipfile
+import io
 
 
-class Compressor(object):
+class Archiver(object):
     """
         Collection of methods of files' compression.
 
@@ -31,9 +32,9 @@ class Compressor(object):
             return -1
 
         if method[0] == "z":
-            return Compressor._to_zip(destination, *filenames, **kwargs)
+            return Archiver._to_zip(destination, *filenames, **kwargs)
         elif method[0] == "t":
-            return Compressor._to_tar(destination, *filenames, **kwargs)
+            return Archiver._to_tar(destination, *filenames, **kwargs)
 
         logging.error("Wrong method specified: '%s'!", method)
         raise ValueError("Wrong method specified: '{}'!".format(method))
@@ -77,41 +78,43 @@ class Compressor(object):
         return successfully_added_count
 
     @staticmethod
-    def _to_tar_flow(files: dict, path: str, mode: str="w") -> int:
+    def to_tar_flow(files: dict,
+                    path: str,
+                    **kwargs) -> int:
         successfully_added_count = 0
-        if
-
-        with tarfile.open(path, mode) as tar_fout:
-            for file_type, file_line in files.items():
+        with tarfile.open(path + ".tar", "w") as tar_fout:
+            for file_name, file_line in files.items():
                 try:
-                    if isinstance(file_line, str):
-                        file_line = file_line.encode('utf-8')
-                    tarinfo = tarfile.TarInfo(file_line)
-                    tar_fout.addfile(tarinfo, file_line)
+                    tarinfo = tarfile.TarInfo(file_name)
+                    file_line_byte = io.BytesIO(file_line.encode('utf-8'))
+                    tarinfo.size = io.StringIO().write(file_line)
+                    tar_fout.addfile(tarinfo, file_line_byte)
                     successfully_added_count += 1
-                    logging.debug("Add file string .'%s' to '%s'",
-                                  file_type, path)
+                    logging.debug("Add file '%s' to '%s'",
+                                  file_name, path)
                 except tarfile.TarError as err:
                     logging.error("'%s' wasn't added!\n%s", file_type, err)
         return successfully_added_count
 
-    @staticmethod
-    def _to_tar(path: str, *files, mode: str="w") -> int:
-        successfully_added_count = 0
-        with tarfile.open(path, mode) as tar_fout:
-            for filename in files:
-                if not isinstance(filename, str):
-                    logging.error("Wrong filename: '%s'!", type(filename))
-                elif os.path.exists(filename):
-                    try:
-                        tar_fout.add(filename)
-                        successfully_added_count += 1
-                        logging.debug("Add file '%s' to '%s'.", filename, path)
-                    except tarfile.TarError as err:
-                        logging.error("'%s' wasn't added!\n%s", filename, err)
-                else:
-                    logging.warning("File isn't exists: '%s'.", filename)
-        return successfully_added_count
+        @staticmethod
+        def _to_tar(path: str, *files, mode: str="w") -> int:
+            successfully_added_count = 0
+            with tarfile.open(path, mode) as tar_fout:
+                for filename in files:
+                    if not isinstance(filename, str):
+                        logging.error("Wrong filename: '%s'!", type(filename))
+                    elif os.path.exists(filename):
+                        try:
+                            tar_fout.add(filename)
+                            successfully_added_count += 1
+                            logging.debug(
+                                "Add file '%s' to '%s'.", filename, path)
+                        except tarfile.TarError as err:
+                            logging.error(
+                                "'%s' wasn't added!\n%s", filename, err)
+                    else:
+                        logging.warning("File isn't exists: '%s'.", filename)
+            return successfully_added_count
 
     @staticmethod
     def archive(destination: str, *filenames, rewrite: bool=True) -> int:
@@ -161,7 +164,7 @@ class Compressor(object):
                 elif compression == "g":
                     params['mode'] = "w:gz"
 
-        return Compressor._archive(*filenames, **params)
+        return Archiver._archive(*filenames, **params)
 
     @staticmethod
     def _extract(path: str, destination: str=".", **kwargs) -> int:

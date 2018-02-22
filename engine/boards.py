@@ -1,9 +1,8 @@
 import logging
 import os
-from typing import NoReturn
 
 from engine.utils.load import get_static_path, load_json, load_plain_text
-from engine.utils.prepare import create_dirs
+from engine.utils.prepare import create_dirs, Archiver
 from engine.utils.render import Render
 
 try:
@@ -18,7 +17,7 @@ LICENSE = load_plain_text(os.path.join(CONFIG.PATHS['static'], "LICENSE"))
 class GenericBoard(object):
     """ Generic board functionality """
 
-    def __init__(self, config_name: str) -> NoReturn:
+    def __init__(self, config_name: str) -> None:
         self._path = get_static_path(config_name)
         self.config = load_json(
             os.path.join(CONFIG.PATHS['static'], self._path)
@@ -35,9 +34,20 @@ class GenericBoard(object):
             'sdc': Render.sdc(**kwargs)
         }
 
+    def generate_archive(self,
+                         project_name: str,
+                         **kwargs) -> None:
+        config_files_extensions = self.generate(project_name, **kwargs)
+        config_files = dict()
+        for extension, content in config_files_extensions.items():
+            filename = ".".join((project_name, extension))
+            config_files.update({filename: content})
+
+        Archiver.to_tar_flow(config_files, project_name)
+
     def generate_files(self,
                        project_name: str,
-                       **kwargs) -> NoReturn:
+                       **kwargs) -> None:
         """
             Generates FPGA config files
 
@@ -58,7 +68,7 @@ class GenericBoard(object):
             GenericBoard.save_license_file(project_path)
 
     @staticmethod
-    def save_license_file(path: str) -> NoReturn:
+    def save_license_file(path: str) -> None:
         """ Save License file to certain folder """
         with open(os.path.join(path, "LICENSE"), 'wt') as fout:
             logging.debug("Adding LICENSE: '%s'.", fout.name)
@@ -68,26 +78,26 @@ class GenericBoard(object):
 class Marsohod2(GenericBoard):
     """TODO: add description"""
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod2B(GenericBoard):
     """TODO: add description"""
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod3(GenericBoard):
     """TODO: add description"""
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod3B(GenericBoard):
     """TODO: add description"""
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
