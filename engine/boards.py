@@ -64,7 +64,7 @@ class GenericBoard(object):
                 LOGGER.info("Creating '%s'...", fout.name)
                 fout.write(content)
 
-        with open(os.path.join(path, "LICENSE"), 'wt') as fout:
+        with open(os.path.join(project_path, "LICENSE"), 'wt') as fout:
             LOGGER.debug("Adding LICENSE: '%s'.", fout.name)
             fout.write(LICENSE)
 
