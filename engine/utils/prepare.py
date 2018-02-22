@@ -78,43 +78,48 @@ class Archiver(object):
         return successfully_added_count
 
     @staticmethod
-    def to_tar_flow(files: dict,
-                    path: str,
-                    **kwargs) -> int:
-        successfully_added_count = 0
-        with tarfile.open(path + ".tar", "w") as tar_fout:
+    def get_tar_io(files: dict) -> io.BytesIO:
+        tar_io = io.BytesIO()
+        with tarfile.open(fileobj=tar_io, mode="w") as tar_fout:
             for file_name, file_line in files.items():
                 try:
                     tarinfo = tarfile.TarInfo(file_name)
                     file_line_byte = io.BytesIO(file_line.encode('utf-8'))
                     tarinfo.size = io.StringIO().write(file_line)
-                    tar_fout.addfile(tarinfo, file_line_byte)
-                    successfully_added_count += 1
-                    logging.debug("Add file '%s' to '%s'",
-                                  file_name, path)
+                    tar_fout.addfile(tarinfo, fileobj=file_line_byte)
+                    logging.debug("Add file '%s' to tar I/O", file_name)
                 except tarfile.TarError as err:
-                    logging.error("'%s' wasn't added!\n%s", file_type, err)
-        return successfully_added_count
+                    logging.error("'%s' wasn't added!\n%s", file_name, err)
+        return tar_io
 
-        @staticmethod
-        def _to_tar(path: str, *files, mode: str="w") -> int:
-            successfully_added_count = 0
-            with tarfile.open(path, mode) as tar_fout:
-                for filename in files:
-                    if not isinstance(filename, str):
-                        logging.error("Wrong filename: '%s'!", type(filename))
-                    elif os.path.exists(filename):
-                        try:
-                            tar_fout.add(filename)
-                            successfully_added_count += 1
-                            logging.debug(
-                                "Add file '%s' to '%s'.", filename, path)
-                        except tarfile.TarError as err:
-                            logging.error(
-                                "'%s' wasn't added!\n%s", filename, err)
-                    else:
-                        logging.warning("File isn't exists: '%s'.", filename)
-            return successfully_added_count
+    @staticmethod
+    def to_tar_flow(files: dict,
+                    path: str,
+                    in_memory=False) -> io.BytesIO:
+        tar_io = Archiver.get_tar_io(files)
+        if not in_memory:
+            with open(path + ".tar", 'wb') as tar_fout:
+                tar_fout.write(tar_io.getvalue())
+
+    @staticmethod
+    def _to_tar(path: str, *files, mode: str="w") -> int:
+        successfully_added_count = 0
+        with tarfile.open(path, mode) as tar_fout:
+            for filename in files:
+                if not isinstance(filename, str):
+                    logging.error("Wrong filename: '%s'!", type(filename))
+                elif os.path.exists(filename):
+                    try:
+                        tar_fout.add(filename)
+                        successfully_added_count += 1
+                        logging.debug(
+                            "Add file '%s' to '%s'.", filename, path)
+                    except tarfile.TarError as err:
+                        logging.error(
+                            "'%s' wasn't added!\n%s", filename, err)
+                else:
+                    logging.warning("File isn't exists: '%s'.", filename)
+        return successfully_added_count
 
     @staticmethod
     def archive(destination: str, *filenames, rewrite: bool=True) -> int:
