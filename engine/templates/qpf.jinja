@@ -2,7 +2,7 @@
 {%- import "_PrintDict.jinja" as PrintDict -%}
 {%- block body -%}
 {%- if meta_info -%}
-    {%- call(key, val) PrintDict.print(meta_info, use_else="# Place project meta information here") -%}
+    {%- call(key, val) PrintDict.print(meta_info) -%}
 {{ key|upper }} = {{ val }}
     {%- endcall -%}
 {%- endif -%}

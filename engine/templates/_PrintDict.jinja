@@ -1,15 +1,5 @@
-{# TODO: fix use_else argument #}
-{# TODO: fix new lines #}
 {%- macro print(dict, use_else=None) -%}
-    {%- if not use_else -%}
-        {%- for key, value in dict.items() -%}
-            {{ caller(key, value) }}
-        {%- endfor -%}
-    {%- else -%}
-        {%- for key, value in dict.items() -%}
-            {{ caller(key, value) }}
-        {%- else -%}
-{{ use_else }}
-        {%- endfor -%}
-    {%- endif -%}
+    {%- for key, value in dict.items() -%}
+        {{ caller(key, value) }}
+    {%- endfor -%}
 {%- endmacro -%}
