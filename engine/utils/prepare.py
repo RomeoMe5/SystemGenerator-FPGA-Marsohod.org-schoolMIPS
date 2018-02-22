@@ -77,6 +77,25 @@ class Compressor(object):
         return successfully_added_count
 
     @staticmethod
+    def _to_tar_flow(files: dict, path: str, mode: str="w") -> int:
+        successfully_added_count = 0
+        if
+
+        with tarfile.open(path, mode) as tar_fout:
+            for file_type, file_line in files.items():
+                try:
+                    if isinstance(file_line, str):
+                        file_line = file_line.encode('utf-8')
+                    tarinfo = tarfile.TarInfo(file_line)
+                    tar_fout.addfile(tarinfo, file_line)
+                    successfully_added_count += 1
+                    logging.debug("Add file string .'%s' to '%s'",
+                                  file_type, path)
+                except tarfile.TarError as err:
+                    logging.error("'%s' wasn't added!\n%s", file_type, err)
+        return successfully_added_count
+
+    @staticmethod
     def _to_tar(path: str, *files, mode: str="w") -> int:
         successfully_added_count = 0
         with tarfile.open(path, mode) as tar_fout:
