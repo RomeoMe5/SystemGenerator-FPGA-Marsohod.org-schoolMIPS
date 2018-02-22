@@ -1,28 +1,25 @@
-import logging
 import os
 
+from engine.utils import PATHS
 from engine.utils.load import get_static_path, load_json, load_plain_text
-from engine.utils.prepare import create_dirs, Archiver
+from engine.utils.log import LOGGER, log
+from engine.utils.prepare import Archiver, create_dirs
 from engine.utils.render import Render
 
-try:
-    from configs.engine import CONFIG
-except ImportError as err:
-    logging.warning("Can't import configuration!\n%s", err)
-    from engine.utils import Config as CONFIG
-
-LICENSE = load_plain_text(os.path.join(CONFIG.PATHS['static'], "LICENSE"))
+LICENSE = load_plain_text(os.path.join(PATHS['static'], "LICENSE"))
 
 
 class GenericBoard(object):
-    """ Generic board functionality """
+    """ Generic board methods (generating configs) """
 
+    @log
     def __init__(self, config_name: str) -> None:
         self._path = get_static_path(config_name)
         self.config = load_json(
-            os.path.join(CONFIG.PATHS['static'], self._path)
+            os.path.join(PATHS['static'], self._path)
         )
 
+    @log
     def generate(self,
                  project_name: str,
                  **kwargs) -> dict:
@@ -34,6 +31,9 @@ class GenericBoard(object):
             'sdc': Render.sdc(**kwargs)
         }
 
+    # TODO: add description
+    # TODO: add LICENSE
+    # TODO: ad logging
     def generate_archive(self,
                          project_name: str,
                          **kwargs) -> None:
@@ -61,43 +61,37 @@ class GenericBoard(object):
         for extension, content in config_files.items():
             filename = ".".join((project_name, extension))
             with open(os.path.join(project_path, filename), 'wt') as fout:
-                logging.info("Creating '%s'...", fout.name)
+                LOGGER.info("Creating '%s'...", fout.name)
                 fout.write(content)
 
-        if kwargs.pop('add_license', True):
-            GenericBoard.save_license_file(project_path)
-
-    @staticmethod
-    def save_license_file(path: str) -> None:
-        """ Save License file to certain folder """
         with open(os.path.join(path, "LICENSE"), 'wt') as fout:
-            logging.debug("Adding LICENSE: '%s'.", fout.name)
+            LOGGER.debug("Adding LICENSE: '%s'.", fout.name)
             fout.write(LICENSE)
 
 
 class Marsohod2(GenericBoard):
-    """TODO: add description"""
+    """ Marsohod2 configs generator """
 
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod2B(GenericBoard):
-    """TODO: add description"""
+    """ Marsohod2Bis configs generator """
 
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod3(GenericBoard):
-    """TODO: add description"""
+    """ Marsohod3 configs generator """
 
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
 
 
 class Marsohod3B(GenericBoard):
-    """TODO: add description"""
+    """ Marsohod3Bis configs generator """
 
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
