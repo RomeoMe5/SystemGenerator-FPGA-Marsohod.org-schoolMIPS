@@ -25,10 +25,10 @@ class GenericBoard(object):
                  **kwargs) -> dict:
         """ Returns FPGA configs """
         return {
-            'v': Render.v(project_name=project_name, **kwargs),
-            'qpf': Render.qpf(**kwargs),
-            'qsf': Render.qsf(**kwargs),
-            'sdc': Render.sdc(**kwargs)
+            'v': Render.v(project_name=project_name, **self.config['v']),
+            'qpf': Render.qpf(project_name=project_name, **self.config['qpf']),
+            'qsf': Render.qsf(project_name=project_name, **self.config['qsf']),
+            'sdc': Render.sdc(project_name=project_name, **self.config['sdc'])
         }
 
     def generate_archive(self, project_name: str, **kwargs) -> None:
@@ -94,3 +94,15 @@ class Marsohod3B(GenericBoard):
 
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
+
+
+# TODO: remove this class, it exists only for debug
+class DE1SoC(GenericBoard):
+    """
+        DE1SoC configs generator (for debug only)
+
+        Use official Altera system builder for this type of boards.
+    """
+
+    def __init__(self) -> None:
+        super(DE1SoC, self).__init__(self.__class__.__name__)
