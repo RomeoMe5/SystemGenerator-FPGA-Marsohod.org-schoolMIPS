@@ -60,6 +60,20 @@ class Render(object):
         ))
 
     @staticmethod
+    def format_date(date_t: datetime=None, quoted: bool=False) -> str:
+        """
+            Return date in Quartus compatible format
+
+            F.i. "12:40:01 December 27, 2017"
+        """
+        if date_t is None:
+            date_t = datetime.utcnow()
+        date_f = f"{date_t:%H:%M:%S %B %d, %Y}"
+        if quoted:
+            return f"\"{date_f}\""
+        return date_f
+
+    @staticmethod
     @load_template("qpf.jinja")
     def qpf(meta_info: dict=None,
             revisions: dict=None,
@@ -67,7 +81,7 @@ class Render(object):
         """ Template rendering interface for .qpf files """
         if not meta_info:
             meta_info = {}
-        meta_info['date'] = str(datetime.utcnow())
+        meta_info['date'] = Render.format_date()
         return Render._render(
             meta_info=meta_info,
             revisions=revisions,
@@ -80,6 +94,7 @@ class Render(object):
             user_assignments: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
+        # TODO: global_assignments.project_creation_time_date = now
         return Render._render(
             global_assignments=global_assignments,
             user_assignments=user_assignments,
