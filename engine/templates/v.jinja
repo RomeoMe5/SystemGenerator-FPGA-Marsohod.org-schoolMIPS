@@ -1,15 +1,38 @@
+{#
+    This template was created by HSE University students
+    Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+    and should be distribured without any warranty ("as is")
+#}
+{# TODO: remove weird {{ "" }} line separators if possible #}
+{# TODO: (known issue) last comma on module declaration shouldn't exists #}
 {%- extends "baseC_.jinja" -%}
+
+{%- block message -%}
+// WARNING: There is issue with last comma on module I/O declaration which is currently should be fixed manually.
+{%- endblock message -%}
+
 {%- block body -%}
+{{ "" }}
 module {{ project_name }}(
+{%- for part_name, assig in assigments.items() -%}
+{{ "    " }}//********** {{ part_name|upper }} **********//
+    {%- for type, rank, value in assig -%}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
+    {%- endfor -%}
+    {%- if not loop.last -%}
+{{ "" }}
+    {%- endif -%}
+{%- endfor -%}
 );
-
-//=======================================================
-//  REG/WIRE declarations
-//=======================================================
-
-//=======================================================
-//  Structural coding
-//=======================================================
-
+{{ "" }}
+//*****************************************//
+//          REG/WIRE declarations          //
+//*****************************************//
+{{ "" }}
+//*****************************************//
+//            Structural coding            //
+//*****************************************//
+{{ "" }}
 endmodule
+{{ "" }}
 {%- endblock body -%}
