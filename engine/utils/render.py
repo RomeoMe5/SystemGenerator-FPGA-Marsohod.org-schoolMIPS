@@ -2,6 +2,7 @@
 
 import os
 from collections import Callable
+from datetime import datetime
 from functools import wraps
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -64,6 +65,9 @@ class Render(object):
             revisions: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qpf files """
+        if not meta_info:
+            meta_info = {}
+        meta_info['date'] = str(datetime.utcnow())
         return Render._render(
             meta_info=meta_info,
             revisions=revisions,

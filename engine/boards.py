@@ -31,7 +31,6 @@ class GenericBoard(object):
             'sdc': Render.sdc(**kwargs)
         }
 
-    # TODO: ad logging
     def generate_archive(self, project_name: str, **kwargs) -> None:
         """ Generate tar file with FPGA config files """
         config_files_extensions = self.generate(project_name, **kwargs)
