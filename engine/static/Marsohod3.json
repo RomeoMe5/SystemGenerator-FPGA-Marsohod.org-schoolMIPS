@@ -9,17 +9,15 @@
     },
     "qsf": {
         "global_assignments": {
-            "FAMILY": "\"MAX 10 \"",
-            "DEVICE": "10M50SAE144C8GES",
-            "TOP_LEVEL_ENTITY": "Marsohod3Top",
-            "ORIGINAL_QUARTUS_VERSION": "15.1.0",
-            "PROJECT_CREATION_TIME_DATE": "\"16:12:04 DECEMBER 27,2017\"",
-            "LAST_QUARTUS_VERSION": "15.1.0",
-            "PROJECT_OUTPUT_DIRECTORY": "output_files",
-            "MIN_CORE_JUNCTION_TEMP": 0,
-            "MAX_CORE_JUNCTION_TEMP": 85,
-            "DEVICE_FILTER_PACKAGE": "EQFP",
-            "ERROR_CHECK_FREQUENCY_DIVISOR": 2
+            "family": "\"MAX 10 \"",
+            "device": "10M50SAE144C8GES",
+            "original_quartus_version": "15.1.0",
+            "last_quartus_version": "15.1.0",
+            "project_output_directory": "output_files",
+            "min_core_junction_temp": 0,
+            "max_core_junction_temp": 85,
+            "device_filter_package": "EQFP",
+            "error_check_frequency_divisor": 2
         },
         "user_assignments": {
             "FTDI": {
