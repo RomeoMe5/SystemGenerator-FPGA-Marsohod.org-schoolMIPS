@@ -1,0 +1,149 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2009 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions
+# and other software and tools, and its AMPP partner logic
+# functions, and any output files from any of the foregoing
+# (including device programming or simulation files), and any
+# associated documentation or information are expressly subject
+# to the terms and conditions of the Altera Program License
+# Subscription Agreement, Altera MegaCore Function License
+# Agreement, or other applicable license agreement, including,
+# without limitation, that your use is for the sole purpose of
+# programming logic devices manufactured by Altera and sold by
+# Altera or its authorized distributors.  Please refer to the
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II
+# Version 9.0 Build 235 06/17/2009 Service Pack 2 SJ Web Edition
+# Date created = 09:49:52  April 09, 2018
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		pipemult_migration_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name TOP_LEVEL_ENTITY pipemult2
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "10:57:58  APRIL 23, 2018"
+set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Lite Edition"
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim (Verilog)"
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name USE_GENERATED_PHYSICAL_CONSTRAINTS OFF -section_id eda_blast_fpga
+set_global_assignment -name VERILOG_FILE pipemult.v
+set_global_assignment -name BDF_FILE pipemult2.bdf
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name QIP_FILE mult.qip
+set_global_assignment -name QIP_FILE ram.qip
+set_global_assignment -name HEX_FILE ram.hex
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -entity lab6 -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -entity lab6 -section_id "Root Region"
+set_global_assignment -name SIMULATION_MODE FUNCTIONAL
+set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE pipemult.cvwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE pipemult.cvwf
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_location_assignment PIN_M2 -to clk1
+set_instance_assignment -name IO_STANDARD "1.8 V" -to clk1
+set_location_assignment PIN_K15 -to dataa[7]
+set_location_assignment PIN_E16 -to dataa[6]
+set_location_assignment PIN_E15 -to dataa[5]
+set_location_assignment PIN_G16 -to dataa[4]
+set_location_assignment PIN_F13 -to dataa[3]
+set_location_assignment PIN_F15 -to dataa[2]
+set_location_assignment PIN_B16 -to dataa[1]
+set_location_assignment PIN_D16 -to dataa[0]
+set_location_assignment PIN_L14 -to datab[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[7]
+set_location_assignment PIN_J16 -to datab[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[6]
+set_location_assignment PIN_J15 -to datab[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[5]
+set_location_assignment PIN_J14 -to datab[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[4]
+set_location_assignment PIN_J13 -to datab[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[3]
+set_location_assignment PIN_M16 -to datab[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[2]
+set_location_assignment PIN_M15 -to datab[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[1]
+set_location_assignment PIN_G15 -to datab[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to datab[0]
+set_location_assignment PIN_N9 -to q[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[15]
+set_location_assignment PIN_R10 -to q[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[14]
+set_location_assignment PIN_T10 -to q[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[13]
+set_location_assignment PIN_R11 -to q[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[12]
+set_location_assignment PIN_T11 -to q[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[11]
+set_location_assignment PIN_R12 -to q[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[10]
+set_location_assignment PIN_T12 -to q[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[9]
+set_location_assignment PIN_P9 -to q[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[8]
+set_location_assignment PIN_R13 -to q[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[7]
+set_location_assignment PIN_T13 -to q[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[6]
+set_location_assignment PIN_M10 -to q[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[5]
+set_location_assignment PIN_N11 -to q[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[4]
+set_location_assignment PIN_T14 -to q[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[3]
+set_location_assignment PIN_T15 -to q[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[2]
+set_location_assignment PIN_N12 -to q[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[1]
+set_location_assignment PIN_P14 -to q[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to q[0]
+set_location_assignment PIN_K16 -to rdaddress[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to rdaddress[4]
+set_location_assignment PIN_L15 -to rdaddress[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to rdaddress[3]
+set_location_assignment PIN_L16 -to rdaddress[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to rdaddress[2]
+set_location_assignment PIN_L13 -to rdaddress[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to rdaddress[1]
+set_location_assignment PIN_N15 -to rdaddress[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to rdaddress[0]
+set_location_assignment PIN_N16 -to wraddress[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to wraddress[4]
+set_location_assignment PIN_R16 -to wraddress[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to wraddress[3]
+set_location_assignment PIN_P16 -to wraddress[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to wraddress[2]
+set_location_assignment PIN_P15 -to wraddress[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to wraddress[1]
+set_location_assignment PIN_N14 -to wraddress[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to wraddress[0]
+set_location_assignment PIN_M1 -to wren
+set_instance_assignment -name IO_STANDARD "1.8 V" -to wren
+set_global_assignment -name DEVICE_MIGRATION_LIST "EP4CE22F17C6,EP4CE6F17C6"
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
