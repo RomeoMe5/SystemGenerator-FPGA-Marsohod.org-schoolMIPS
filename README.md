@@ -1,5 +1,5 @@
 # FPGAMarsohodCAD
-[![Build Status](https://travis-ci.com/hell03end/FPGAMarsohodCAD.svg?token=eSmHFpkLmTo93ZHUMUtp&branch=master)](https://travis-ci.com/hell03end/FPGAMarsohodCAD)
+<!-- [![Build Status](https://travis-ci.com/hell03end/FPGAMarsohodCAD.svg?token=eSmHFpkLmTo93ZHUMUtp&branch=master)](https://travis-ci.com/hell03end/FPGAMarsohodCAD) -->
 
 CAD for automatically configuring FPGA "Marsohod"
 
