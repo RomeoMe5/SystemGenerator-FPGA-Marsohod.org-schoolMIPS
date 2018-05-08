@@ -4,23 +4,27 @@
     and should be distribured without any warranty ("as is")
 #}
 {# TODO: remove weird {{ "" }} line separators if possible #}
-{# TODO: (known issue) last comma on module declaration shouldn't exists #}
+{# TODO: integrate _debouncer module #}
 {%- extends "baseC_.jinja" -%}
-
-{%- block message -%}
-// WARNING: There is issue with last comma on module I/O declaration which is currently should be fixed manually.
-{%- endblock message -%}
 
 {%- block body -%}
 {{ "" }}
 module {{ project_name }}(
 {%- for part_name, assig in assigments.items() -%}
 {{ "    " }}//********** {{ part_name|upper }} **********//
-    {%- for type, rank, value in assig -%}
+    {%- if not loop.last -%}{# Normal generation until last iteration #}
+        {%- for type, rank, value in assig -%}
 {{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
-    {%- endfor -%}
-    {%- if not loop.last -%}
+        {%- endfor -%}
 {{ "" }}
+    {%- else -%}{# Separate rule for last iteration #}
+        {%- for type, rank, value in assig -%}
+            {%- if not loop.last -%}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
+            {%- else -%}{# Don't type coma after last line #}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }}
+            {%- endif -%}
+        {%- endfor -%}
     {%- endif -%}
 {%- endfor -%}
 );
