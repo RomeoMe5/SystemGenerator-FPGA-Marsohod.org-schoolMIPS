@@ -1,7 +1,7 @@
 {
     "qpf": {
         "meta_info": {
-            "quartus_version": "15.1.0"
+            "quartus_version": "9.0"
         },
         "revisions": {
             "project_revision": "initial"
@@ -9,8 +9,8 @@
     },
     "qsf": {
         "global_assignments": {
-            "family": "\"Cyclone III\"",
-            "device": "EP3C10E144C8",
+            "family": "\"Cyclone IV\"",
+            "device": "EP4CE6E22C8N",
             "original_quartus_version": "9.0 SP2",
             "last_quartus_version": "9.0 SP2",
             "project_output_directory": "output_files",

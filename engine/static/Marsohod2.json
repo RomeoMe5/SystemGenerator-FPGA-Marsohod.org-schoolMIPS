@@ -1,7 +1,7 @@
 {
     "qpf": {
         "meta_info": {
-            "quartus_version": "15.1.0"
+            "quartus_version": "9.0"
         },
         "revisions": {
             "project_revision": "initial"
