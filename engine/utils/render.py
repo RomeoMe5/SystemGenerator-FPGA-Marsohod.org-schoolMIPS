@@ -5,15 +5,20 @@ from collections import Callable
 from datetime import datetime
 from functools import wraps
 
+from engine.utils import PATHS
+from engine.utils.log import LOGGER, log
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
-from configs.engine import COPYRIGHT
-from engine.utils import PATHS
-from engine.utils.log import LOGGER, log
+try:
+    from configs.engine import COPYRIGHT
+except ImportError as err:
+    # default values
+    COPYRIGHT = "Higher School for Economics University"
+
 
 ENV = Environment(
-    loader=FileSystemLoader(PATHS['templ'], encoding="utf-8"),
+    loader=FileSystemLoader(PATHS.TEMPL, encoding="utf-8"),
     autoescape=select_autoescape(enabled_extensions=(), default=False),
     trim_blocks=True,
     lstrip_blocks=True,
@@ -94,22 +99,28 @@ class Render(object):
             user_assignments: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
-        # TODO: global_assignments.project_creation_time_date = now
+        if global_assignments is None:
+            global_assignments = {}
+        global_assignments['project_creation_time_date'] = Render.format_date()
         return Render._render(
             global_assignments=global_assignments,
             user_assignments=user_assignments,
             **kwargs
         )
 
-    # TODO: not useful?
     @staticmethod
     @load_template("sdc.jinja")
     def sdc(**kwargs) -> str:
         """ Template rendering interface for .sdc files """
+        # There is no special requirements
         return Render._render(**kwargs)
 
     @staticmethod
     @load_template("v.jinja")
-    def v(project_name: str, **kwargs) -> str:
+    def v(project_name: str, assigments: dict=None, **kwargs) -> str:
         """ Template rendering interface for .v files """
-        return Render._render(project_name=project_name, **kwargs)
+        return Render._render(
+            project_name=project_name,
+            assigments=assigments,
+            **kwargs
+        )

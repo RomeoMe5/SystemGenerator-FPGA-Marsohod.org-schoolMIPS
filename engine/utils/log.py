@@ -5,14 +5,24 @@ from functools import wraps
 try:
     from configs.engine import LOGGER
 except ImportError as err:
+    # default logging configuration
     import logging
-    logging.basicConfig(
-        level=logging.WARNING,
-        format="[%(asctime)s] %(levelname)s "
-               "[%(name)s.{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s",
-        datefmt="%H:%M:%S"
+    from logging.handlers import RotatingFileHandler
+
+    LOG_LEVEL = logging.WARNING
+    LOG_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s." \
+                 "{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s"
+    LOG_NAME = "$default.log"
+    logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT, datefmt="%H:%M:%S")
+    LOGGER = logging.getLogger(LOG_NAME)
+    FILE_HANDLER = RotatingFileHandler(
+        os.path.join('.', LOG_NAME),
+        maxBytes=1024 * 100,
+        backupCount=10
     )
-    LOGGER = logging.getLogger('$default.log')
+    FILE_HANDLER.setFormatter(logging.Formatter(LOG_FORMAT))
+    FILE_HANDLER.setLevel(LOG_LEVEL)
+    LOGGER.addHandler(FILE_HANDLER)
 
 
 def log(func: Callable) -> Callable:

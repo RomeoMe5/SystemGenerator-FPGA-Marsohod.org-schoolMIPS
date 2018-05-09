@@ -180,9 +180,9 @@ class Archiver(object):
 
         return Archiver._archive(*filenames, **params)
 
+    # TODO: implement extraction
     @staticmethod
     def _extract(path: str, destination: str=".", **kwargs) -> int:
-        # TODO: implement extraction
         # Note: this function signature refer to public method
         # but was hidden until method will be finished
         method, compression = path.lower().split('.')[-2:]

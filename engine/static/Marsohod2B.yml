@@ -1,0 +1,230 @@
+qpf:
+  meta_info:
+    quartus_version: '9.0'
+  revisions:
+    project_revision: initial
+qsf:
+  global_assignments:
+    family: '"Cyclone IV"'
+    device: EP4CE6E22C8N
+    original_quartus_version: 9.0 SP2
+    last_quartus_version: 9.0 SP2
+    project_output_directory: output_files
+    min_core_junction_temp: 0
+    max_core_junction_temp: 85
+    device_filter_package: EQFP
+    error_check_frequency_divisor: 1
+  user_assignments:
+    FTDI:
+      location:
+      - - PIN_24
+        - FTDI_BD0
+      - - PIN_28
+        - FTDI_BD1
+      - - PIN_11
+        - FTDI_BD2
+      - - PIN_10
+        - FTDI_BD3
+    CLOCK:
+      location:
+      - - PIN_25
+        - CLK100MHZ
+    KEY:
+      location:
+      - - PIN_23
+        - KEY0
+      - - PIN_22
+        - KEY1
+    SDRAM_DQ:
+      location:
+      - - PIN_30
+        - SDRAM_DQ[15]
+      - - PIN_31
+        - SDRAM_DQ[14]
+      - - PIN_32
+        - SDRAM_DQ[13]
+      - - PIN_33
+        - SDRAM_DQ[12]
+      - - PIN_34
+        - SDRAM_DQ[11]
+      - - PIN_38
+        - SDRAM_DQ[10]
+      - - PIN_39
+        - SDRAM_DQ[9]
+      - - PIN_42
+        - SDRAM_DQ[8]
+      - - PIN_71
+        - SDRAM_DQ[7]
+      - - PIN_72
+        - SDRAM_DQ[6]
+      - - PIN_73
+        - SDRAM_DQ[5]
+      - - PIN_74
+        - SDRAM_DQ[4]
+      - - PIN_75
+        - SDRAM_DQ[3]
+      - - PIN_76
+        - SDRAM_DQ[2]
+      - - PIN_77
+        - SDRAM_DQ[1]
+      - - PIN_80
+        - SDRAM_DQ[0]
+    SDRAM_A:
+      location:
+      - - PIN_60
+        - SDRAM_A[0]
+      - - PIN_64
+        - SDRAM_A[1]
+      - - PIN_65
+        - SDRAM_A[2]
+      - - PIN_66
+        - SDRAM_A[3]
+      - - PIN_46
+        - SDRAM_A[4]
+      - - PIN_49
+        - SDRAM_A[5]
+      - - PIN_50
+        - SDRAM_A[6]
+      - - PIN_51
+        - SDRAM_A[7]
+      - - PIN_52
+        - SDRAM_A[8]
+      - - PIN_53
+        - SDRAM_A[9]
+      - - PIN_59
+        - SDRAM_A[10]
+      - - PIN_54
+        - SDRAM_A[11]
+    others SDRAM options:
+      location:
+      - - PIN_70
+        - SDRAM_LDQM
+      - - PIN_43
+        - SDRAM_UDQM
+      - - PIN_55
+        - SDRAM_BA0
+      - - PIN_58
+        - SDRAM_BA1
+      - - PIN_67
+        - SDRAM_RAS
+      - - PIN_68
+        - SDRAM_CAS
+      - - PIN_69
+        - SDRAM_WE
+      - - PIN_44
+        - SDRAM_CLK
+    LED:
+      location:
+      - - PIN_79
+        - LED[3]
+      - - PIN_83
+        - LED[2]
+      - - PIN_84
+        - LED[1]
+      - - PIN_85
+        - LED[0]
+    VGA:
+      location:
+      - - PIN_144
+        - VGA_RED[4]
+      - - PIN_1
+        - VGA_RED[3]
+      - - PIN_2
+        - VGA_RED[2]
+      - - PIN_3
+        - VGA_RED[1]
+      - - PIN_7
+        - VGA_RED[0]
+      - - PIN_136
+        - VGA_GREEN[5]
+      - - PIN_137
+        - VGA_GREEN[4]
+      - - PIN_138
+        - VGA_GREEN[3]
+      - - PIN_141
+        - VGA_GREEN[2]
+      - - PIN_142
+        - VGA_GREEN[1]
+      - - PIN_143
+        - VGA_GREEN[0]
+      - - PIN_128
+        - VGA_BLUE[4]
+      - - PIN_129
+        - VGA_BLUE[3]
+      - - PIN_132
+        - VGA_BLUE[2]
+      - - PIN_133
+        - VGA_BLUE[1]
+      - - PIN_135
+        - VGA_BLUE[0]
+      - - PIN_127
+        - VGA_HSYNC
+      - - PIN_126
+        - VGA_VSYNC
+    ADC:
+      location:
+      - - 'PIN_100 '
+        - ADC_D[0]
+      - - PIN_99
+        - ADC_D[1]
+      - - PIN_98
+        - ADC_D[2]
+      - - PIN_91
+        - ADC_D[3]
+      - - PIN_90
+        - ADC_D[4]
+      - - PIN_89
+        - ADC_D[5]
+      - - PIN_88
+        - ADC_D[6]
+      - - PIN_87
+        - ADC_D[7]
+      - - PIN_86
+        - ADC_CLK
+    I/O:
+      location:
+      - - PIN_101
+        - IO[0]
+      - - PIN_103
+        - IO[1]
+      - - PIN_104
+        - IO[2]
+      - - PIN_105
+        - IO[3]
+      - - PIN_106
+        - IO[4]
+      - - PIN_110
+        - IO[5]
+      - - PIN_111
+        - IO[6]
+      - - PIN_112
+        - IO[7]
+      - - PIN_113
+        - IO[8]
+      - - PIN_114
+        - IO[9]
+      - - PIN_115
+        - IO[10]
+      - - PIN_119
+        - IO[11]
+      - - PIN_120
+        - IO[12]
+      - - PIN_121
+        - IO[13]
+      - - PIN_124
+        - IO[14]
+      - - PIN_125
+        - IO[15]
+    others:
+      location:
+      - - PIN_12
+        - DCLK
+      - - PIN_13
+        - DATA0
+      - - PIN_8
+        - NCSO
+      - - PIN_6
+        - ASDO
+sdc: {}
+v:
+  assigments: {}

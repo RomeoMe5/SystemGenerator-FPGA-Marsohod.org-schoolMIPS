@@ -1,12 +1,12 @@
 import os
 
 from engine.utils import PATHS
-from engine.utils.load import get_static_path, load_json, load_plain_text
+from engine.utils.load import Loader
 from engine.utils.log import LOGGER, log
 from engine.utils.prepare import Archiver, create_dirs
 from engine.utils.render import Render
 
-LICENSE = load_plain_text(os.path.join(PATHS['static'], "LICENSE"))
+LICENSE = Loader.load_static("LICENSE")
 
 
 class GenericBoard(object):
@@ -14,39 +14,46 @@ class GenericBoard(object):
 
     @log
     def __init__(self, config_name: str) -> None:
-        self._path = get_static_path(config_name)
-        self.config = load_json(
-            os.path.join(PATHS['static'], self._path)
-        )
+        self._filename = config_name
+        self.config = Loader.load_static(self._filename)
 
     @log
-    def generate(self,
-                 project_name: str,
-                 **kwargs) -> dict:
+    def generate(self, project_name: str, **kwargs) -> dict:
         """ Returns FPGA configs """
         return {
-            'v': Render.v(project_name=project_name, **self.config['v']),
-            'qpf': Render.qpf(project_name=project_name, **self.config['qpf']),
-            'qsf': Render.qsf(project_name=project_name, **self.config['qsf']),
-            'sdc': Render.sdc(project_name=project_name, **self.config['sdc'])
+            'v': Render.v(
+                project_name=project_name,
+                **self.config.get('v', {})
+            ),
+            'qpf': Render.qpf(
+                project_name=project_name,
+                **self.config.get('qpf', {})
+            ),
+            'qsf': Render.qsf(
+                project_name=project_name,
+                **self.config.get('qsf', {})
+            ),
+            'sdc': Render.sdc(
+                project_name=project_name,
+                **self.config.get('sdc', {})
+            )
         }
 
-    def generate_archive(self, project_name: str, **kwargs) -> None:
+    def generate_archive(self, project_name: str, **kwargs) -> object:
         """ Generate tar file with FPGA config files """
         config_files_extensions = self.generate(project_name, **kwargs)
-        config_files = dict()
-        LOGGER.debug("Create new dictionary(config_files)")
+        config_files = {}
+
         for extension, content in config_files_extensions.items():
             filename = ".".join((project_name, extension))
-            config_files.update({filename: content})
+            config_files[filename] = content
             LOGGER.debug("  Adding '%s': ''%s ", filename, content)
-        config_files.update({"LICENSE": LICENSE})
+        config_files['LICENSE'] = LICENSE
         LOGGER.debug("  Adding LICENSE : '%s'", LICENSE)
         Archiver.to_tar_flow(config_files, project_name)
+        return self
 
-    def generate_files(self,
-                       project_name: str,
-                       **kwargs) -> None:
+    def generate_files(self, project_name: str, **kwargs) -> object:
         """
             Generates FPGA config files
 
@@ -59,13 +66,16 @@ class GenericBoard(object):
 
         for extension, content in config_files.items():
             filename = ".".join((project_name, extension))
-            with open(os.path.join(project_path, filename), 'wt') as fout:
-                LOGGER.info("Creating '%s'...", fout.name)
-                fout.write(content)
+            GenericBoard._save_to_file(project_path, filename, content)
 
-        with open(os.path.join(project_path, "LICENSE"), 'wt') as fout:
-            LOGGER.debug("Adding LICENSE: '%s'.", fout.name)
-            fout.write(LICENSE)
+        return self
+
+    @staticmethod
+    def _save_to_file(path: str, filename: str, content: object) -> None:
+        """ Save content to file """
+        with open(os.path.join(path, filename), 'wt') as fout:
+            LOGGER.info("Creating '%s'...", fout.name)
+            fout.write(content)
 
 
 class Marsohod2(GenericBoard):

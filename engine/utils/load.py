@@ -1,44 +1,46 @@
-import json
 import os
 
-from engine.utils import PATHS
-from engine.utils.log import LOGGER, log
+from engine.utils.globals import PATHS, SUPPORTED_EXTENSIONS, SUPPORTED_LOADERS
+from engine.utils.log import LOGGER
 
 
-def get_static_path(filename: str,
-                    extension: str="json",
-                    path_to_static: str=PATHS['static']) -> str:
-    """ Return path for static object (if it exists) """
-    path = os.path.join(path_to_static, filename)
+class Loader(object):
+    """ Implements file content loading """
+    EXTENSIONS = SUPPORTED_EXTENSIONS
+    LOADERS = SUPPORTED_LOADERS
 
-    if os.path.exists(path):
-        return path
-    elif not filename.endswith(extension):
-        LOGGER.debug("Assume file has '%s' extension.", extension)
-        path = ".".join((path, extension))
+    @staticmethod
+    def load_static(filename: str,
+                    path_to_static: str=PATHS.STATIC,
+                    loader_params: dict=None,
+                    **kwargs) -> (str, dict, list):
+        """ Loads file' content from static folder """
+        filepath = Loader.get_static_path(filename, path_to_static)
+        file_format = filepath.split('.')[-1]
+        if loader_params is None:
+            loader_params = {}
+        with open(filepath, 'r', **kwargs) as fin:
+            LOGGER.debug("Loading '%s' content...", filepath)
+            for extension in Loader.EXTENSIONS:
+                if file_format == extension:
+                    return Loader.LOADERS[extension](fin, **loader_params)
+            return fin.read()  # read plain text
 
-    if not os.path.exists(path):
+    @staticmethod
+    def get_static_path(filename: str,
+                        path_to_static: str=PATHS.STATIC) -> str:
+        """ Return path for static object (if it exists) """
+        path = os.path.join(path_to_static, filename)
+
+        if os.path.exists(path):
+            return path
+
+        for extension in Loader.EXTENSIONS:
+            if not filename.endswith(extension):
+                LOGGER.debug("Assume file has '%s' extension.", extension)
+                path = ".".join((path, extension))
+                if os.path.exists(path):
+                    return path
+
         LOGGER.error("'%s' isn't exists!", path)
         raise FileNotFoundError(f"'{path}' isn't exists!")
-
-    return path
-
-
-def load_json(filepath: str, **kwargs) -> dict:
-    """ Loads json contents """
-    if not os.path.exists(filepath):
-        LOGGER.error("File isn't exists '%s'!", filepath)
-
-    with open(filepath, 'r', **kwargs) as fin:
-        LOGGER.debug("Loading '%s' content...", filepath)
-        return json.load(fin)
-
-
-def load_plain_text(filepath: str, **kwargs) -> str or list:
-    """ Loads plain text file contents as string or list of strings """
-    if not os.path.exists(filepath):
-        LOGGER.error("File isn't exists '%s'!", filepath)
-
-    with open(filepath, 'r', **kwargs) as fin:
-        LOGGER.debug("Loading '%s' content...", filepath)
-        return fin.read()

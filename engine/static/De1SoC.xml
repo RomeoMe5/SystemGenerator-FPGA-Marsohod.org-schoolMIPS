@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<qpf>
+    <meta_info>
+        <quartus_version>15.1.0</quartus_version>
+    </meta_info>
+    <revisions>
+        <project_revision>initial</project_revision>
+    </revisions>
+</qpf>
+<qsf>
+    <global_assignments>
+        <family>&quot;Cyclone V&quot;</family>
+        <device>5CSEMA5F31C6</device>
+        <original_quartus_version>&quot;15.1.0&quot;</original_quartus_version>
+        <last_quartus_version>&quot;15.1.0&quot;</last_quartus_version>
+        <device_filter_package>FBGA</device_filter_package>
+        <device_filter_pin_count>896</device_filter_pin_count>
+        <device_filter_speed_grade>6</device_filter_speed_grade>
+    </global_assignments>
+    <user_assignments>
+        <audio>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_ADCDAT</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_ADCLRCK</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_BCLK</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_DACDAT</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_DACLRCK</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>AUD_XCK</instance>
+            <location>PIN_K7</location>
+            <location>AUD_ADCDAT</location>
+            <location>PIN_K8</location>
+            <location>AUD_ADCLRCK</location>
+            <location>PIN_H7</location>
+            <location>AUD_BCLK</location>
+            <location>PIN_J7</location>
+            <location>AUD_DACDAT</location>
+            <location>PIN_H8</location>
+            <location>AUD_DACLRCK</location>
+            <location>PIN_G7</location>
+            <location>AUD_XCK</location>
+        </audio>
+        <clock>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>CLOCK2_50</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>CLOCK3_50</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>CLOCK4_50</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>CLOCK_50</instance>
+            <location>PIN_AA16</location>
+            <location>CLOCK2_50</location>
+            <location>PIN_Y26</location>
+            <location>CLOCK3_50</location>
+            <location>PIN_K14</location>
+            <location>CLOCK4_50</location>
+            <location>PIN_AF14</location>
+            <location>CLOCK_50</location>
+        </clock>
+        <i2c for audio and video-in>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>FPGA_I2C_SCLK</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>FPGA_I2C_SDAT</instance>
+            <location>PIN_J12</location>
+            <location>FPGA_I2C_SCLK</location>
+            <location>PIN_K12</location>
+            <location>FPGA_I2C_SDAT</location>
+        </i2c for audio and video-in>
+        <key>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>KEY[0]</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>KEY[1]</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>KEY[2]</instance>
+            <instance>IO_STANDARD</instance>
+            <instance>3.3-V LVTTL</instance>
+            <instance>KEY[3]</instance>
+            <location>PIN_AA14</location>
+            <location>KEY[0]</location>
+            <location>PIN_AA15</location>
+            <location>KEY[1]</location>
+            <location>PIN_W15</location>
+            <location>KEY[2]</location>
+            <location>PIN_Y16</location>
+            <location>KEY[3]</location>
+        </key>
+    </user_assignments>
+</qsf>
+<sdc>
+    <create_clock>
+        <period>20.000ns</period>
+        <ports>CLOCK2_50</ports>
+    </create_clock>
+    <create_clock>
+        <period>20.000ns</period>
+        <ports>CLOCK3_50</ports>
+    </create_clock>
+    <create_clock>
+        <period>20.000ns</period>
+        <ports>CLOCK4_50</ports>
+    </create_clock>
+    <create_clock>
+        <period>20.000ns</period>
+        <ports>CLOCK_50</ports>
+    </create_clock>
+    <create_clock />
+    <create_clock>
+        <period>&quot;27 MHz&quot;</period>
+        <ports>TD_CLK27</ports>
+        <name>tv_27m</name>
+    </create_clock>
+    <create_clock>
+        <period>&quot;100 MHz&quot;</period>
+        <ports>DRAM_CLK</ports>
+        <name>clk_dram</name>
+    </create_clock>
+    <create_clock>
+        <period>&quot;18.432 MHz&quot;</period>
+        <ports>AUD_XCK</ports>
+        <name>clk_audxck</name>
+        <comment>AUDIO : 48kHz 384fs 32-bit data</comment>
+    </create_clock>
+    <create_clock>
+        <period>&quot;1.536 MH&quot;</period>
+        <ports>AUD_BCLK</ports>
+        <name>clk_audbck</name>
+    </create_clock>
+    <create_clock>
+        <period>&quot;25.18 MHz&quot;</period>
+        <ports>VGA_CLK</ports>
+        <name>clk_vga</name>
+        <comment>VGA : 640x480@60Hz</comment>
+    </create_clock>
+    <create_clock>
+        <period>&quot;40.0 MHz&quot;</period>
+        <ports>VGA_CLK</ports>
+        <name>clk_vga</name>
+        <comment>VGA : 800x600@60Hz</comment>
+    </create_clock>
+    <create_clock>
+        <period>&quot;65.0 MHz&quot;</period>
+        <ports>VGA_CLK</ports>
+        <name>clk_vga</name>
+        <comment>VGA : 1024x768@60Hz</comment>
+    </create_clock>
+    <create_clock>
+        <period>&quot;108.0 MHz&quot;</period>
+        <ports>VGA_CLK</ports>
+        <name>clk_vga</name>
+        <comment>VGA : 1280x1024@60Hz</comment>
+    </create_clock>
+    <create_clock>
+        <period>40</period>
+        <name>{altera_reserved_tck}</name>
+        <comment>for enhancing USB BlasterII to be reliable, 25MHz</comment>
+        <etc>{altera_reserved_tck}</etc>
+    </create_clock>
+    <create_generated_clock>
+        <deriv>derive_pll_clocks</deriv>
+    </create_generated_clock>
+    <set_clock_uncertainty>
+        <deriv>derive_clock_uncertainty</deriv>
+    </set_clock_uncertainty>
+    <set_input_delay>
+        <clock>altera_reserved_tck 3</clock>
+        <clock_fall>true</clock_fall>
+        <ports>altera_reserved_tdi</ports>
+        <comment>for enhancing USB BlasterII to be reliable, 25MHz</comment>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>altera_reserved_tck 3</clock>
+        <clock_fall>true</clock_fall>
+        <ports>altera_reserved_tms</ports>
+    </set_input_delay>
+    <set_input_delay />
+    <set_input_delay>
+        <clock>clk_dram -0.048</clock>
+        <ports>DRAM_DQ*</ports>
+        <comment>Board Delay (Data) + Propagation Delay - Board Delay (Clock)</comment>
+        <type>max</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>clk_dram -0.057</clock>
+        <ports>DRAM_DQ*</ports>
+        <type>min</type>
+    </set_input_delay>
+    <set_input_delay />
+    <set_input_delay>
+        <clock>tv_27m 3.508</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_DATA*</ports>
+        <type>max</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>tv_27m -2.539</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_DATA*</ports>
+        <type>min</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>tv_27m 3.654</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_HS</ports>
+        <type>max</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>tv_27m -2.454</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_HS</ports>
+        <type>min</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>tv_27m 3.652</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_VS</ports>
+        <type>max</type>
+    </set_input_delay>
+    <set_input_delay>
+        <clock>tv_27m -2.456</clock>
+        <clock_fall>true</clock_fall>
+        <ports>TD_VS</ports>
+        <type>min</type>
+    </set_input_delay>
+    <set_output_delay>
+        <clock>altera_reserved_tck 3</clock>
+        <ports>altera_reserved_tdo</ports>
+        <comment>for enhancing USB BlasterII to be reliable, 25MHz</comment>
+    </set_output_delay>
+    <set_output_delay />
+    <set_output_delay>
+        <clock>clk_dram 1.452</clock>
+        <ports>DRAM_DQ*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.857</clock>
+        <ports>DRAM_DQ*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.531</clock>
+        <ports>DRAM_ADDR*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.805</clock>
+        <ports>DRAM_ADDR*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.533</clock>
+        <ports>DRAM_*DQM</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.805</clock>
+        <ports>DRAM_*DQM</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.510</clock>
+        <ports>DRAM_BA*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.800</clock>
+        <ports>DRAM_BA*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.520</clock>
+        <ports>DRAM_RAS_N</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.780</clock>
+        <ports>DRAM_RAS_N</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.5000</clock>
+        <ports>DRAM_CAS_N</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.800</clock>
+        <ports>DRAM_CAS_N</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.545</clock>
+        <ports>DRAM_WE_N</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.755</clock>
+        <ports>DRAM_WE_N</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.496</clock>
+        <ports>DRAM_CKE</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.804</clock>
+        <ports>DRAM_CKE</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram 1.508</clock>
+        <ports>DRAM_CS_N</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_dram -0.792</clock>
+        <ports>DRAM_CS_N</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay />
+    <set_output_delay>
+        <clock>clk_vga 0.220</clock>
+        <ports>VGA_R*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga -1.506</clock>
+        <ports>VGA_R*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga 0.212</clock>
+        <ports>VGA_G*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga -1.519</clock>
+        <ports>VGA_G*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga 0.264</clock>
+        <ports>VGA_B*</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga -1.519</clock>
+        <ports>VGA_B*</ports>
+        <type>min</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga 0.215</clock>
+        <ports>VGA_BLANK</ports>
+        <type>max</type>
+    </set_output_delay>
+    <set_output_delay>
+        <clock>clk_vga -1.485</clock>
+        <ports>VGA_BLANK</ports>
+        <type>min</type>
+    </set_output_delay>
+</sdc>
+<v>
+    <assigments>
+        <ADC>output</ADC>
+        <ADC></ADC>
+        <ADC>ADC_CONVST</ADC>
+        <ADC>output</ADC>
+        <ADC></ADC>
+        <ADC>ADC_DIN</ADC>
+        <ADC>input</ADC>
+        <ADC></ADC>
+        <ADC>ADC_DOUT</ADC>
+        <ADC>output</ADC>
+        <ADC></ADC>
+        <ADC>ADC_SCLK</ADC>
+        <Audio>input</Audio>
+        <Audio></Audio>
+        <Audio>AUD_ADCDAT</Audio>
+        <Audio>inout</Audio>
+        <Audio></Audio>
+        <Audio>AUD_ADCLRCK</Audio>
+        <Audio>inout</Audio>
+        <Audio></Audio>
+        <Audio>AUD_BCLK</Audio>
+        <Audio>output</Audio>
+        <Audio></Audio>
+        <Audio>AUD_DACDAT</Audio>
+        <Audio>inout</Audio>
+        <Audio></Audio>
+        <Audio>AUD_DACLRCK</Audio>
+        <Audio>output</Audio>
+        <Audio></Audio>
+        <Audio>AUD_XCK</Audio>
+        <Clock>input</Clock>
+        <Clock></Clock>
+        <Clock>CLOCK2_50</Clock>
+        <Clock>input</Clock>
+        <Clock></Clock>
+        <Clock>CLOCK3_50</Clock>
+        <Clock>input</Clock>
+        <Clock></Clock>
+        <Clock>CLOCK4_50</Clock>
+        <Clock>input</Clock>
+        <Clock></Clock>
+        <Clock>CLOCK_50</Clock>
+        <SDRAM>output</SDRAM>
+        <SDRAM>[12:0]</SDRAM>
+        <SDRAM>DRAM_ADDR</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM>[1:0]</SDRAM>
+        <SDRAM>DRAM_BA</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_CAS_N</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_CKE</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_CLK</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_CS_N</SDRAM>
+        <SDRAM>inout</SDRAM>
+        <SDRAM>[15:0]</SDRAM>
+        <SDRAM>DRAM_DQ</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_LDQM</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_RAS_N</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_UDQM</SDRAM>
+        <SDRAM>output</SDRAM>
+        <SDRAM></SDRAM>
+        <SDRAM>DRAM_WE_N</SDRAM>
+        <I2C for Audio and Video-In>output</I2C for Audio and Video-In>
+        <I2C for Audio and Video-In></I2C for Audio and Video-In>
+        <I2C for Audio and Video-In>FPGA_I2C_SCLK</I2C for Audio and Video-In>
+        <I2C for Audio and Video-In>inout</I2C for Audio and Video-In>
+        <I2C for Audio and Video-In></I2C for Audio and Video-In>
+        <I2C for Audio and Video-In>FPGA_I2C_SDAT</I2C for Audio and Video-In>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX0</SEG7>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX1</SEG7>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX2</SEG7>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX3</SEG7>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX4</SEG7>
+        <SEG7>output</SEG7>
+        <SEG7>[6:0]</SEG7>
+        <SEG7>HEX5</SEG7>
+        <IR>input</IR>
+        <IR></IR>
+        <IR>IRDA_RXD</IR>
+        <IR>output</IR>
+        <IR></IR>
+        <IR>IRDA_TXD</IR>
+        <Key>input</Key>
+        <Key>[3:0]</Key>
+        <Key>KEY</Key>
+        <Led>output</Led>
+        <Led>[9:0]</Led>
+        <Led>LEDR</Led>
+        <PS2>inout</PS2>
+        <PS2></PS2>
+        <PS2>PS2_CLK</PS2>
+        <PS2>inout</PS2>
+        <PS2></PS2>
+        <PS2>PS2_CLK2</PS2>
+        <PS2>inout</PS2>
+        <PS2></PS2>
+        <PS2>PS2_DAT</PS2>
+        <PS2>inout</PS2>
+        <PS2></PS2>
+        <PS2>PS2_DAT2</PS2>
+        <SW>input</SW>
+        <SW>[9:0]</SW>
+        <SW>SW</SW>
+        <Video-In>input</Video-In>
+        <Video-In></Video-In>
+        <Video-In>TD_CLK27</Video-In>
+        <Video-In>input</Video-In>
+        <Video-In>[7:0]</Video-In>
+        <Video-In>TD_DATA</Video-In>
+        <Video-In>input</Video-In>
+        <Video-In></Video-In>
+        <Video-In>TD_HS</Video-In>
+        <Video-In>output</Video-In>
+        <Video-In></Video-In>
+        <Video-In>TD_RESET_N</Video-In>
+        <Video-In>input</Video-In>
+        <Video-In></Video-In>
+        <Video-In>TD_VS</Video-In>
+        <VGA>output</VGA>
+        <VGA></VGA>
+        <VGA>VGA_BLANK_N</VGA>
+        <VGA>output</VGA>
+        <VGA>[7:0]</VGA>
+        <VGA>VGA_B</VGA>
+        <VGA>output</VGA>
+        <VGA></VGA>
+        <VGA>VGA_CLK</VGA>
+        <VGA>output</VGA>
+        <VGA>[7:0]</VGA>
+        <VGA>VGA_G</VGA>
+        <VGA>output</VGA>
+        <VGA></VGA>
+        <VGA>VGA_HS</VGA>
+        <VGA>output</VGA>
+        <VGA>[7:0]</VGA>
+        <VGA>VGA_R</VGA>
+        <VGA>output</VGA>
+        <VGA></VGA>
+        <VGA>VGA_SYNC_N</VGA>
+        <VGA>output</VGA>
+        <VGA></VGA>
+        <VGA>VGA_VS</VGA>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_CONV_USB_N</HPS>
+        <HPS>output</HPS>
+        <HPS>[14:0]</HPS>
+        <HPS>HPS_DDR3_ADDR</HPS>
+        <HPS>output</HPS>
+        <HPS>[2:0]</HPS>
+        <HPS>HPS_DDR3_BA</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_CAS_N</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_CKE</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_CK_N</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_CK_P</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_CS_N</HPS>
+        <HPS>output</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_DDR3_DM</HPS>
+        <HPS>inout</HPS>
+        <HPS>[31:0]</HPS>
+        <HPS>HPS_DDR3_DQ</HPS>
+        <HPS>inout</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_DDR3_DQS_N</HPS>
+        <HPS>inout</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_DDR3_DQS_P</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_ODT</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_RAS_N</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_RESET_N</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_RZQ</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_DDR3_WE_N</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_GTX_CLK</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_INT_N</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_MDC</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_MDIO</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_RX_CLK</HPS>
+        <HPS>input</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_ENET_RX_DATA</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_RX_DV</HPS>
+        <HPS>output</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_ENET_TX_DATA</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_ENET_TX_EN</HPS>
+        <HPS>inout</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_FLASH_DATA</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_FLASH_DCLK</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_FLASH_NCSO</HPS>
+        <HPS>inout</HPS>
+        <HPS>[1:0]</HPS>
+        <HPS>HPS_GPIO</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_GSENSOR_INT</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_I2C1_SCLK</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_I2C1_SDAT</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_I2C2_SCLK</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_I2C2_SDAT</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_I2C_CONTROL</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_KEY</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_LED</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SD_CLK</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SD_CMD</HPS>
+        <HPS>inout</HPS>
+        <HPS>[3:0]</HPS>
+        <HPS>HPS_SD_DATA</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SPIM_CLK</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SPIM_MISO</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SPIM_MOSI</HPS>
+        <HPS>inout</HPS>
+        <HPS></HPS>
+        <HPS>HPS_SPIM_SS</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_UART_RX</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_UART_TX</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_USB_CLKOUT</HPS>
+        <HPS>inout</HPS>
+        <HPS>[7:0]</HPS>
+        <HPS>HPS_USB_DATA</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_USB_DIR</HPS>
+        <HPS>input</HPS>
+        <HPS></HPS>
+        <HPS>HPS_USB_NXT</HPS>
+        <HPS>output</HPS>
+        <HPS></HPS>
+        <HPS>HPS_USB_STP</HPS>
+    </assigments>
+</v>
