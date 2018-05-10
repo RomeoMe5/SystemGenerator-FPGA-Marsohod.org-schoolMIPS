@@ -11,9 +11,9 @@
 # Users are recommended to modify this file to match users logic.
 {%- endblock message -%}
 
-{%- block body -%}
+{%- block body %}
 
-{%- if create_clock -%}
+{% if create_clock -%}
 #**************************#
 #       Create Clock       #
 #**************************#
@@ -26,7 +26,15 @@
             {%- if 'comment' in c -%}
 # {{ c['comment'] }}
             {%- endif -%}
-create_clock -period {{ c['period'] }} {%- if 'name' in c -%} -name {{ c['name'] }} {%- endif -%} {%- if 'ports' in c -%} [get_ports {{ c['ports'] }}] {%- endif -%} {{ c.get('etc', "") }}
+            {%- if 'name' in c and 'ports' in c -%}
+create_clock -period {{ c['period'] }} -name {{ c['name'] }} [get_ports {{ c['ports'] }}] {{ c.get('etc', "") }}
+            {%- elif 'name' in c -%}
+create_clock -period {{ c['period'] }} -name {{ c['name'] }} {{ c.get('etc', "") }}
+            {%- elif 'ports' in c -%}
+create_clock -period {{ c['period'] }} [get_ports {{ c['ports'] }}] {{ c.get('etc', "") }}
+            {%- else -%}
+create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
+            {%- endif -%}
         {%- endif -%}
     {%- endfor -%}
 {%- endif -%}
@@ -88,7 +96,15 @@ create_clock -period {{ c['period'] }} {%- if 'name' in c -%} -name {{ c['name']
             {%- if 'comment' in c -%}
 # {{ c['comment'] }}
             {%- endif -%}
-set_input_delay {%- if 'type' in c -%} -{{ c['type'] }} {%- endif -%} -clock {{ c['clock'] }} {%- if 'clock_fall' in c -%} -clock_fall {%- endif -%} [get_ports {{ c['ports'] }}]
+            {%- if 'type' in c and 'clock_fall' in c -%}
+set_input_delay -{{ c['type'] }} -clock {{ c['clock'] }} -clock_fall [get_ports {{ c['ports'] }}]
+            {%- elif 'type' in c -%}
+set_input_delay -{{ c['type'] }} -clock {{ c['clock'] }} [get_ports {{ c['ports'] }}]
+            {%- elif 'clock_fall' in c -%}
+set_input_delay -clock {{ c['clock'] }} -clock_fall [get_ports {{ c['ports'] }}]
+            {%- else -%}
+set_input_delay -clock {{ c['clock'] }} [get_ports {{ c['ports'] }}]
+            {%- endif -%}
         {%- endif -%}
     {%- endfor -%}
 {%- endif -%}
@@ -209,6 +225,6 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {#TODO#}{%- else -%}
         {%- endif -%}
     {%- endfor -%}
-{%- endif -%}
+{%- endif %}
 
-{%- endblock body -%}
+{% endblock body -%}

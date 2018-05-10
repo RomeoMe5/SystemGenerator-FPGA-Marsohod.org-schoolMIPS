@@ -1,6 +1,7 @@
 """ Rendering interface """
 
 import os
+import re
 from collections import Callable
 from datetime import datetime
 from functools import wraps
@@ -108,12 +109,14 @@ class Render(object):
             **kwargs
         )
 
+    # TODO: fix bug in template rendering instead of using regexes
     @staticmethod
     @load_template("sdc.jinja")
     def sdc(**kwargs) -> str:
         """ Template rendering interface for .sdc files """
-        # There is no special requirements
-        return Render._render(**kwargs)
+        rendered = Render._render(**kwargs)
+        rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)  # fix comments
+        return rendered
 
     @staticmethod
     @load_template("v.jinja")
