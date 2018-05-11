@@ -26,4 +26,4 @@ export COPYRIGHT="MUEM (HSE University)"
 # WEB:
 # flask run --with-threads
 # GUI:
-# TODO
+# [important] [feature] TODO: complete preparation

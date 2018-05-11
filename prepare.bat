@@ -25,4 +25,4 @@ REM ===== Run application =====
 REM WEB:
 REM flask run --with-threads
 REM GUI:
-REM TODO
+REM [important] [feature] TODO: complete preparation

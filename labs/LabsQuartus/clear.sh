@@ -37,7 +37,7 @@ function remove_files {
 }
 
 for arg in $*; do
-    # TODO: use 'in' keyword
+    # [minor] [enhancement] TODO: use 'in' keyword
     if [ "$arg" = "-h" -o "$arg" = "-H" -o "$arg" = "--help" -o "$arg" = "/?" ]; then
         show_help
         exit

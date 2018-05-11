@@ -3,7 +3,7 @@ from collections import Callable
 from functools import wraps
 
 try:
-    from configs.engine import LOGGER
+    from configs.engine import LOGGER  # global config logger import
 except ImportError as err:
     # default logging configuration
     import logging
