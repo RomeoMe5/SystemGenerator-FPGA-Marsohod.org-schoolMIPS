@@ -1,12 +1,19 @@
 """ Additional methods for preparing engine workflow. """
 
 import io
+import json
 import os
 import shutil
 import tarfile
 import zipfile
 
-from engine.utils.log import LOGGER
+import dill
+import yaml
+
+try:
+    from engine.utils.log import LOGGER
+except ImportError as err:
+    import logging as LOGGER
 
 
 class Archiver(object):
@@ -180,13 +187,76 @@ class Archiver(object):
 
         return Archiver._archive(*filenames, **params)
 
-    # TODO: implement extraction
+    # [minor] TODO: implement extraction
     @staticmethod
     def _extract(path: str, destination: str=".", **kwargs) -> int:
         # Note: this function signature refer to public method
         # but was hidden until method will be finished
         method, compression = path.lower().split('.')[-2:]
         raise NotImplementedError
+
+
+class Convertor(object):
+    """ Collection of methods to convert static files formats. """
+    LOADERS = {
+        'json': json.load,
+        'yml': yaml.load,
+        'bin': dill.load
+    }
+    DUMPERS = {
+        'json': json.dump,
+        'yml': yaml.dump,
+        'bin': dill.dump
+    }
+
+    @staticmethod
+    def _load_content(path: str, fmt: str=None) -> object:
+        """ Try to guess file format and load file content. """
+        if fmt is None or fmt not in Convertor.LOADERS:
+            fmt = path.split('.')[-1]
+            if fmt in Convertor.LOADERS:
+                LOGGER.debug("Detect file format: %s", fmt)
+            else:
+                fmt = None
+                LOGGER.debug("Can't detect file format from '%s'", path)
+
+        if fmt is None:
+            for extension, loader in Convertor.LOADERS.items():
+                _path = path
+                if not _path.endswith(extension):
+                    _path = ".".join((_path, extension))
+                    LOGGER.debug("Assume file has '%s' extension", extension)
+
+                try:
+                    with open(_path, 'rb') as fin:
+                        return loader(fin)
+                except BaseException as err:
+                    LOGGER.warning(err)
+            raise IOError(f"Can't load file content: '{path}'!")
+
+        with open(path, 'rb') as fin:
+            return Convertor.LOADERS[fmt](fin)
+
+    @staticmethod
+    def convert(from_path: str,
+                to_fmt: str,
+                to_path: str=None,
+                from_fmt: str=None) -> None:
+        """ Convert static files formats. """
+        content = Convertor._load_content(from_path, from_fmt)
+        print(type(content))
+
+        if to_path is None:
+            to_path = ".".join(from_path.split('.')[:-1])
+            LOGGER.debug("Assume destination path is: '%s'", to_path)
+
+        if not to_path.endswith(to_fmt):
+            to_path = ".".join((to_path, to_fmt))
+
+        mode = 'w' if to_fmt != 'bin' else 'wb'
+        with open(to_path, mode) as fout:
+            Convertor.DUMPERS[to_fmt](content, fout)
+            LOGGER.info("Converted file saved to: '%s'", to_path)
 
 
 def create_dirs(*paths, rewrite: bool=False) -> int:
