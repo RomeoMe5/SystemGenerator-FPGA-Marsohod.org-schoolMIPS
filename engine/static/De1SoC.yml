@@ -1,17 +1,14 @@
 qpf:
-  meta_info:
-    quartus_version: 15.1.0
-  revisions:
-    project_revision: initial
+  quartus_version: 15.1.0
 qsf:
+  family: '"Cyclone V"'
+  device: 5CSEMA5F31C6
+  original_quartus_version: '"15.1.0"'
+  last_quartus_version: '"15.1.0"'
   global_assignments:
-    family: '"Cyclone V"'
-    device: 5CSEMA5F31C6
-    original_quartus_version: '"15.1.0"'
-    last_quartus_version: '"15.1.0"'
     device_filter_package: FBGA
-    device_filter_pin_count: '896'
-    device_filter_speed_grade: '6'
+    device_filter_pin_count: 896
+    device_filter_speed_grade: 6
   user_assignments:
     audio:
       instance:

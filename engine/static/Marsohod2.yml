@@ -1,21 +1,18 @@
 qpf:
-  meta_info:
-    quartus_version: '9.0'
-  revisions:
-    project_revision: initial
+  quartus_version: '9.0'
 qsf:
+  family: '"Cyclone III"'
+  device: EP3C10E144C8
+  original_quartus_version: '"9.0 SP2"'
+  last_quartus_version: '"9.0 SP2"'
   global_assignments:
-    family: '"Cyclone III"'
-    device: EP3C10E144C8
-    original_quartus_version: 9.0 SP2
-    last_quartus_version: 9.0 SP2
     project_output_directory: output_files
     min_core_junction_temp: 0
     max_core_junction_temp: 85
     device_filter_package: EQFP
     error_check_frequency_divisor: 1
   user_assignments:
-    FTDI:
+    ftdi:
       location:
       - - PIN_24
         - FTDI_BD0
@@ -25,17 +22,17 @@ qsf:
         - FTDI_BD2
       - - PIN_10
         - FTDI_BD3
-    CLOCK:
+    clock:
       location:
       - - PIN_25
         - CLK100MHZ
-    KEY:
+    key:
       location:
       - - PIN_23
         - KEY0
       - - PIN_22
         - KEY1
-    SDRAM_DQ:
+    sdram_dq:
       location:
       - - PIN_30
         - SDRAM_DQ[15]
@@ -69,7 +66,7 @@ qsf:
         - SDRAM_DQ[1]
       - - PIN_80
         - SDRAM_DQ[0]
-    SDRAM_A:
+    sdram_a:
       location:
       - - PIN_60
         - SDRAM_A[0]
@@ -95,7 +92,7 @@ qsf:
         - SDRAM_A[10]
       - - PIN_54
         - SDRAM_A[11]
-    others SDRAM options:
+    others sdram options:
       location:
       - - PIN_70
         - SDRAM_LDQM
@@ -113,7 +110,7 @@ qsf:
         - SDRAM_WE
       - - PIN_44
         - SDRAM_CLK
-    LED:
+    led:
       location:
       - - PIN_79
         - LED[3]
@@ -123,7 +120,7 @@ qsf:
         - LED[1]
       - - PIN_85
         - LED[0]
-    VGA:
+    vga:
       location:
       - - PIN_144
         - VGA_RED[4]
@@ -161,7 +158,7 @@ qsf:
         - VGA_HSYNC
       - - PIN_126
         - VGA_VSYNC
-    ADC:
+    adc:
       location:
       - - 'PIN_100 '
         - ADC_D[0]
@@ -181,7 +178,7 @@ qsf:
         - ADC_D[7]
       - - PIN_86
         - ADC_CLK
-    I/O:
+    i/o:
       location:
       - - PIN_101
         - IO[0]

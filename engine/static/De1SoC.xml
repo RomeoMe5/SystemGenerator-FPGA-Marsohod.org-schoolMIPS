@@ -1,18 +1,14 @@
+<!-- depreciated -->
 <?xml version="1.0" encoding="UTF-8" ?>
 <qpf>
-    <meta_info>
-        <quartus_version>15.1.0</quartus_version>
-    </meta_info>
-    <revisions>
-        <project_revision>initial</project_revision>
-    </revisions>
+    <quartus_version>15.1.0</quartus_version>
 </qpf>
 <qsf>
+    <family>&quot;Cyclone V&quot;</family>
+    <device>5CSEMA5F31C6</device>
+    <original_quartus_version>&quot;15.1.0&quot;</original_quartus_version>
+    <last_quartus_version>&quot;15.1.0&quot;</last_quartus_version>
     <global_assignments>
-        <family>&quot;Cyclone V&quot;</family>
-        <device>5CSEMA5F31C6</device>
-        <original_quartus_version>&quot;15.1.0&quot;</original_quartus_version>
-        <last_quartus_version>&quot;15.1.0&quot;</last_quartus_version>
         <device_filter_package>FBGA</device_filter_package>
         <device_filter_pin_count>896</device_filter_pin_count>
         <device_filter_speed_grade>6</device_filter_speed_grade>

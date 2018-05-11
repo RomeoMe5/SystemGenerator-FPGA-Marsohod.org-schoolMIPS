@@ -10,21 +10,28 @@ class Loader(object):
     LOADERS = SUPPORTED_LOADERS
 
     @staticmethod
-    def load_static(filename: str,
-                    path_to_static: str=PATHS.STATIC,
-                    loader_params: dict=None,
-                    **kwargs) -> (str, dict, list):
-        """ Loads file' content from static folder """
-        filepath = Loader.get_static_path(filename, path_to_static)
-        file_format = filepath.split('.')[-1]
+    def load(filepath: str,
+             loader_params: dict=None,
+             **kwargs) -> object:
+        """ Loads content of static file from any location """
+        file_format = filepath.split('.')[-1].lower()
         if loader_params is None:
             loader_params = {}
-        with open(filepath, 'r', **kwargs) as fin:
+        with open(filepath, 'rb', **kwargs) as fin:
             LOGGER.debug("Loading '%s' content...", filepath)
             for extension in Loader.EXTENSIONS:
                 if file_format == extension:
                     return Loader.LOADERS[extension](fin, **loader_params)
             return fin.read()  # read plain text
+
+    @staticmethod
+    def load_static(filename: str,
+                    path_to_static: str=PATHS.STATIC,
+                    loader_params: dict=None,
+                    **kwargs) -> object:
+        """ Loads content of static file from engine 'static' folder """
+        filepath = Loader.get_static_path(filename, path_to_static)
+        return Loader.load(filepath, loader_params, **kwargs)
 
     @staticmethod
     def get_static_path(filename: str,

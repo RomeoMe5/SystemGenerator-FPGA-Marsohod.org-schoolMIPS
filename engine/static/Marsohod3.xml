@@ -1,18 +1,14 @@
+<!-- depreciated -->
 <?xml version="1.0" encoding="UTF-8" ?>
 <qpf>
-    <meta_info>
-        <quartus_version>15.1.0</quartus_version>
-    </meta_info>
-    <revisions>
-        <project_revision>initial</project_revision>
-    </revisions>
+    <quartus_version>15.1.0</quartus_version>
 </qpf>
 <qsf>
+    <family>&quot;MAX 10 &quot;</family>
+    <device>10M50SAE144C8GES</device>
+    <original_quartus_version>15.1.0</original_quartus_version>
+    <last_quartus_version>15.1.0</last_quartus_version>
     <global_assignments>
-        <family>&quot;MAX 10 &quot;</family>
-        <device>10M50SAE144C8GES</device>
-        <original_quartus_version>15.1.0</original_quartus_version>
-        <last_quartus_version>15.1.0</last_quartus_version>
         <project_output_directory>output_files</project_output_directory>
         <min_core_junction_temp>0</min_core_junction_temp>
         <max_core_junction_temp>85</max_core_junction_temp>

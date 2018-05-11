@@ -1,18 +1,13 @@
 {
     "qpf": {
-        "meta_info": {
-            "quartus_version": "15.1.0"
-        },
-        "revisions": {
-            "project_revision": "initial"
-        }
+        "quartus_version": "15.1.0"
     },
     "qsf": {
+        "family": "\"MAX 10 \"",
+        "device": "10M08SAE144C8GES",
+        "original_quartus_version": "15.1.0",
+        "last_quartus_version": "15.1.0",
         "global_assignments": {
-            "family": "\"MAX 10 \"",
-            "device": "10M08SAE144C8GES",
-            "original_quartus_version": "15.1.0",
-            "last_quartus_version": "15.1.0",
             "project_output_directory": "output_files",
             "min_core_junction_temp": 0,
             "max_core_junction_temp": 85,
