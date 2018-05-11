@@ -5,9 +5,11 @@ build/
 .idea/
 .venv/
 .env/
-*tmp/
+temp/
 logs/
 log/
+
+*tmp*
 
 *.py[cod]
 *.log
