@@ -12,6 +12,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
 try:
+    # global config imports
     from configs.engine import COPYRIGHT
 except ImportError as err:
     # default values
@@ -57,7 +58,6 @@ class Render(object):
     """ Collection of renders for templates """
 
     @staticmethod
-    @log
     def _render(template: Template, **kwargs) -> str:
         LOGGER.debug("Rendering '%s' template...", template.filename)
         return "\n".join(template.generate(
@@ -66,29 +66,40 @@ class Render(object):
         ))
 
     @staticmethod
-    def format_date(date_t: datetime=None, quoted: bool=False) -> str:
+    def format_date(date_t: datetime=None,
+                    quoted: bool=True,
+                    sep: bool=False) -> str:
         """
             Return date in Quartus compatible format
 
-            F.i. "12:40:01 December 27, 2017"
+            F.i. "12:40:01 DECEMBER 27,2017"
         """
         if date_t is None:
             date_t = datetime.utcnow()
-        date_f = f"{date_t:%H:%M:%S %B %d, %Y}"
+        date_f = f"{date_t:%H:%M:%S %B %d,%Y}"
+        if sep:
+            date_f = f"{date_t:%H:%M:%S %B %d, %Y}"
         if quoted:
             return f"\"{date_f}\""
         return date_f
 
     @staticmethod
     @load_template("qpf.jinja")
-    def qpf(meta_info: dict=None,
-            revisions: dict=None,
+    def qpf(project_name: str,
+            quartus_version: str="15.1.0",
             **kwargs) -> str:
         """ Template rendering interface for .qpf files """
-        if not meta_info:
-            meta_info = {}
-        meta_info['date'] = Render.format_date()
+        meta_info = {
+            'date': Render.format_date(quoted=False, sep=True),
+            'quartus_version': quartus_version
+        }
+        meta_info.update(kwargs.pop('meta_info', {}))
+
+        revisions = {'project_revision': project_name}
+        revisions.update(kwargs.pop('revisions', {}))
+
         return Render._render(
+            project_name=project_name,
             meta_info=meta_info,
             revisions=revisions,
             **kwargs
@@ -96,31 +107,46 @@ class Render(object):
 
     @staticmethod
     @load_template("qsf.jinja")
-    def qsf(global_assignments: dict=None,
+    def qsf(project_name: str,
+            family: str,
+            device: str,
+            original_quartus_version: str='"9.0"',
+            last_quartus_version: str='"9.0"',
             user_assignments: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
-        if global_assignments is None:
-            global_assignments = {}
-        global_assignments['project_creation_time_date'] = Render.format_date()
+        global_assignments = {
+            'project_creation_time_date': Render.format_date().upper(),
+            'family': family,
+            'device': device,
+            'original_quartus_version': original_quartus_version,
+            'last_quartus_version': last_quartus_version,
+            'top_level_entity': f"\"{project_name}\"",
+            # 'sdc_file': f"{project_name}.sdc"
+        }
+        global_assignments.update(kwargs.pop('global_assignments', {}))
         return Render._render(
+            project_name=project_name,
             global_assignments=global_assignments,
             user_assignments=user_assignments,
             **kwargs
         )
 
-    # TODO: fix bug in template rendering instead of using regexes
+    # [bug] TODO: fix bug in template rendering instead of using regexes
     @staticmethod
     @load_template("sdc.jinja")
-    def sdc(**kwargs) -> str:
+    def sdc(project_name: str, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
-        rendered = Render._render(**kwargs)
-        rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)  # fix comments
+        rendered = Render._render(project_name=project_name, **kwargs)
+        # fix comments rendering
+        rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)
         return rendered
 
     @staticmethod
     @load_template("v.jinja")
-    def v(project_name: str, assigments: dict=None, **kwargs) -> str:
+    def v(project_name: str,
+          assigments: dict=None,
+          **kwargs) -> str:
         """ Template rendering interface for .v files """
         return Render._render(
             project_name=project_name,
