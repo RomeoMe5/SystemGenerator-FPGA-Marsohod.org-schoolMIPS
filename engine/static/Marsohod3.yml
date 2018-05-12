@@ -32,7 +32,9 @@ qsf:
         - KEY0
       - - PIN_25
         - KEY1
-    SDRAM_DQ:
+
+    # SDRAM was merged
+    SDRAM:
       location:
       - - PIN_27
         - SDRAM_DQ[15]
@@ -66,8 +68,7 @@ qsf:
         - SDRAM_DQ[1]
       - - PIN_80
         - SDRAM_DQ[0]
-    SDRAM_A:
-      location:
+
       - - PIN_57
         - SDRAM_A[0]
       - - PIN_58
@@ -92,8 +93,7 @@ qsf:
         - SDRAM_A[10]
       - - PIN_51
         - SDRAM_A[11]
-    others SDRAM options:
-      location:
+
       - - PIN_65
         - SDRAM_LDQM
       - - PIN_40
@@ -224,7 +224,7 @@ qsf:
         - IO[18]
       - - PIN_118
         - IO[19]
-    others:
+    OTHERS:
       location:
       - - PIN_123
         - RESERVED
@@ -232,4 +232,92 @@ qsf:
         - BOOT_SEL
 sdc: {}
 v:
-  assigments: {}
+  assigments:
+    FTDI:
+    - - input
+      - ''
+      - FTDI_BD0
+    - - input
+      - ''
+      - FTDI_BD2
+    - - output
+      - ''
+      - FTDI_BD1
+    - - output
+      - ''
+      - FTDI_BD3
+    CLOCK:
+    - - input
+      - ''
+      - CLK100MHZ
+    KEY:
+    - - input
+      - ''
+      - KEY0
+    - - input
+      - ''
+      - KEY1
+    SDRAM:
+    - - inout
+      - "[15:0]"
+      - SDRAM_DQ
+    - - output
+      - "[11:0]"
+      - SDRAM_A
+    - - input
+      - ''
+      - SDRAM_LDQM
+    - - input
+      - ''
+      - SDRAM_UDQM
+    - - input
+      - ''
+      - SDRAM_BA0
+    - - input
+      - ''
+      - SDRAM_BA1
+    - - input
+      - ''
+      - SDRAM_LDQM
+    - - input
+      - ''
+      - SDRAM_LDQM
+    - - input
+      - ''
+      - SDRAM_RAS
+    - - input
+      - ''
+      - SDRAM_CAS
+    - - input
+      - ''
+      - SDRAM_WE
+    - - input
+      - ''
+      - SDRAM_CLK
+    LED:
+    - - output
+      - "[7:0]"
+      - LED
+    TMDS:
+    - - output
+      - "[7:0]"
+      - TMDS
+    FTD:
+    - - output
+      - "[7:0]"
+      - FTD
+    FTC:
+    - - output
+      - "[7:0]"
+      - FTC
+    I/0:
+    - - output
+      - "[19:0]"
+      - IO
+    OTHERS:
+    - - input
+      - ''
+      - BOOT_SEL
+    - - input
+      - ''
+      - RESERVED
