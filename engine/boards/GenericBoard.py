@@ -30,12 +30,15 @@ class GenericBoard(object):
     @staticmethod
     def _generate(project_name: str, **configs) -> dict:
         """ Generates FPGA configs """
-        return {
+        generated_configs = {
             'v': Render.v(project_name, **configs.get('v', {})),
             'qpf': Render.qpf(project_name, **configs.get('qpf', {})),
-            'qsf': Render.qsf(project_name, **configs.get('qsf', {})),
-            'sdc': Render.sdc(project_name, **configs.get('sdc', {}))
+            'qsf': Render.qsf(project_name, **configs.get('qsf', {}))
         }
+        sdc = configs.get('sdc')
+        if sdc:
+            generated_configs['sdc'] = Render.sdc(project_name, **sdc)
+        return generated_configs
 
     @staticmethod
     def _archive(path: str, **configs) -> None:
@@ -135,4 +138,5 @@ class GenericBoard(object):
         base = f"<{self.__class__.__name__}::{hex(id(self))}>"
         if self._configs is None:
             return base
-        return base + f"{str(self._configs)[:50]}..." + "}"
+        return f"{base}\n" \
+               f"{str(self._configs)[:25]} ... {str(self._configs)[-25:]}"
