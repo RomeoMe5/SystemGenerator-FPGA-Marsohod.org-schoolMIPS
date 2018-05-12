@@ -33,11 +33,9 @@ class GenericBoard(object):
         generated_configs = {
             'v': Render.v(project_name, **configs.get('v', {})),
             'qpf': Render.qpf(project_name, **configs.get('qpf', {})),
-            'qsf': Render.qsf(project_name, **configs.get('qsf', {}))
+            'qsf': Render.qsf(project_name, **configs.get('qsf', {})),
+            'sdc': Render.sdc(project_name, **configs.get('sdc', {}))
         }
-        sdc = configs.get('sdc')
-        if sdc:
-            generated_configs['sdc'] = Render.sdc(project_name, **sdc)
         return generated_configs
 
     @staticmethod

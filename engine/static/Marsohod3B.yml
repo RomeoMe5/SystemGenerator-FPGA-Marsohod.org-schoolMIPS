@@ -1,7 +1,7 @@
 qpf:
   quartus_version: 15.1.0
 qsf:
-  family: '"MAX 10 "'
+  family: '"MAX 10"'
   device: 10M08SAE144C8GES
   original_quartus_version: '"15.1.0"'
   last_quartus_version: '"15.1.0"'
@@ -230,7 +230,31 @@ qsf:
         - RESERVED
       - - PIN_126
         - BOOT_SEL
-sdc: {}
+sdc:
+  create_clock:
+  -
+  create_generated_clock:
+  -
+  set_clock_latency:
+  -
+  set_clock_uncertainty:
+  -
+  set_input_delay:
+  -
+  set_output_delay:
+  -
+  set_clock_groups:
+  -
+  set_false_path:
+  -
+  set_multicycle_path:
+  -
+  set_maximum_delay:
+  -
+  set_minimum_delay:
+  -
+  set_load:
+  -
 v:
   assigments:
     FTDI:
