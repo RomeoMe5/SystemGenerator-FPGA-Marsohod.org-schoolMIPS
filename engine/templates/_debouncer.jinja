@@ -1,0 +1,15 @@
+// http://www.labfor.ru/articles/debouncer_verilog
+// http://www.fpga4fun.com/Debouncer2.html
+
+module button_debouncer
+(
+    input clk_i, // ckock
+    input rst_i, // reset state
+    input sw_i, // main input
+
+    output reg sw_state_o, // indicates the button state
+    output reg sw_down_o, // indicates that button state is down
+    output reg sw_up_o // indicates that button state is up
+);
+
+endmodule
