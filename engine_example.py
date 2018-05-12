@@ -18,4 +18,4 @@ if __name__ == "__main__":
     board = DE1SoC().generate(project_name + "1", audio=True).dump()
 
     # regenerate project with audio and clock support
-    # board.archive(project_name + "1", force=True, audio=True, clock=True)
+    board.archive(project_name + "1", force=True, audio=True, clock=True)
