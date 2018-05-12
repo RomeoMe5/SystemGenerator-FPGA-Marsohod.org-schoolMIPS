@@ -9,25 +9,29 @@
 
 {%- block body -%}
 {{ "" }}
+{%- if assigments -%}
 module {{ project_name }}(
-{%- for part_name, assig in assigments.items() -%}
+    {%- for part_name, assig in assigments.items() -%}
 {{ "    " }}//********** {{ part_name|upper }} **********//
-    {%- if not loop.last -%}{# Normal generation until last iteration #}
-        {%- for type, rank, value in assig -%}
+        {%- if not loop.last -%}{# Normal generation until last iteration #}
+            {%- for type, rank, value in assig -%}
 {{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
-        {%- endfor -%}
+            {%- endfor -%}
 {{ "" }}
-    {%- else -%}{# Separate rule for last iteration #}
-        {%- for type, rank, value in assig -%}
-            {%- if not loop.last -%}
+        {%- else -%}{# Separate rule for last iteration #}
+            {%- for type, rank, value in assig -%}
+                {%- if not loop.last -%}
 {{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
-            {%- else -%}{# Don't type coma after last line #}
+                {%- else -%}{# Don't type coma after last line #}
 {{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }}
-            {%- endif -%}
-        {%- endfor -%}
-    {%- endif -%}
-{%- endfor -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endfor -%}
 );
+{%- else -%}
+module {{ project_name }}();
+{%- endif -%}
 {{ "" }}
 //*****************************************//
 //          REG/WIRE declarations          //
