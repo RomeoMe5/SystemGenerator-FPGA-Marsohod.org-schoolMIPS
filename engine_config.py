@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 
 COPYRIGHT = "Moscow University of Electronics and Mathematics, " \
             "Higher School for Economics University"
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 # ===== Logging =====

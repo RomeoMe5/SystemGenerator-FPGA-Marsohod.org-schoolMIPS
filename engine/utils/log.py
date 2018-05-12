@@ -3,11 +3,12 @@ from collections import Callable
 from functools import wraps
 
 try:
-    from configs.engine import LOGGER  # global config logger import
+    from engine_config import LOGGER  # global config logger import
 except ImportError as err:
     # default logging configuration
     import logging
     from logging.handlers import RotatingFileHandler
+    from engine.utils.globals import PATHS
 
     LOG_LEVEL = logging.WARNING
     LOG_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s." \
@@ -16,13 +17,15 @@ except ImportError as err:
     logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT, datefmt="%H:%M:%S")
     LOGGER = logging.getLogger(LOG_NAME)
     FILE_HANDLER = RotatingFileHandler(
-        os.path.join('.', LOG_NAME),
+        os.path.join(PATHS.BASE, LOG_NAME),
         maxBytes=1024 * 100,
         backupCount=10
     )
     FILE_HANDLER.setFormatter(logging.Formatter(LOG_FORMAT))
     FILE_HANDLER.setLevel(LOG_LEVEL)
     LOGGER.addHandler(FILE_HANDLER)
+
+    LOGGER.warning(err)
 
 
 def log(func: Callable) -> Callable:

@@ -13,6 +13,7 @@ class PATHS:
 
 
 # add path relative to the project root to class globals
+PATHS.BASE = os.path.abspath(os.path.dirname(PATHS.ROOT))
 PATHS.STATIC = os.path.join(PATHS.ROOT, "static")
 PATHS.TEMPL = os.path.join(PATHS.ROOT, "templates")
 

@@ -13,7 +13,7 @@ from jinja2.environment import Environment, Template
 
 try:
     # global config imports
-    from configs.engine import COPYRIGHT
+    from engine_config import COPYRIGHT
 except ImportError as err:
     # default values
     COPYRIGHT = "Higher School for Economics University"
