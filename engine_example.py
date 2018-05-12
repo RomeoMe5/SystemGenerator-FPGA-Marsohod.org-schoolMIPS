@@ -1,10 +1,6 @@
-import logging
 import sys
 
-# suspend engine logs
-logging.basicConfig(level=logging.ERROR)
-
-from engine import DE1SoC
+from engine import Marsohod3
 
 
 if __name__ == "__main__":
@@ -12,10 +8,10 @@ if __name__ == "__main__":
     project_name = "tmp" if len(sys.argv) < 2 else sys.argv[1]
 
     # generate empty project
-    print(DE1SoC().generate_files(project_name))
+    print(Marsohod3().generate_files(project_name))
 
-    # generate project with audio support
-    board = DE1SoC().generate(project_name + "1", audio=True).dump()
+    # generate project with keys support
+    board = Marsohod3().generate(project_name + "1", keys=True).dump()
 
-    # regenerate project with audio and clock support
-    board.archive(project_name + "1", force=True, audio=True, clock=True)
+    # regenerate project with keys and clock support
+    board.archive(project_name + "1", force=True, keys=True, clock=True)
