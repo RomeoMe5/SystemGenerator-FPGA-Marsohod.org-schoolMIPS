@@ -4,9 +4,8 @@ rsc/
 *.JSON
 *.db
 *.db.journal
-
-# specific
-set_env_vars*
+*.pot
+*.mo
 
 # Flask stuff:
 instance/

@@ -4,4 +4,3 @@ isort==4.2.15
 jedi==0.11.1
 pep8==1.7.1
 pylint==1.8.1
-pytest==3.3.1
