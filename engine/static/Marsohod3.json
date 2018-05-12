@@ -3,12 +3,12 @@
         "quartus_version": "15.1.0"
     },
     "qsf": {
-        "family": "\"MAX 10 \"",
+        "family": "\"MAX 10\"",
         "device": "10M50SAE144C8GES",
-        "original_quartus_version": "15.1.0",
-        "last_quartus_version": "15.1.0",
+        "original_quartus_version": "\"15.1.0\"",
+        "last_quartus_version": "\"15.1.0\"",
+        "project_output_directory": "output_files",
         "global_assignments": {
-            "project_output_directory": "output_files",
             "min_core_junction_temp": 0,
             "max_core_junction_temp": 85,
             "device_filter_package": "EQFP",
@@ -55,7 +55,7 @@
                     ]
                 ]
             },
-            "SDRAM_DQ": {
+            "SDRAM": {
                 "location": [
                     [
                         "PIN_27",
@@ -120,11 +120,7 @@
                     [
                         "PIN_80",
                         "SDRAM_DQ[0]"
-                    ]
-                ]
-            },
-            "SDRAM_A": {
-                "location": [
+                    ],
                     [
                         "PIN_57",
                         "SDRAM_A[0]"
@@ -172,11 +168,7 @@
                     [
                         "PIN_51",
                         "SDRAM_A[11]"
-                    ]
-                ]
-            },
-            "others SDRAM options": {
-                "location": [
+                    ],
                     [
                         "PIN_65",
                         "SDRAM_LDQM"
@@ -439,7 +431,7 @@
                     ]
                 ]
             },
-            "others": {
+            "OTHERS": {
                 "location": [
                     [
                         "PIN_123",
@@ -453,8 +445,172 @@
             }
         }
     },
-    "sdc": {},
+    "sdc": {
+        "create_clock": [],
+        "create_generated_clock": [],
+        "set_clock_latency": [],
+        "set_clock_uncertainty": [],
+        "set_input_delay": [],
+        "set_output_delay": [],
+        "set_clock_groups": [],
+        "set_false_path": [],
+        "set_multicycle_path": [],
+        "set_maximum_delay": [],
+        "set_minimum_delay": [],
+        "set_load": []
+    },
     "v": {
-        "assigments": {}
+        "assigments": {
+            "FTDI": [
+                [
+                    "input",
+                    "",
+                    "FTDI_BD0"
+                ],
+                [
+                    "input",
+                    "",
+                    "FTDI_BD2"
+                ],
+                [
+                    "output",
+                    "",
+                    "FTDI_BD1"
+                ],
+                [
+                    "output",
+                    "",
+                    "FTDI_BD3"
+                ]
+            ],
+            "CLOCK": [
+                [
+                    "input",
+                    "",
+                    "CLK100MHZ"
+                ]
+            ],
+            "KEY": [
+                [
+                    "input",
+                    "",
+                    "KEY0"
+                ],
+                [
+                    "input",
+                    "",
+                    "KEY1"
+                ]
+            ],
+            "SDRAM": [
+                [
+                    "inout",
+                    "[15:0]",
+                    "SDRAM_DQ"
+                ],
+                [
+                    "output",
+                    "[11:0]",
+                    "SDRAM_A"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_LDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_UDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_BA0"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_BA1"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_LDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_LDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_RAS"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_CAS"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_WE"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_CLK"
+                ]
+            ],
+            "LED": [
+                [
+                    "output",
+                    "[7:0]",
+                    "LED"
+                ]
+            ],
+            "TMDS": [
+                [
+                    "output",
+                    "[7:0]",
+                    "TMDS"
+                ]
+            ],
+            "FTD": [
+                [
+                    "output",
+                    "[7:0]",
+                    "FTD"
+                ]
+            ],
+            "FTC": [
+                [
+                    "output",
+                    "[7:0]",
+                    "FTC"
+                ]
+            ],
+            "I/0": [
+                [
+                    "output",
+                    "[19:0]",
+                    "IO"
+                ]
+            ],
+            "OTHERS": [
+                [
+                    "input",
+                    "",
+                    "BOOT_SEL"
+                ],
+                [
+                    "input",
+                    "",
+                    "RESERVED"
+                ]
+            ]
+        }
     }
 }

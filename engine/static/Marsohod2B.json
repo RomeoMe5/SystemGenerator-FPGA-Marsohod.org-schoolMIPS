@@ -5,10 +5,10 @@
     "qsf": {
         "family": "\"Cyclone IV\"",
         "device": "EP4CE6E22C8N",
-        "original_quartus_version": "9.0 SP2",
-        "last_quartus_version": "9.0 SP2",
+        "original_quartus_version": "\"9.0 SP2\"",
+        "last_quartus_version": "\"9.0 SP2\"",
+        "project_output_directory": "output_files",
         "global_assignments": {
-            "project_output_directory": "output_files",
             "min_core_junction_temp": 0,
             "max_core_junction_temp": 85,
             "device_filter_package": "EQFP",
@@ -55,7 +55,7 @@
                     ]
                 ]
             },
-            "SDRAM_DQ": {
+            "SDRAM": {
                 "location": [
                     [
                         "PIN_30",
@@ -120,11 +120,7 @@
                     [
                         "PIN_80",
                         "SDRAM_DQ[0]"
-                    ]
-                ]
-            },
-            "SDRAM_A": {
-                "location": [
+                    ],
                     [
                         "PIN_60",
                         "SDRAM_A[0]"
@@ -172,11 +168,7 @@
                     [
                         "PIN_54",
                         "SDRAM_A[11]"
-                    ]
-                ]
-            },
-            "others SDRAM options": {
-                "location": [
+                    ],
                     [
                         "PIN_70",
                         "SDRAM_LDQM"
@@ -415,7 +407,7 @@
                     ]
                 ]
             },
-            "others": {
+            "OTHERS": {
                 "location": [
                     [
                         "PIN_12",
@@ -437,8 +429,190 @@
             }
         }
     },
-    "sdc": {},
+    "sdc": {
+        "create_clock": [],
+        "create_generated_clock": [],
+        "set_clock_latency": [],
+        "set_clock_uncertainty": [],
+        "set_input_delay": [],
+        "set_output_delay": [],
+        "set_clock_groups": [],
+        "set_false_path": [],
+        "set_multicycle_path": [],
+        "set_maximum_delay": [],
+        "set_minimum_delay": [],
+        "set_load": []
+    },
     "v": {
-        "assigments": {}
+        "assigments": {
+            "FTDI": [
+                [
+                    "input",
+                    "",
+                    "FTDI_BD0"
+                ],
+                [
+                    "input",
+                    "",
+                    "FTDI_BD2"
+                ],
+                [
+                    "output",
+                    "",
+                    "FTDI_BD1"
+                ],
+                [
+                    "output",
+                    "",
+                    "FTDI_BD3"
+                ]
+            ],
+            "CLOCK": [
+                [
+                    "input",
+                    "",
+                    "CLK100MHZ"
+                ]
+            ],
+            "KEY": [
+                [
+                    "input",
+                    "",
+                    "KEY0"
+                ],
+                [
+                    "input",
+                    "",
+                    "KEY1"
+                ]
+            ],
+            "SDRAM": [
+                [
+                    "inout",
+                    "[15:0]",
+                    "SDRAM_DQ"
+                ],
+                [
+                    "output",
+                    "[11:0]",
+                    "SDRAM_A"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_LDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_UDQM"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_BA0"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_BA1"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_RAS"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_CAS"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_WE"
+                ],
+                [
+                    "input",
+                    "",
+                    "SDRAM_CLK"
+                ]
+            ],
+            "LED": [
+                [
+                    "output",
+                    "[3:0]",
+                    "LED"
+                ]
+            ],
+            "VGA": [
+                [
+                    "output",
+                    "[4:0]",
+                    "VGA_RED"
+                ],
+                [
+                    "output",
+                    "[5:0]",
+                    "VGA_GREEN"
+                ],
+                [
+                    "output",
+                    "[4:0]",
+                    "VGA_BLUE"
+                ],
+                [
+                    "output",
+                    "",
+                    "VGA_HSYNC"
+                ],
+                [
+                    "output",
+                    "",
+                    "VGA_VSYNC"
+                ]
+            ],
+            "ADC": [
+                [
+                    "input",
+                    "[7:0]",
+                    "ADC_D"
+                ],
+                [
+                    "output",
+                    "",
+                    "ADC_CLK"
+                ]
+            ],
+            "I/0": [
+                [
+                    "output",
+                    "[15:0]",
+                    "IO"
+                ]
+            ],
+            "OTHERS": [
+                [
+                    "output",
+                    "",
+                    "DCLK"
+                ],
+                [
+                    "input",
+                    "",
+                    "DATA0"
+                ],
+                [
+                    "output",
+                    "",
+                    "NCSO"
+                ],
+                [
+                    "output",
+                    "",
+                    "ASDO"
+                ]
+            ]
+        }
     }
 }

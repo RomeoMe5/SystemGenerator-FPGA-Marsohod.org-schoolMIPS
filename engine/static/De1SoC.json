@@ -7,10 +7,11 @@
         "device": "5CSEMA5F31C6",
         "original_quartus_version": "\"15.1.0\"",
         "last_quartus_version": "\"15.1.0\"",
+        "project_output_directory": "output_files",
         "global_assignments": {
             "device_filter_package": "FBGA",
-            "device_filter_pin_count": "896",
-            "device_filter_speed_grade": "6"
+            "device_filter_pin_count": 896,
+            "device_filter_speed_grade": 6
         },
         "user_assignments": {
             "audio": {
@@ -470,7 +471,6 @@
         "set_false_path": [],
         "set_multicycle_path": [],
         "set_maximum_delay": [],
-        "set_minimum_delay": [],
         "set_minimum_delay": [],
         "set_load": []
     },

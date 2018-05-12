@@ -5,8 +5,8 @@ qsf:
   device: 10M08SAE144C8GES
   original_quartus_version: '"15.1.0"'
   last_quartus_version: '"15.1.0"'
+  project_output_directory: output_files
   global_assignments:
-    project_output_directory: output_files
     min_core_junction_temp: 0
     max_core_junction_temp: 85
     device_filter_package: EQFP
@@ -32,8 +32,6 @@ qsf:
         - KEY0
       - - PIN_25
         - KEY1
-
-    #SDRAM was merged
     SDRAM:
       location:
       - - PIN_27
@@ -231,30 +229,18 @@ qsf:
       - - PIN_126
         - BOOT_SEL
 sdc:
-  create_clock:
-  -
-  create_generated_clock:
-  -
-  set_clock_latency:
-  -
-  set_clock_uncertainty:
-  -
-  set_input_delay:
-  -
-  set_output_delay:
-  -
-  set_clock_groups:
-  -
-  set_false_path:
-  -
-  set_multicycle_path:
-  -
-  set_maximum_delay:
-  -
-  set_minimum_delay:
-  -
-  set_load:
-  -
+  create_clock: []
+  create_generated_clock: []
+  set_clock_latency: []
+  set_clock_uncertainty: []
+  set_input_delay: []
+  set_output_delay: []
+  set_clock_groups: []
+  set_false_path: []
+  set_multicycle_path: []
+  set_maximum_delay: []
+  set_minimum_delay: []
+  set_load: []
 v:
   assigments:
     FTDI:

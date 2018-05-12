@@ -5,8 +5,8 @@ qsf:
   device: EP4CE6E22C8N
   original_quartus_version: '"9.0 SP2"'
   last_quartus_version: '"9.0 SP2"'
+  project_output_directory: output_files
   global_assignments:
-    project_output_directory: output_files
     min_core_junction_temp: 0
     max_core_junction_temp: 85
     device_filter_package: EQFP
@@ -32,8 +32,6 @@ qsf:
         - KEY0
       - - PIN_22
         - KEY1
-
-    # SDRAM was merged
     SDRAM:
       location:
       - - PIN_30
@@ -223,30 +221,18 @@ qsf:
       - - PIN_6
         - ASDO
 sdc:
-  create_clock:
-  -
-  create_generated_clock:
-  -
-  set_clock_latency:
-  -
-  set_clock_uncertainty:
-  -
-  set_input_delay:
-  -
-  set_output_delay:
-  -
-  set_clock_groups:
-  -
-  set_false_path:
-  -
-  set_multicycle_path:
-  -
-  set_maximum_delay:
-  -
-  set_minimum_delay:
-  -
-  set_load:
-  -
+  create_clock: []
+  create_generated_clock: []
+  set_clock_latency: []
+  set_clock_uncertainty: []
+  set_input_delay: []
+  set_output_delay: []
+  set_clock_groups: []
+  set_false_path: []
+  set_multicycle_path: []
+  set_maximum_delay: []
+  set_minimum_delay: []
+  set_load: []
 v:
   assigments:
     FTDI:

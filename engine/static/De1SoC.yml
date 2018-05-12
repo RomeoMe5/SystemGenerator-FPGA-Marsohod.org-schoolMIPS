@@ -5,6 +5,7 @@ qsf:
   device: 5CSEMA5F31C6
   original_quartus_version: '"15.1.0"'
   last_quartus_version: '"15.1.0"'
+  project_output_directory: output_files
   global_assignments:
     device_filter_package: FBGA
     device_filter_pin_count: 896

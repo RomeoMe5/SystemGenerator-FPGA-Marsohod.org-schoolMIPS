@@ -112,9 +112,12 @@ class Render(object):
             device: str,
             original_quartus_version: str='"9.0"',
             last_quartus_version: str='"9.0"',
+            project_output_directory: str=None,
             user_assignments: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
+        if not project_output_directory:
+            project_output_directory = "project_output"
         global_assignments = {
             'project_creation_time_date': Render.format_date().upper(),
             'family': family,
@@ -122,7 +125,8 @@ class Render(object):
             'original_quartus_version': original_quartus_version,
             'last_quartus_version': last_quartus_version,
             'top_level_entity': f"\"{project_name}\"",
-            # 'sdc_file': f"{project_name}.sdc"
+            'project_output_directory': project_output_directory,
+            # [minor] [wtf?] TODO 'sdc_file': f"{project_name}.sdc"
         }
         global_assignments.update(kwargs.pop('global_assignments', {}))
         return Render._render(

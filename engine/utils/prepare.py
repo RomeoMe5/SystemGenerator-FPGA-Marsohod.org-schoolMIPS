@@ -244,7 +244,6 @@ class Convertor(object):
                 from_fmt: str=None) -> None:
         """ Convert static files formats. """
         content = Convertor._load_content(from_path, from_fmt)
-        print(type(content))
 
         if to_path is None:
             to_path = ".".join(from_path.split('.')[:-1])
