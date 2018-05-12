@@ -21,9 +21,9 @@ set_global_assignment -name SDC_FILE {{ project_name }}.sdc
 {{ "\n" }}
 {%- if user_assignments -%}
     {%- for part_name, assignments in user_assignments.items() -%}
-#**************************************************************
+# -------------------------------------------------------------------------- #
 # {{ part_name|upper }}
-#**************************************************************
+# -------------------------------------------------------------------------- #
         {%- for instance in assignments['instance'] -%}
 set_instance_assignment -name {{ instance[0]|upper }} "{{ instance[1]|upper }}" -to {{ instance[2]|upper }}
         {%- endfor -%}

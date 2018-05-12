@@ -12,7 +12,7 @@
 {%- if assigments -%}
 module {{ project_name }}(
     {%- for part_name, assig in assigments.items() -%}
-{{ "    " }}//********** {{ part_name|upper }} **********//
+{{ "    " }}//---------- {{ part_name|upper }} ----------//
         {%- if not loop.last -%}{# Normal generation until last iteration #}
             {%- for type, rank, value in assig -%}
 {{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
@@ -33,13 +33,13 @@ module {{ project_name }}(
 module {{ project_name }}();
 {%- endif -%}
 {{ "" }}
-//*****************************************//
+// --------------------------------------- //
 //          REG/WIRE declarations          //
-//*****************************************//
+// --------------------------------------- //
 {{ "\n" }}
-//*****************************************//
+// --------------------------------------- //
 //            Structural coding            //
-//*****************************************//
+// --------------------------------------- //
 {{ "\n" }}
 endmodule
 {{ "" }}

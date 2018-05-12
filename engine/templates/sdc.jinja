@@ -14,9 +14,9 @@
 {%- block body %}
 
 {% if create_clock -%}
-#**************************#
+# ------------------------ #
 #       Create Clock       #
-#**************************#
+# ------------------------ #
     {%- for c in create_clock -%}
         {%- if not c -%}
 {{ "" }}
@@ -40,9 +40,9 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {%- endif -%}
 
 {%- if create_generated_clock -%}
-#************************************#
+# ---------------------------------- #
 #       Create Generated Clock       #
-#************************************#
+# ---------------------------------- #
     {%- for c in create_generated_clock -%}
         {%- if not c -%}
 {{ "" }}
@@ -54,9 +54,9 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {%- endif -%}
 
 {%- if set_clock_latency -%}
-#*******************************#
+# ----------------------------- #
 #       Set Clock Latency       #
-#*******************************#
+# ----------------------------- #
     {%- for c in set_clock_latency -%}
         {%- if not c -%}
 {{ "" }}
@@ -68,9 +68,9 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {%- endif -%}
 
 {%- if set_clock_uncertainty -%}
-#***********************************#
+# --------------------------------- #
 #       Set Clock Uncertainty       #
-#***********************************#
+# --------------------------------- #
     {%- for c in set_clock_uncertainty -%}
         {%- if not c -%}
 {{ "" }}
@@ -82,9 +82,9 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {%- endif -%}
 
 {%- if set_input_delay -%}
-#***************************#
+# ------------------------- #
 #       Set Input Delay     #
-#***************************#
+# ------------------------- #
 # max : Board Delay (Data) - Board Delay (Clock) + tsu (External Device)
 # min : Board Delay (Data) - Board Delay (Clock) - th (External Device)
     {%- for c in set_input_delay -%}
@@ -110,9 +110,9 @@ set_input_delay -clock {{ c['clock'] }} [get_ports {{ c['ports'] }}]
 {%- endif -%}
 
 {%- if set_output_delay -%}
-#******************************#
+# ---------------------------- #
 #       Set Output Delay       #
-#******************************#
+# ---------------------------- #
 # max : Board Delay (Data) - Board Delay (Clock) + tsu (External Device)
 # min : Board Delay (Data) - Board Delay (Clock) - th (External Device)
     {%- for c in set_output_delay -%}
@@ -130,9 +130,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_clock_groups -%}
-#*******************************#
+# ----------------------------- #
 #       Set Clock Groups        #
-#*******************************#
+# ----------------------------- #
     {%- for c in set_clock_groups -%}
         {%- if not c -%}
 {{ "" }}
@@ -144,9 +144,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_false_path -%}
-#****************************#
+# -------------------------- #
 #       Set False Path       #
-#****************************#
+# -------------------------- #
     {%- for c in set_false_path -%}
         {%- if not c -%}
 {{ "" }}
@@ -158,9 +158,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_multicycle_path -%}
-#*********************************#
+# ------------------------------- #
 #       Set Multicycle Path       #
-#*********************************#
+# ------------------------------- #
     {%- for c in set_multicycle_path -%}
         {%- if not c -%}
 {{ "" }}
@@ -172,9 +172,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_maximum_delay -%}
-#*******************************#
+# ----------------------------- #
 #       Set Maximum Delay       #
-#*******************************#
+# ----------------------------- #
     {%- for c in set_maximum_delay -%}
         {%- if not c -%}
 {{ "" }}
@@ -186,9 +186,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_minimum_delay -%}
-#*******************************#
+# ----------------------------- #
 #       Set Minimum Delay       #
-#*******************************#
+# ----------------------------- #
     {%- for c in set_minimum_delay -%}
         {%- if not c -%}
 {{ "" }}
@@ -200,9 +200,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_input_transition -%}
-#**********************************#
+# -------------------------------- #
 #       Set Input Transition       #
-#**********************************#
+# -------------------------------- #
     {%- for c in set_input_transition -%}
         {%- if not c -%}
 {{ "" }}
@@ -214,9 +214,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {%- endif -%}
 
 {%- if set_load -%}
-#******************************#
+# ---------------------------- #
 #           Set Load           #
-#******************************#
+# ---------------------------- #
     {%- for c in set_load -%}
         {%- if not c -%}
 {{ "" }}
