@@ -12,8 +12,8 @@ def send_password_update_email(user: User,
         _('[HSE FPGAMarsohodCAD] Update Your Password'),
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
-        text_body=render_template('email/reset_password.txt',
+        text_body=render_template('email/set_password.txt',
                                   user=user, token=token),
-        html_body=render_template('email/reset_password.html',
+        html_body=render_template('email/set_password.html',
                                   user=user, token=token)
     )

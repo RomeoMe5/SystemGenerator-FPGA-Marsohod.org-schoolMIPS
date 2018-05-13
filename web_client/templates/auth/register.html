@@ -4,17 +4,12 @@
 {%- block app_content -%}
     <h1>{{ _("Register") }}</h1>
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-4">
             {{ wtf.quick_form(form) }}
         </div>
-        <div class="col-md-7">
-            {%- include "_last_seen.jinja" -%}
+        <div class="col-md-2">{# empty space #}</div>
+        <div class="col-md-6">
+            {%- include "auth/_about.jinja" -%}
         </div>
     </div>
-    <br>
-
-    <p>
-        {{ _("Already registered?") }}
-        <a href="{{ url_for('auth.login') }}">{{ _("Click to Login!") }}</a>
-    </p>
 {%- endblock -%}

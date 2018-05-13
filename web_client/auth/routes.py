@@ -21,7 +21,7 @@ def login() -> object:
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(_email=form.email.data).first()
 
         if not user or not user.check_password(form.password.data):
             flash(_("Invalid username or password"))
@@ -61,9 +61,26 @@ def register() -> object:
         user.age = form.age.data
         user.city = form.city.data
         user.password = get_random_str()  # temporary set random password
+
         db.session.add(user)
         db.session.commit()
         current_app.logger.debug("register new user: %s", user)
+
+        try:
+            # [debug] TODO: remove
+            if not current_app.config['MAIL_SERVER']:
+                token = user.get_verification_token()
+                flash(_("This is a debug session: mailing is not supported!"))
+                return redirect(url_for('auth.update_password', token=token))
+
+            send_password_update_email(user)
+        except BaseException as err:
+            current_app.logger.debug("can't send email:\n%s", err)
+            flash(_("Error occurs while mailing you, please contact support!"))
+            db.session.delete(user)  # remove created user
+            db.session.commit()
+            return redirect(url_for("auth.register"))
+
         flash(_("Check your email address for setting password link!"))
         return redirect(url_for("auth.login"))
 
@@ -82,9 +99,13 @@ def reset_password_request() -> object:
 
     reset_form = ResetPasswordRequestForm()
     if reset_form.validate_on_submit():
-        user = User.query.filter_by(email=reset_form.email.data).first()
+        if not current_app.config['MAIL_SERVER']:
+            flash(_("Sorry, this is debug session: mailing is not supported!"))
+            return redirect(url_for("auth.login"))
+
+        user = User.query.filter_by(_email=reset_form.email.data).first()
         if user:
-            send_password_reset_email(user)
+            send_password_update_email(user)
         flash(_("Check email for the instructions to reset your password"))
         return redirect(url_for("auth.login"))
 
@@ -101,7 +122,7 @@ def update_password(token: str) -> object:
         current_app.logger.debug("[password] authenticated: %s", current_user)
         return redirect(url_for("main.index"))
 
-    user = User.verify_reset_password_token(token)
+    user = User.verify_token(token)
     if not user:
         current_app.logger.debug("token %s has expired or invalid", token)
         flash(_("Token expired or invalid."))
@@ -112,7 +133,7 @@ def update_password(token: str) -> object:
         user.password = form.password.data
         current_app.logger.debug("user %s change password", user)
         db.session.commit()
-        flash(_("Your password has been reset."))
+        flash(_("Your password has been updated!"))
         return redirect(url_for("auth.login"))
 
     return render_template(
