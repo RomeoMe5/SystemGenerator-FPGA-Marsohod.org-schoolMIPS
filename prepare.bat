@@ -14,9 +14,20 @@ REM Tests:
 pip install --no-cache -r tests/requirements.txt
 
 REM ===== Set environment variables =====
-set FLASK_APP=web_client/run.py
+set FLASK_APP=run_web.py
 set FLASK_DEBUG=1
+set STATIC_PATH=.generated
+
+mkdir %STATIC_PATH%
 
 REM ===== Run application =====
 REM WEB:
+flask db init
+flask db migrate
+flask db upgrade
+
+flask translate init ru
+flask translate update
+flask translate compile
+
 flask run --with-threads

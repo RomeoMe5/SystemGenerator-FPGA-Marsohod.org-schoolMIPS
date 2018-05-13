@@ -1,6 +1,5 @@
 import os
 
-import rq
 from flask import Flask, current_app, request
 from flask_babel import lazy_gettext as _l
 from flask_babel import Babel
@@ -9,7 +8,6 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from redis import Redis
 
 from web_client.log import (enable_email_error_notifications,
                             enable_logging_to_file, enable_logging_to_stdout)
@@ -52,12 +50,6 @@ def create_app(config_class: object=Config) -> Flask:
             enable_logging_to_stdout(app)
         else:
             enable_logging_to_file(app)
-
-    app.redis = Redis.from_url(app.config['REDIS_URL'])
-    app.task_queue = rq.Queue(
-        app.config['REDIS_TASK_NAME'],
-        connection=app.redis
-    )
 
     return app
 

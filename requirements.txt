@@ -13,8 +13,6 @@ Jinja2==2.10
 Mako==1.0.7
 PyJWT==1.5.3
 python-dotenv==0.8.2
-redis==2.10.6
-rq==0.10.0
 SQLAlchemy==1.2.1
 WTForms==2.1
 

@@ -5,7 +5,7 @@ import click
 from flask import Flask
 
 APP_NAME = "web_client"
-TRNSL_PATH = op.join(APP_NAME, "translation")
+TRNSL_PATH = os.path.join(APP_NAME, "translation")
 
 
 def register(app: Flask) -> None:
@@ -34,7 +34,7 @@ def register(app: Flask) -> None:
         if sp.call("pybabel extract -F babel.cfg -k _l -o msg.pot ."):
             raise RuntimeError("Extract command failed")
 
-        if sp.call("pybabel update -i msg.pot -d {TRNSL_PATH}"):
+        if sp.call(f"pybabel update -i msg.pot -d {TRNSL_PATH}"):
             raise RuntimeError("Update command failed")
 
         os.remove("msg.pot")
@@ -42,5 +42,5 @@ def register(app: Flask) -> None:
     @translate.command()
     def compile() -> None:
         """ Compile all languages. """
-        if sp.call("pybabel compile -d {TRNSL_PATH}"):
+        if sp.call(f"pybabel compile -d {TRNSL_PATH}"):
             raise RuntimeError("Compile command failed")

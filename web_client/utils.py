@@ -1,3 +1,4 @@
+import string
 from hashlib import md5
 from random import SystemRandom
 from urllib import parse
