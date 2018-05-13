@@ -48,7 +48,7 @@ def login() -> object:
 
 @bp.route('/logout')
 def logout() -> object:
-    if not os.path.exists(current_user.path):
+    if os.path.exists(current_user.path):
         current_app.logger.debug("Remove dir: %s", current_user.path)
         shutil.rmtree(current_user.path)
     current_app.logger.info("logout user: %s", current_user)
