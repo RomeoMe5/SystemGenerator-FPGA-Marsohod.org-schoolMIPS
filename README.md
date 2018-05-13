@@ -29,7 +29,7 @@ mkdir $STATIC_PATH
 
 # create database
 flask db init
-flask db upgrade # is it necessery?
+flask db upgrade
 
 # compile translations (optional)
 flask translate compile
