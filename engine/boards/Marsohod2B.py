@@ -128,3 +128,13 @@ class Marsohod2B(GenericBoard):
             force=force,
             **config_filter
         )
+
+    @property
+    def params(self) -> dict:
+        """ Configurable params. """
+        # sdc isn't included, because it should be generated atomaitcally
+        return {
+            'str': ("project_name", "quartus_version"),
+            'bool': ("ftdi", "clock", "keys", "sdram", "leds",
+                     "vga", "adc", "io", "others")
+        }

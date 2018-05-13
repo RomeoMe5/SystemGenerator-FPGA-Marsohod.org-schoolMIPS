@@ -190,3 +190,14 @@ class DE1SoC(GenericBoard):
             force=force,
             **config_filter
         )
+
+    @property
+    def params(self) -> dict:
+        """ Configurable params. """
+        # sdc isn't included, because it should be generated atomaitcally
+        return {
+            'str': ("project_name", "quartus_version"),
+            'bool': ("audio", "clock", "i2c_for_audio_and_video_in", "key",
+                     "adc", "sdram", "seg7", "ir", "led", "ps2", "sw",
+                     "video_in", "vga", "hps")
+        }
