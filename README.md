@@ -15,20 +15,18 @@ FPGA Marsohod CAD web interface
 # first, clone repository
 git clone https://github.com/hell03end/FPGAMarsohodCAD
 
-# then install dependencies
+# install dependencies
 pip install --no-cache -r requirements.txt
 pip install --no-cache -r engine/requirements.txt
 
 # set environment variables [use 'set' instead of 'export' for winfows]
 export FLASK_APP=run_web.py
-export FLASK_DEBUG=1
 export STATIC_PATH=.generated # where to store generated configs
 
 # [use '%STATIC_PATH%' for windows]
 mkdir $STATIC_PATH
 
 # create database
-flask db init
 flask db upgrade
 
 # compile translations (optional)
