@@ -1,15 +1,14 @@
 # ===== Create virtual environment =====
-sudo python3 -m venv .env
+sudo python3 -m venv .venv
 
 # ===== Activate environment =====
-source .env/bin/activate
+source .venv/bin/activate
 
 # ===== Install dependencies =====
 # Dev:
-sudo pip3 install --no-cache -r requirements.txt
+sudo pip3 install --no-cache -r requirements.txt  # contains web client dependencies
 # App(s):
 sudo pip3 install --no-cache -r engine/requirements.txt
-sudo pip3 install --no-cache -r web_client/requirements.txt
 # Tests:
 sudo pip3 install --no-cache -r tests/requirements.txt
 

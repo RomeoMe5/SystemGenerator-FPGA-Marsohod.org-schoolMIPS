@@ -1,15 +1,15 @@
 REM ===== Create virtual environment =====
-python -m venv .env
+python -m venv .venv
 
 REM ===== Activate environment =====
-".env/Scripts/activate"
+".venv/Scripts/activate"
 
 REM ===== Install dependencies =====
 REM Dev:
+REM contains web client dependencies
 pip install --no-cache -r requirements.txt
 REM App(s):
 pip install --no-cache -r engine/requirements.txt
-pip install --no-cache -r web_client/requirements.txt
 REM Tests:
 pip install --no-cache -r tests/requirements.txt
 

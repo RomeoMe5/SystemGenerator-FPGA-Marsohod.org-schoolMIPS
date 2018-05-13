@@ -1,3 +1,4 @@
+# ===== Common =====
 __pycache__/
 .vscode/
 .cache/
@@ -17,3 +18,17 @@ log/
 *$py.class
 *.bak
 *.db
+
+# ===== Web Client =====
+bak/
+rsc/
+
+*.JSON
+*.db
+*.db.journal
+*.pot
+*.mo
+
+# Flask stuff:
+instance/
+.webassets-cache
