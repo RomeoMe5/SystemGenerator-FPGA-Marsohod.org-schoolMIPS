@@ -33,9 +33,6 @@ class User(UserMixin, db.Model):
         self._email = email.strip().lower()
         self.path = os.path.join(current_app.config['STATIC_PATH'],
                                  self._email.split('@')[0])
-        if not os.path.exists(self.path):
-            current_app.logger.debug("Create dir: %s", self.path)
-            os.mkdir(self.path)
 
     # Is needed for backward compitability
     @property

@@ -41,9 +41,9 @@ class GenericBoard(object):
     @staticmethod
     def _generate(project_name: str, **configs) -> dict:
         """ Generates FPGA configs """
-        # # [bug] TODO: remove
-        # if isinstance(project_name, (list, tuple)):
-        #     project_name = project_name[0]
+        # [bug] TODO: remove
+        if isinstance(project_name, (list, tuple)):
+            project_name = project_name[0]
         generated_configs = {
             'v': Render.v(project_name, **configs.get('v', {})),
             'qpf': Render.qpf(project_name, **configs.get('qpf', {})),

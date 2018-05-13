@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
 from flask_babel import _
@@ -30,6 +33,10 @@ def login() -> object:
         login_user(user, remember=form.remember_me.data)
         current_app.logger.info("login user: %s", user)
 
+        if not os.path.exists(user.path):
+            current_app.logger.debug("Create dir: %s", user.path)
+            os.mkdir(user.path)
+
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc:
             next_page = url_for("main.index")
@@ -41,6 +48,9 @@ def login() -> object:
 
 @bp.route('/logout')
 def logout() -> object:
+    if not os.path.exists(current_user.path):
+        current_app.logger.debug("Remove dir: %s", current_user.path)
+        shutil.rmtree(current_user.path)
     current_app.logger.info("logout user: %s", current_user)
     logout_user()
     return redirect(url_for("auth.login"))
