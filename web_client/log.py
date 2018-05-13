@@ -27,7 +27,7 @@ def enable_email_error_notifications(app: object,
         mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
         fromaddr=f"no-reply@{app.config['MAIL_SERVER']}",
         toaddrs=app.config.get('ADMINS'),
-        subject=_l("Microblog Failure"),
+        subject=_l("HSE FPGAMarsohodCAD Failure"),
         credentials=auth,
         secure=() if int(app.config.get('MAIL_USE_TLS')) else None
     )

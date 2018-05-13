@@ -1,0 +1,19 @@
+from flask import current_app, render_template
+from flask_babel import _
+
+from web_client.email import send_email
+from web_client.models import User
+
+
+def send_password_update_email(user: User,
+                               expires_in: float or int=600) -> None:
+    token = user.get_verification_token(expires_in=expires_in)
+    send_email(
+        _('[HSE FPGAMarsohodCAD] Update Your Password'),
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template('email/reset_password.txt',
+                                  user=user, token=token),
+        html_body=render_template('email/reset_password.html',
+                                  user=user, token=token)
+    )

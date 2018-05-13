@@ -24,11 +24,13 @@ def send_email(subject: str,
         with app.app_context():
             mail.send(msg)
 
+    app.logger.info("send email '%s' to %s", subject, recipients)
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body if html_body else text_body
 
     if attachments is not None:
+        app.logger.debug("email to %s has attachments", recipients)
         for attachment in attachments:
             msg.attach(*attachment)
 
