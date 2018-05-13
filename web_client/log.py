@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler, SMTPHandler
 from flask_babel import lazy_gettext as _l
 
 try:
-    from config import LOG_LEVEL, LOG_FORMAT
+    from web_client_config import LOG_LEVEL, LOG_FORMAT
 except ImportError as err:
     LOG_LEVEL = logging.WARNING
     LOG_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:" \
