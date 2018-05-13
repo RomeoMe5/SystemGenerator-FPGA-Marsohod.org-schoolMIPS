@@ -27,9 +27,23 @@ class GenericBoard(object):
         self._project_name = GenericBoard.DEFAULT_PROJECT_NAME
         self._configs = None
 
+    @property
+    def project_name(self) -> str:
+        return self._project_name
+
+    @project_name.setter
+    def project_name(self, project_name: str) -> None:
+        # [bug] TODO: remove
+        if isinstance(project_name, (list, tuple)):
+            project_name = project_name[0]
+        self._project_name = project_name
+
     @staticmethod
     def _generate(project_name: str, **configs) -> dict:
         """ Generates FPGA configs """
+        # # [bug] TODO: remove
+        # if isinstance(project_name, (list, tuple)):
+        #     project_name = project_name[0]
         generated_configs = {
             'v': Render.v(project_name, **configs.get('v', {})),
             'qpf': Render.qpf(project_name, **configs.get('qpf', {})),
@@ -82,13 +96,13 @@ class GenericBoard(object):
     @property
     def configs(self) -> dict:
         if self._configs is None:
-            self._configs = GenericBoard._generate(self._project_name,
+            self._configs = GenericBoard._generate(self.project_name,
                                                    **self._static)
         return self._configs
 
     def generate(self, project_name: str, **kwargs) -> object:
         """ Generates FPGA configs for specific project """
-        self._project_name = project_name
+        self.project_name = project_name
         self._configs = GenericBoard._generate(project_name, **self._static)
         return self
 
@@ -103,7 +117,7 @@ class GenericBoard(object):
             self.generate(project_name, **kwargs)
 
         if not project_path:
-            project_path = self._project_name
+            project_path = self.project_name
 
         self._archive(project_path, **self._configs)
         return self
@@ -111,7 +125,7 @@ class GenericBoard(object):
     def dump(self, path: str=None) -> object:
         """ Save FPGA config files to separate folder. """
         if not path:
-            path = self._project_name
+            path = self.project_name
         GenericBoard._dump(path, **self._configs)
         return self
 

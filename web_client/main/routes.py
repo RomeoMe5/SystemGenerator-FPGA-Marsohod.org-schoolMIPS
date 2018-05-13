@@ -40,9 +40,7 @@ def board(board: str) -> object:
         params.pop('submit', None)
         params.pop('csrf_token', None)
 
-        filename = request.form['project_name']
-        path = os.path.join(current_user.path, filename)
-
+        path = os.path.join(current_user.path, params['project_name'])
         board = getattr(engine.boards, board)()
         board.generate(**params).archive(project_path=path)
 
@@ -51,7 +49,7 @@ def board(board: str) -> object:
             ".".join((path, fmt)),
             mimetype='application/octet-stream',
             as_attachment=True,
-            attachment_filename=".".join((filename, fmt))
+            attachment_filename=".".join((params['project_name'], fmt))
         )
 
     return render_template("board.html", form=form, title=board, boards=BOARDS)
