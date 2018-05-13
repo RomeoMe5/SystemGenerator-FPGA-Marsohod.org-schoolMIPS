@@ -15,7 +15,7 @@ class DE1SoC(GenericBoard):
         self.message = "THIS CLASS SHOULD BE USED ONLY FOR DEBUGGING.\n" \
             "Please, use the oficial Altera app for generating " \
             "configs for this type of devices."
-        LOGGER.warning(self.message)
+        LOGGER.info(self.message)
 
     # [feature] TODO: add support for correct filtering .sdc-files
     def generate(self,

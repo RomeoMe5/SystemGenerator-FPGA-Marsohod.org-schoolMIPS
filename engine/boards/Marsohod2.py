@@ -8,7 +8,7 @@ class Marsohod2(GenericBoard):
     def __init__(self) -> None:
         super(Marsohod2, self).__init__(self.__class__.__name__)
         self.message = "THIS CLASS IS UNDER DEVELOPMENT: NO WARRANTY PROVIDED!"
-        LOGGER.warning(self.message)
+        LOGGER.info(self.message)
 
     def generate(self,
                  project_name: str,
