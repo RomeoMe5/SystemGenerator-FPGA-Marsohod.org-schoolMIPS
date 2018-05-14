@@ -1,0 +1,16 @@
+[improvement]
+* separate registration: some basic functions are available withoud registration
+* simplify registration: leave only email (maybe also company)
+* GUI representation
+
+[feature]
+* add config loading as admin
+* add custom board generation from loaded configs
+* add debounser for buttons
+* add shool MIPS support
+* add admin
+
+[bugs]
+* handle 130 pin for Marsohod3
+* incorrect project_name type
+* incorrect quartus version

@@ -78,3 +78,4 @@ class DE1SoCForm(FlaskForm):
     video_in = BooleanField(_l("Video Input"))
     vga = BooleanField(_l("VGA"))
     hps = BooleanField(_l("HPS"))
+    submit = SubmitField(_l("Generate"))
