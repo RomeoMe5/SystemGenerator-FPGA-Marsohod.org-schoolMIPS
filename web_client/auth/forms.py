@@ -19,14 +19,14 @@ class LoginForm(FlaskForm):
 # password should be set manually
 class RegistrationForm(FlaskForm):
     email = StringField(_l("Email"), validators=[DataRequired(), Email()])
-    city = StringField(_("City"), validators=[Length(max=140)])
-    company = StringField(_("Company"), validators=[
+    city = StringField(_l("City"), validators=[Length(max=140)])
+    company = StringField(_l("Company"), validators=[
         DataRequired(), Length(min=2, max=140)
     ])
-    position = StringField(_("Position"), validators=[
+    position = StringField(_l("Position"), validators=[
         DataRequired(), Length(min=3, max=140)
     ])
-    age = IntegerField(_("Age"), validators=[DataRequired()])
+    age = IntegerField(_l("Age"), validators=[DataRequired()])
     submit = SubmitField(_l("Register"))
 
     def validate_age(self, age: IntegerField) -> None:

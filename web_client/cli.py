@@ -5,7 +5,7 @@ import click
 from flask import Flask
 
 APP_NAME = "web_client"
-TRNSL_PATH = os.path.join(APP_NAME, "translation")
+TRNSL_PATH = os.path.join(APP_NAME, "translations")
 
 
 def register(app: Flask) -> None:

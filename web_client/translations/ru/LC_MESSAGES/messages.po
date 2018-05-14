@@ -1,24 +1,25 @@
-# Russian translations for PROJECT.
-# Copyright (C) 2018 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# Russian translations for FPGAMarsohodCAD web-client.
+# Copyright (C) 2018 HSE University
+# This file is distributed under the same license as the FPGAMarsohodCAD
+# project.
+# Dmitriy Pchelkin <dapchelkin@edu.hse.ru>, 2018.
+# Alexey Ivanov <aaivanov_5@edu.hse.ru>, 2018.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-05-13 22:12+0300\n"
-"PO-Revision-Date: 2018-05-13 22:26+0300\n"
+"Project-Id-Version:  0.0.1\n"
+"Report-Msgid-Bugs-To: dapchelkin@edu.hse.ru\n"
+"POT-Creation-Date: 2018-05-14 11:27+0300\n"
+"PO-Revision-Date: 2018-05-14 11:24+0300\n"
+"Last-Translator: Dmitriy Pchelkin <dapchelkin@edu.hse.ru>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
-"Last-Translator: \n"
-"X-Generator: Poedit 2.0.6\n"
 
 #: web_client/__init__.py:24
 msgid "Please log in to access this page."
@@ -45,7 +46,7 @@ msgstr "Пароль"
 msgid "Remember Me"
 msgstr "Запомнить"
 
-#: web_client/auth/forms.py:16 web_client/auth/routes.py:39
+#: web_client/auth/forms.py:16 web_client/auth/routes.py:46
 #: web_client/templates/auth/login.html:5
 msgid "Sign In"
 msgstr "Войти"
@@ -66,8 +67,8 @@ msgstr "Должность"
 msgid "Age"
 msgstr "Возраст"
 
-#: web_client/auth/forms.py:30 web_client/auth/routes.py:89
-#: web_client/templates/auth/register.html:5 web_client/templates/base.html:52
+#: web_client/auth/forms.py:30 web_client/auth/routes.py:99
+#: web_client/templates/auth/register.html:5 web_client/templates/base.html:53
 msgid "Register"
 msgstr "Зарегистрироваться"
 
@@ -87,48 +88,49 @@ msgstr "Запросить сброс пароля"
 msgid "Repeat Password"
 msgstr "Повторите пароль"
 
-#: web_client/auth/forms.py:55 web_client/auth/routes.py:141
+#: web_client/auth/forms.py:55 web_client/auth/routes.py:151
 #: web_client/templates/auth/update_password.html:5
 msgid "Update Password"
 msgstr "Обновить пароль"
 
-#: web_client/auth/routes.py:27
+#: web_client/auth/routes.py:30
 msgid "Invalid username or password"
 msgstr "Неправильное имя пользователя или пароль"
 
-#: web_client/auth/routes.py:73
+#: web_client/auth/routes.py:83
 msgid "This is a debug session: mailing is not supported!"
 msgstr "Это отладочная сессия: отправка почты не поддерживается!"
 
-#: web_client/auth/routes.py:79
+#: web_client/auth/routes.py:89
 msgid "Error occurs while mailing you, please contact support!"
 msgstr ""
 "Во время отправки сообщения на указанный email произошла ошибка! "
 "Пожалуйста, свяжитесь с поддержкой."
 
-#: web_client/auth/routes.py:84
+#: web_client/auth/routes.py:94
 msgid "Check your email address for setting password link!"
 msgstr "На указанный адрес отправлено письмо для установки пароля."
 
-#: web_client/auth/routes.py:103
+#: web_client/auth/routes.py:113
 msgid "Sorry, this is debug session: mailing is not supported!"
 msgstr "Это отладочная сессия: отправка почты не поддерживается!"
 
-#: web_client/auth/routes.py:109
+#: web_client/auth/routes.py:119
 msgid "Check email for the instructions to reset your password"
 msgstr ""
-"Инструкции по сбросу пароля отправлены на указанный адрес электронной почты"
+"Инструкции по сбросу пароля отправлены на указанный адрес электронной "
+"почты"
 
-#: web_client/auth/routes.py:114
+#: web_client/auth/routes.py:124
 #: web_client/templates/auth/reset_password_request.html:5
 msgid "Reset Password"
 msgstr "Сбросить пароль"
 
-#: web_client/auth/routes.py:128
+#: web_client/auth/routes.py:138
 msgid "Token expired or invalid."
 msgstr "Время действия ссылки истекло."
 
-#: web_client/auth/routes.py:136
+#: web_client/auth/routes.py:146
 msgid "Your password has been updated!"
 msgstr "Ваш пароль был обновлен."
 
@@ -242,21 +244,45 @@ msgstr ""
 msgid "HPS"
 msgstr ""
 
-#: web_client/templates/base.html:9 web_client/templates/base.html:24
+#: web_client/templates/base.html:10 web_client/templates/base.html:25
 msgid "HSE Marsohod CAD"
 msgstr "Системный Генератор ПЛИС НИУ ВШЭ"
 
-#: web_client/templates/base.html:18
+#: web_client/templates/base.html:19
 msgid "Toggle navigation"
 msgstr ""
 
-#: web_client/templates/base.html:47
+#: web_client/templates/base.html:48
 msgid "Login"
 msgstr "Войти"
 
-#: web_client/templates/base.html:58
+#: web_client/templates/base.html:64
 msgid "Logout"
 msgstr "Выйти"
+
+#: web_client/templates/base.html:96
+msgid "Created by HSE University students"
+msgstr "Сделали студенты НИУ ВШЭ"
+
+#: web_client/templates/base.html:98
+msgid "Dmitriy Pchelkin"
+msgstr "Дмитрий Пчелкин"
+
+#: web_client/templates/base.html:100
+msgid "and"
+msgstr "и"
+
+#: web_client/templates/base.html:102
+msgid "Alexey Ivanov"
+msgstr "Алексей Иванов"
+
+#: web_client/templates/base.html:106
+msgid "Report issue"
+msgstr "Сообщить о проблеме"
+
+#: web_client/templates/base.html:110
+msgid "Contribute"
+msgstr "Содействовать"
 
 #: web_client/templates/auth/_about.jinja:2
 msgid "This is FPGA Marsohod CAD web client."
@@ -289,10 +315,9 @@ msgstr "нажмите здесь"
 
 #: web_client/templates/email/set_password.html:8
 msgid ""
-"Alternatively, you can paste the following link in your browser's address "
-"bar"
-msgstr ""
-"Кроме того, вы можете вставить следующую ссылку в адресную строку браузера"
+"Alternatively, you can paste the following link in your browser's address"
+" bar"
+msgstr "Кроме того, вы можете вставить следующую ссылку в адресную строку браузера"
 
 #: web_client/templates/email/set_password.html:10
 msgid "If you have not requested a password update simply ignore this message"

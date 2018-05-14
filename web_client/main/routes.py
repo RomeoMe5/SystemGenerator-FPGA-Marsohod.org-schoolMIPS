@@ -3,7 +3,6 @@ from datetime import datetime
 
 from flask import (abort, current_app, g, redirect, render_template, request,
                    send_file, url_for)
-from flask_babel import get_locale
 from flask_login import current_user, login_required
 
 import engine.boards
@@ -17,7 +16,6 @@ def before_request() -> None:
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
-    g.locale = str(get_locale())
 
 
 @bp.route('/')
