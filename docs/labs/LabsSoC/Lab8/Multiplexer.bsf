@@ -1,0 +1,128 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2017  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Intel and sold by Intel or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 16 16 224 288)
+	(text "Multiplexer" (rect 5 0 46 12)(font "Arial" ))
+	(text "inst" (rect 8 256 20 268)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "DIN[15..0]" (rect 0 0 40 12)(font "Arial" ))
+		(text "DIN[15..0]" (rect 21 27 61 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32)(line_width 3))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "R_mem0[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem0[15..0]" (rect 21 43 84 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48)(line_width 3))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "R_mem1[15..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "R_mem1[15..0]" (rect 21 59 83 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "R_mem2[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem2[15..0]" (rect 21 75 84 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "R_mem3[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem3[15..0]" (rect 21 91 84 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "R_mem4[15..0]" (rect 0 0 64 12)(font "Arial" ))
+		(text "R_mem4[15..0]" (rect 21 107 85 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "R_mem5[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem5[15..0]" (rect 21 123 84 135)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 0 144)
+		(input)
+		(text "R_mem6[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem6[15..0]" (rect 21 139 84 151)(font "Arial" ))
+		(line (pt 0 144)(pt 16 144)(line_width 3))
+	)
+	(port
+		(pt 0 160)
+		(input)
+		(text "R_mem7[15..0]" (rect 0 0 63 12)(font "Arial" ))
+		(text "R_mem7[15..0]" (rect 21 155 84 167)(font "Arial" ))
+		(line (pt 0 160)(pt 16 160)(line_width 3))
+	)
+	(port
+		(pt 0 176)
+		(input)
+		(text "G_in[15..0]" (rect 0 0 42 12)(font "Arial" ))
+		(text "G_in[15..0]" (rect 21 171 63 183)(font "Arial" ))
+		(line (pt 0 176)(pt 16 176)(line_width 3))
+	)
+	(port
+		(pt 0 192)
+		(input)
+		(text "R_chs[7..0]" (rect 0 0 48 12)(font "Arial" ))
+		(text "R_chs[7..0]" (rect 21 187 69 199)(font "Arial" ))
+		(line (pt 0 192)(pt 16 192)(line_width 3))
+	)
+	(port
+		(pt 0 208)
+		(input)
+		(text "DIN_chs" (rect 0 0 36 12)(font "Arial" ))
+		(text "DIN_chs" (rect 21 203 57 215)(font "Arial" ))
+		(line (pt 0 208)(pt 16 208)(line_width 1))
+	)
+	(port
+		(pt 0 224)
+		(input)
+		(text "G_chs" (rect 0 0 27 12)(font "Arial" ))
+		(text "G_chs" (rect 21 219 48 231)(font "Arial" ))
+		(line (pt 0 224)(pt 16 224)(line_width 1))
+	)
+	(port
+		(pt 208 32)
+		(output)
+		(text "Bus[15..0]" (rect 0 0 38 12)(font "Arial" ))
+		(text "Bus[15..0]" (rect 149 27 187 39)(font "Arial" ))
+		(line (pt 208 32)(pt 192 32)(line_width 3))
+	)
+	(drawing
+		(rectangle (rect 16 16 192 256)(line_width 1))
+	)
+)
