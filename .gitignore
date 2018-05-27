@@ -20,6 +20,12 @@ log/
 *.bak
 *.db
 
+# ===== Altera Soft =====
+incremental_db/
+output_files/
+simulation/
+db/
+
 # ===== Web Client =====
 bak/
 rsc/

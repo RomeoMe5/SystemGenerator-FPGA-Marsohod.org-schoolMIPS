@@ -44,6 +44,7 @@
 *.jpg       binary
 *.png       binary
 *.zip       binary
+*.rar       binary
 *.gz        binary
 *.pdf       binary
 *.doc       binary

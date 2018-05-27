@@ -9,6 +9,9 @@
 * add debounser for buttons
 * add shool MIPS support
 * add admin
+* add "blog" feature to publish additional instructions
+* add "storage" for drivers and etc.
+* add .csv pin assignment export
 
 [bugs]
 * handle 130 pin for Marsohod3
