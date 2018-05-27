@@ -1,0 +1,228 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2016  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Intel and sold by Intel or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "graphic" (version "1.4"))
+(pin
+	(input)
+	(rect 272 192 448 208)
+	(text "INPUT" (rect 133 0 169 13)(font "Arial" (font_size 6)))
+	(text "CLOCK_50" (rect 9 0 83 15)(font "Arial" ))
+	(pt 176 8)
+	(drawing
+		(line (pt 92 12)(pt 117 12))
+		(line (pt 92 4)(pt 117 4))
+		(line (pt 121 8)(pt 176 8))
+		(line (pt 92 12)(pt 92 4))
+		(line (pt 117 4)(pt 121 8))
+		(line (pt 117 12)(pt 121 8))
+	)
+	(text "VCC" (rect 136 7 160 20)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 272 208 448 224)
+	(text "BIDIR" (rect 144 3 175 16)(font "Arial" (font_size 6)))
+	(text "GPIO_0[30]" (rect 12 1 86 16)(font "Arial" ))
+	(pt 176 8)
+	(drawing
+		(line (pt 120 12)(pt 98 12))
+		(line (pt 176 8)(pt 124 8))
+		(line (pt 120 4)(pt 98 4))
+		(line (pt 98 12)(pt 94 8))
+		(line (pt 98 4)(pt 94 8))
+		(line (pt 120 12)(pt 124 8))
+		(line (pt 124 8)(pt 120 4))
+	)
+	(rotate180)
+	(text "VCC" (rect 148 -4 172 9)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 272 224 448 240)
+	(text "BIDIR" (rect 144 3 175 16)(font "Arial" (font_size 6)))
+	(text "GPIO_0[32]" (rect 12 1 86 16)(font "Arial" ))
+	(pt 176 8)
+	(drawing
+		(line (pt 120 12)(pt 98 12))
+		(line (pt 176 8)(pt 124 8))
+		(line (pt 120 4)(pt 98 4))
+		(line (pt 98 12)(pt 94 8))
+		(line (pt 98 4)(pt 94 8))
+		(line (pt 120 12)(pt 124 8))
+		(line (pt 124 8)(pt 120 4))
+	)
+	(rotate180)
+	(text "VCC" (rect 148 -4 172 9)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 272 240 448 256)
+	(text "BIDIR" (rect 144 3 175 16)(font "Arial" (font_size 6)))
+	(text "GPIO_0[34]" (rect 12 1 86 16)(font "Arial" ))
+	(pt 176 8)
+	(drawing
+		(line (pt 120 12)(pt 98 12))
+		(line (pt 176 8)(pt 124 8))
+		(line (pt 120 4)(pt 98 4))
+		(line (pt 98 12)(pt 94 8))
+		(line (pt 98 4)(pt 94 8))
+		(line (pt 120 12)(pt 124 8))
+		(line (pt 124 8)(pt 120 4))
+	)
+	(rotate180)
+	(text "VCC" (rect 148 -4 172 9)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 720 192 896 208)
+	(text "BIDIR" (rect 1 0 32 13)(font "Arial" (font_size 6)))
+	(text "GPIO_0[31]" (rect 90 0 164 15)(font "Arial" ))
+	(pt 0 8)
+	(drawing
+		(line (pt 56 4)(pt 78 4))
+		(line (pt 0 8)(pt 52 8))
+		(line (pt 56 12)(pt 78 12))
+		(line (pt 78 4)(pt 82 8))
+		(line (pt 78 12)(pt 82 8))
+		(line (pt 56 4)(pt 52 8))
+		(line (pt 52 8)(pt 56 12))
+	)
+	(text "VCC" (rect 4 7 28 20)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 720 208 896 224)
+	(text "BIDIR" (rect 1 0 32 13)(font "Arial" (font_size 6)))
+	(text "GPIO_0[33]" (rect 90 0 164 15)(font "Arial" ))
+	(pt 0 8)
+	(drawing
+		(line (pt 56 4)(pt 78 4))
+		(line (pt 0 8)(pt 52 8))
+		(line (pt 56 12)(pt 78 12))
+		(line (pt 78 4)(pt 82 8))
+		(line (pt 78 12)(pt 82 8))
+		(line (pt 56 4)(pt 52 8))
+		(line (pt 52 8)(pt 56 12))
+	)
+	(text "VCC" (rect 4 7 28 20)(font "Arial" (font_size 6)))
+)
+(pin
+	(bidir)
+	(rect 720 224 896 240)
+	(text "BIDIR" (rect 1 0 32 13)(font "Arial" (font_size 6)))
+	(text "GPIO_0[35]" (rect 90 0 164 15)(font "Arial" ))
+	(pt 0 8)
+	(drawing
+		(line (pt 56 4)(pt 78 4))
+		(line (pt 0 8)(pt 52 8))
+		(line (pt 56 12)(pt 78 12))
+		(line (pt 78 4)(pt 82 8))
+		(line (pt 78 12)(pt 82 8))
+		(line (pt 56 4)(pt 52 8))
+		(line (pt 52 8)(pt 56 12))
+	)
+	(text "VCC" (rect 4 7 28 20)(font "Arial" (font_size 6)))
+)
+(symbol
+	(rect 496 168 656 280)
+	(text "arduino_to_de1" (rect 5 0 107 15)(font "Arial" ))
+	(text "inst" (rect 8 96 31 111)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 17 15)(font "Arial" ))
+		(text "clk" (rect 21 27 38 42)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "b1" (rect 0 0 16 15)(font "Arial" ))
+		(text "b1" (rect 21 43 37 58)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "b2" (rect 0 0 16 15)(font "Arial" ))
+		(text "b2" (rect 21 59 37 74)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "b3" (rect 0 0 16 15)(font "Arial" ))
+		(text "b3" (rect 21 75 37 90)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
+	)
+	(port
+		(pt 160 32)
+		(output)
+		(text "output_led1" (rect 0 0 76 15)(font "Arial" ))
+		(text "output_led1" (rect 75 27 139 42)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32))
+	)
+	(port
+		(pt 160 48)
+		(output)
+		(text "output_led2" (rect 0 0 76 15)(font "Arial" ))
+		(text "output_led2" (rect 75 43 139 58)(font "Arial" ))
+		(line (pt 160 48)(pt 144 48))
+	)
+	(port
+		(pt 160 64)
+		(output)
+		(text "output_led3" (rect 0 0 76 15)(font "Arial" ))
+		(text "output_led3" (rect 75 59 139 74)(font "Arial" ))
+		(line (pt 160 64)(pt 144 64))
+	)
+	(drawing
+		(rectangle (rect 16 16 144 96))
+	)
+)
+(connector
+	(pt 448 200)
+	(pt 496 200)
+)
+(connector
+	(pt 448 216)
+	(pt 496 216)
+)
+(connector
+	(pt 448 232)
+	(pt 496 232)
+)
+(connector
+	(pt 448 248)
+	(pt 496 248)
+)
+(connector
+	(pt 656 200)
+	(pt 720 200)
+)
+(connector
+	(pt 656 216)
+	(pt 720 216)
+)
+(connector
+	(pt 656 232)
+	(pt 720 232)
+)
