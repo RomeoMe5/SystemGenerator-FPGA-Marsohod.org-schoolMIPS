@@ -28,12 +28,16 @@ def board(board: str) -> object:
         _ = params.pop("submit", None)
         _ = params.pop("csrf_token", None)
 
-        if current_user.is_anonymous():
-            path = get_random_str()
+        if current_user.is_anonymous:
+            path = os.path.join(current_app.config['STATIC_PATH'],
+                                get_random_str())
+            if not os.path.exists(path):
+                os.mkdir(path)
         else:
             path = current_user.path
         project_path = os.path.join(path, params['project_name'])
         board.generate(**params).archive(project_path=project_path)
+        # [bug] TODO: remove directory after files generation
 
         fmt = "tar"
         return send_file(
