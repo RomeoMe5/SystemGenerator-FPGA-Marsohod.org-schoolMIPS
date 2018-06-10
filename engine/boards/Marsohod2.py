@@ -13,7 +13,7 @@ class Marsohod2(GenericBoard):
     def generate(self,
                  project_name: str,
                  # qpf: optional
-                 quartus_version: str="15.1.0",
+                 quartus_version: str="9.0",
                  # qsf: optional
                  original_quartus_version: str=None,  # default=quartus_version
                  last_quartus_version: str=None,  # default=quartus_version

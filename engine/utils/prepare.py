@@ -116,6 +116,7 @@ class Archiver(object):
                 LOGGER.info("Create '%s'.tar file", path)
                 tar_fout.write(tar_io.getvalue())
                 LOGGER.debug("Adding tar I/O to '%s'.tar file", path)
+        return tar_io
 
     @staticmethod
     def _to_tar(path: str, *files, mode: str="w") -> int:
