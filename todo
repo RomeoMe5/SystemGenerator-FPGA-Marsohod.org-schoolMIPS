@@ -12,6 +12,7 @@
 * add "blog" feature to publish additional instructions
 * add "storage" for drivers and etc.
 * add .csv pin assignment export
+* add static files from https://github.com/MIPSfpga/digital-design-lab-manual
 
 [bugs]
 * handle 130 pin for Marsohod3
