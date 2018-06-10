@@ -3,15 +3,15 @@ from engine.utils.log import LOGGER
 
 
 # [minor] [dev] TODO: remove this class, it exists only for debug
-class DE1SoC(GenericBoard):
+class De1SoC(GenericBoard):
     """
-        DE1SoC configs generator (for debug only)
+        De1SoC configs generator (for debug only)
 
         Use official Altera system builder for this type of boards.
     """
 
     def __init__(self) -> None:
-        super(DE1SoC, self).__init__(self.__class__.__name__)
+        super(De1SoC, self).__init__(self.__class__.__name__)
         self.message = "THIS CLASS SHOULD BE USED ONLY FOR DEBUGGING.\n" \
             "Please, use the oficial Altera app for generating " \
             "configs for this type of devices."
@@ -154,7 +154,7 @@ class DE1SoC(GenericBoard):
         })
 
         self._project_name = project_name
-        self._configs = super(DE1SoC, self)._generate(project_name,
+        self._configs = super(De1SoC, self)._generate(project_name,
                                                       **self.__filtered_static)
         return self
 
@@ -171,7 +171,7 @@ class DE1SoC(GenericBoard):
             :param force :type bool - force config to be recreated
             :param config_filter :type dict - allow to customize configs
         """
-        return super(DE1SoC, self).generate_files(
+        return super(De1SoC, self).generate_files(
             project_name=project_name,
             project_path=project_path,
             force=force,
@@ -184,7 +184,7 @@ class DE1SoC(GenericBoard):
                 force: bool=False,
                 **config_filter) -> object:
         """ Generate tar file with FPGA config files for specific project """
-        return super(DE1SoC, self).archive(
+        return super(De1SoC, self).archive(
             project_name=project_name,
             project_path=project_path,
             force=force,
