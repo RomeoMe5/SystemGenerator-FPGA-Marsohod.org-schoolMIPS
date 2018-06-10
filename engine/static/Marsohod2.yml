@@ -1,0 +1,336 @@
+qpf:
+  quartus_version: '9.0'
+qsf:
+  family: '"Cyclone III"'
+  device: EP3C10E144C8
+  original_quartus_version: '"9.0 SP2"'
+  last_quartus_version: '"9.0 SP2"'
+  project_output_directory: output_files
+  global_assignments:
+    min_core_junction_temp: 0
+    max_core_junction_temp: 85
+    device_filter_package: EQFP
+    error_check_frequency_divisor: 1
+  user_assignments:
+    FTDI:
+      location:
+      - - PIN_24
+        - FTDI_BD0
+      - - PIN_28
+        - FTDI_BD1
+      - - PIN_11
+        - FTDI_BD2
+      - - PIN_10
+        - FTDI_BD3
+    CLOCK:
+      location:
+      - - PIN_25
+        - CLK100MHZ
+    KEY:
+      location:
+      - - PIN_23
+        - KEY0
+      - - PIN_22
+        - KEY1
+    SDRAM:
+      location:
+      - - PIN_30
+        - SDRAM_DQ[15]
+      - - PIN_31
+        - SDRAM_DQ[14]
+      - - PIN_32
+        - SDRAM_DQ[13]
+      - - PIN_33
+        - SDRAM_DQ[12]
+      - - PIN_34
+        - SDRAM_DQ[11]
+      - - PIN_38
+        - SDRAM_DQ[10]
+      - - PIN_39
+        - SDRAM_DQ[9]
+      - - PIN_42
+        - SDRAM_DQ[8]
+      - - PIN_71
+        - SDRAM_DQ[7]
+      - - PIN_72
+        - SDRAM_DQ[6]
+      - - PIN_73
+        - SDRAM_DQ[5]
+      - - PIN_74
+        - SDRAM_DQ[4]
+      - - PIN_75
+        - SDRAM_DQ[3]
+      - - PIN_76
+        - SDRAM_DQ[2]
+      - - PIN_77
+        - SDRAM_DQ[1]
+      - - PIN_80
+        - SDRAM_DQ[0]
+
+      - - PIN_60
+        - SDRAM_A[0]
+      - - PIN_64
+        - SDRAM_A[1]
+      - - PIN_65
+        - SDRAM_A[2]
+      - - PIN_66
+        - SDRAM_A[3]
+      - - PIN_46
+        - SDRAM_A[4]
+      - - PIN_49
+        - SDRAM_A[5]
+      - - PIN_50
+        - SDRAM_A[6]
+      - - PIN_51
+        - SDRAM_A[7]
+      - - PIN_52
+        - SDRAM_A[8]
+      - - PIN_53
+        - SDRAM_A[9]
+      - - PIN_59
+        - SDRAM_A[10]
+      - - PIN_54
+        - SDRAM_A[11]
+
+      - - PIN_70
+        - SDRAM_LDQM
+      - - PIN_43
+        - SDRAM_UDQM
+      - - PIN_55
+        - SDRAM_BA0
+      - - PIN_58
+        - SDRAM_BA1
+      - - PIN_67
+        - SDRAM_RAS
+      - - PIN_68
+        - SDRAM_CAS
+      - - PIN_69
+        - SDRAM_WE
+      - - PIN_44
+        - SDRAM_CLK
+    LED:
+      location:
+      - - PIN_79
+        - LED[3]
+      - - PIN_83
+        - LED[2]
+      - - PIN_84
+        - LED[1]
+      - - PIN_85
+        - LED[0]
+    VGA:
+      location:
+      - - PIN_144
+        - VGA_RED[4]
+      - - PIN_1
+        - VGA_RED[3]
+      - - PIN_2
+        - VGA_RED[2]
+      - - PIN_3
+        - VGA_RED[1]
+      - - PIN_7
+        - VGA_RED[0]
+      - - PIN_136
+        - VGA_GREEN[5]
+      - - PIN_137
+        - VGA_GREEN[4]
+      - - PIN_138
+        - VGA_GREEN[3]
+      - - PIN_141
+        - VGA_GREEN[2]
+      - - PIN_142
+        - VGA_GREEN[1]
+      - - PIN_143
+        - VGA_GREEN[0]
+      - - PIN_128
+        - VGA_BLUE[4]
+      - - PIN_129
+        - VGA_BLUE[3]
+      - - PIN_132
+        - VGA_BLUE[2]
+      - - PIN_133
+        - VGA_BLUE[1]
+      - - PIN_135
+        - VGA_BLUE[0]
+      - - PIN_127
+        - VGA_HSYNC
+      - - PIN_126
+        - VGA_VSYNC
+    ADC:
+      location:
+      - - PIN_100
+        - ADC_D[0]
+      - - PIN_99
+        - ADC_D[1]
+      - - PIN_98
+        - ADC_D[2]
+      - - PIN_91
+        - ADC_D[3]
+      - - PIN_90
+        - ADC_D[4]
+      - - PIN_89
+        - ADC_D[5]
+      - - PIN_88
+        - ADC_D[6]
+      - - PIN_87
+        - ADC_D[7]
+      - - PIN_86
+        - ADC_CLK
+    I/O:
+      location:
+      - - PIN_101
+        - IO[0]
+      - - PIN_103
+        - IO[1]
+      - - PIN_104
+        - IO[2]
+      - - PIN_105
+        - IO[3]
+      - - PIN_106
+        - IO[4]
+      - - PIN_110
+        - IO[5]
+      - - PIN_111
+        - IO[6]
+      - - PIN_112
+        - IO[7]
+      - - PIN_113
+        - IO[8]
+      - - PIN_114
+        - IO[9]
+      - - PIN_115
+        - IO[10]
+      - - PIN_119
+        - IO[11]
+      - - PIN_120
+        - IO[12]
+      - - PIN_121
+        - IO[13]
+      - - PIN_124
+        - IO[14]
+      - - PIN_125
+        - IO[15]
+    OTHERS:
+      location:
+      - - PIN_12
+        - DCLK
+      - - PIN_13
+        - DATA0
+      - - PIN_8
+        - NCSO
+      - - PIN_6
+        - ASDO
+sdc:
+  create_clock: []
+  create_generated_clock: []
+  set_clock_latency: []
+  set_clock_uncertainty: []
+  set_input_delay: []
+  set_output_delay: []
+  set_clock_groups: []
+  set_false_path: []
+  set_multicycle_path: []
+  set_maximum_delay: []
+  set_minimum_delay: []
+  set_load: []
+v:
+  assigments:
+    FTDI:
+    - - input
+      - ''
+      - FTDI_BD0
+    - - input
+      - ''
+      - FTDI_BD2
+    - - output
+      - ''
+      - FTDI_BD1
+    - - output
+      - ''
+      - FTDI_BD3
+    CLOCK:
+    - - input
+      - ''
+      - CLK100MHZ
+    KEY:
+    - - input
+      - ''
+      - KEY0
+    - - input
+      - ''
+      - KEY1
+    SDRAM:
+    - - inout
+      - "[15:0]"
+      - SDRAM_DQ
+    - - output
+      - "[11:0]"
+      - SDRAM_A
+    - - input
+      - ''
+      - SDRAM_LDQM
+    - - input
+      - ''
+      - SDRAM_UDQM
+    - - input
+      - ''
+      - SDRAM_BA0
+    - - input
+      - ''
+      - SDRAM_BA1
+    - - input
+      - ''
+      - SDRAM_RAS
+    - - input
+      - ''
+      - SDRAM_CAS
+    - - input
+      - ''
+      - SDRAM_WE
+    - - input
+      - ''
+      - SDRAM_CLK
+    LED:
+    - - output
+      - "[3:0]"
+      - LED
+    VGA:
+    - - output
+      - "[4:0]"
+      - VGA_RED
+    - - output
+      - "[5:0]"
+      - VGA_GREEN
+    - - output
+      - "[4:0]"
+      - VGA_BLUE
+    - - output
+      - ''
+      - VGA_HSYNC
+    - - output
+      - ''
+      - VGA_VSYNC
+    ADC:
+    - - input
+      - "[7:0]"
+      - ADC_D
+    - - output
+      - ''
+      - ADC_CLK
+    I/0:
+    - - output
+      - "[15:0]"
+      - IO
+    OTHERS:
+    - - output
+      - ''
+      - DCLK
+    - - input
+      - ''
+      - DATA0
+    - - output
+      - ''
+      - NCSO
+    - - output
+      - ''
+      - ASDO

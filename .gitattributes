@@ -1,0 +1,55 @@
+# Linux scripts
+# ============
+*.sh		text eol=lf
+
+# Source files
+# ============
+*.py 		text
+*.sql  		text
+*.vb  		text
+*.cs  		text
+*.json		text
+*.md		text
+*.rst		text
+*.xml		text
+*.txt		text
+*.v 		text
+*.qsf 		text
+*.qpf 		text
+*.bdf 		text
+*.bsf 		text
+*.qip 		text
+*.do 		text
+*.vwf		text
+*.emx		text
+*.tc		text
+*.linq		text
+*.erd		binary
+*.spl7		binary
+*.xlsx		binary
+*.accdb		binary
+*.docx      binary
+*.pptx      binary
+
+# Binary files
+# ============
+*.config	text
+*.db		binary
+*.resx		binary
+*.p 		binary
+*.pkl 		binary
+*.pyc 		binary
+*.pyd		binary
+*.pyo 		binary
+*.jpg       binary
+*.png       binary
+*.zip       binary
+*.rar       binary
+*.gz        binary
+*.pdf       binary
+*.doc       binary
+*.npy       binary
+*.pkz       binary
+*.model     binary
+
+*.ipynb linguist-language=Python

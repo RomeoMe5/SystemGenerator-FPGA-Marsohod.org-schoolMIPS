@@ -1,0 +1,26 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
+{%- extends "Base_.jinja" -%}
+
+{%- block content -%}
+{{ "" }}
+{%- if meta_info -%}
+	{%- for key, value in meta_info.items() -%}
+{{ key|upper }} = "{{ value }}"
+	{%- endfor -%}
+{%- else -%}
+# Place project meta information here
+{%- endif -%}
+{{ "" }}
+{%- if revisions -%}
+# Revisions
+	{%- for key, value in revisions.items() -%}
+{{ key|upper }} = "{{ value }}"
+	{%- endfor -%}
+{%- endif -%}
+{{ "" }}
+{%- endblock content -%}

@@ -1,0 +1,43 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{%- extends "../BaseC_.jinja" -%}
+{%- block message -%}
+{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- endblock message -%}
+{%- block content -%}
+{# verilog file content #}
+/*
+ * 7-segment indicator controller.
+ * Able to display 0-F hex numbers. Output scheme is `HGFEDCBA`.
+ */
+module Seven  (
+	input wire [3:0] in,
+	output reg [7:0] out // hgfedcba
+);
+always @* begin
+	case (in)
+		4'h0 : out = ~8'b00111111;
+		4'h1 : out = ~8'b00000110;
+		4'h2 : out = ~8'b01011011;
+		4'h3 : out = ~8'b01001111;
+		4'h4 : out = ~8'b01100110;
+		4'h5 : out = ~8'b01101101;
+		4'h6 : out = ~8'b01111101;
+		4'h7 : out = ~8'b00000111;
+		4'h8 : out = ~8'b01111111;
+		4'h9 : out = ~8'b01101111;
+		4'hA : out = ~8'b01110111;
+		4'hB : out = ~8'b01111100;
+		4'hC : out = ~8'b00111001;
+		4'hD : out = ~8'b01011110;
+		4'hE : out = ~8'b01111001;
+		4'hF : out = ~8'b01110001;
+		default: out = ~8'b10000000;
+	endcase
+end
+
+endmodule
+{%- endblock content -%}

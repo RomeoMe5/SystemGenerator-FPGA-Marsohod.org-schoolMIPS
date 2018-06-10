@@ -1,0 +1,42 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{%- extends "../BaseC_.jinja" -%}
+{%- block message -%}
+{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- endblock message -%}
+{%- block content -%}
+{# verilog file content #}
+/*
+ * Frequency generator to decrease {CLOCK_FREQ} (internal board clock)
+ * to {OUT_FREQ}.
+ */
+module Generator  #(
+	parameter CLOCK_FREQ = {%- if clock_freq -%}{{ clock_freq }}{%- else -%}100000000{%- endif -%}, // board internal clock
+	parameter OUT_FREQ = {%- if out_freq -%}{{ out_freq }}{%- else -%}1000000{%- endif -%} // output frequency
+)(
+	input wire clk, // board clock
+	output reg out
+);
+parameter MAX_RATE = CLOCK_FREQ / (2 * OUT_FREQ);
+parameter CNT_WIDTH = $clog2(MAX_RATE);
+
+reg [CNT_WIDTH - 1:0] counter = 0;
+
+initial begin
+	counter <= 1'b0;
+end
+
+always @(posedge clk) begin
+	if (counter == MAX_RATE[CNT_WIDTH-1:0]) begin
+		counter <= 0;
+		out <= ~out;
+	end else begin
+		counter <= counter + 1'b1;
+	end
+end
+
+endmodule
+{%- endblock content -%}

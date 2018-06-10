@@ -1,0 +1,230 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
+{# [bug] TODO: fix template rendering result: strings are incorrectly separated with \n #}
+{%- extends "Base_.jinja" -%}
+
+{%- block message -%}
+# Users are recommended to modify this file to match users logic.
+{%- endblock message -%}
+
+{%- block body %}
+
+{% if create_clock -%}
+# ------------------------ #
+#       Create Clock       #
+# ------------------------ #
+	{%- for c in create_clock -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+		{%- else -%}
+			{%- if 'comment' in c -%}
+# {{ c['comment'] }}
+			{%- endif -%}
+			{%- if 'name' in c and 'ports' in c -%}
+create_clock -period {{ c['period'] }} -name {{ c['name'] }} [get_ports {{ c['ports'] }}] {{ c.get('etc', "") }}
+			{%- elif 'name' in c -%}
+create_clock -period {{ c['period'] }} -name {{ c['name'] }} {{ c.get('etc', "") }}
+			{%- elif 'ports' in c -%}
+create_clock -period {{ c['period'] }} [get_ports {{ c['ports'] }}] {{ c.get('etc', "") }}
+			{%- else -%}
+create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
+			{%- endif -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if create_generated_clock -%}
+# ---------------------------------- #
+#       Create Generated Clock       #
+# ---------------------------------- #
+	{%- for c in create_generated_clock -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_clock_latency -%}
+# ----------------------------- #
+#       Set Clock Latency       #
+# ----------------------------- #
+	{%- for c in set_clock_latency -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_clock_uncertainty -%}
+# --------------------------------- #
+#       Set Clock Uncertainty       #
+# --------------------------------- #
+	{%- for c in set_clock_uncertainty -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_input_delay -%}
+# ------------------------- #
+#       Set Input Delay     #
+# ------------------------- #
+# max : Board Delay (Data) - Board Delay (Clock) + tsu (External Device)
+# min : Board Delay (Data) - Board Delay (Clock) - th (External Device)
+	{%- for c in set_input_delay -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+		{%- else -%}
+			{%- if 'comment' in c -%}
+# {{ c['comment'] }}
+			{%- endif -%}
+			{%- if 'type' in c and 'clock_fall' in c -%}
+set_input_delay -{{ c['type'] }} -clock {{ c['clock'] }} -clock_fall [get_ports {{ c['ports'] }}]
+			{%- elif 'type' in c -%}
+set_input_delay -{{ c['type'] }} -clock {{ c['clock'] }} [get_ports {{ c['ports'] }}]
+			{%- elif 'clock_fall' in c -%}
+set_input_delay -clock {{ c['clock'] }} -clock_fall [get_ports {{ c['ports'] }}]
+			{%- else -%}
+set_input_delay -clock {{ c['clock'] }} [get_ports {{ c['ports'] }}]
+			{%- endif -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_output_delay -%}
+# ---------------------------- #
+#       Set Output Delay       #
+# ---------------------------- #
+# max : Board Delay (Data) - Board Delay (Clock) + tsu (External Device)
+# min : Board Delay (Data) - Board Delay (Clock) - th (External Device)
+	{%- for c in set_output_delay -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+		{%- else -%}
+			{%- if 'comment' in c -%}
+# {{ c['comment'] }}
+			{%- endif -%}
+set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{ c['ports'] }}]
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_clock_groups -%}
+# ----------------------------- #
+#       Set Clock Groups        #
+# ----------------------------- #
+	{%- for c in set_clock_groups -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_false_path -%}
+# -------------------------- #
+#       Set False Path       #
+# -------------------------- #
+	{%- for c in set_false_path -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_multicycle_path -%}
+# ------------------------------- #
+#       Set Multicycle Path       #
+# ------------------------------- #
+	{%- for c in set_multicycle_path -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_maximum_delay -%}
+# ----------------------------- #
+#       Set Maximum Delay       #
+# ----------------------------- #
+	{%- for c in set_maximum_delay -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_minimum_delay -%}
+# ----------------------------- #
+#       Set Minimum Delay       #
+# ----------------------------- #
+	{%- for c in set_minimum_delay -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_input_transition -%}
+# -------------------------------- #
+#       Set Input Transition       #
+# -------------------------------- #
+	{%- for c in set_input_transition -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if set_load -%}
+# ---------------------------- #
+#           Set Load           #
+# ---------------------------- #
+	{%- for c in set_load -%}
+		{%- if not c -%}
+{{ "" }}
+		{%- elif 'deriv' in c -%}
+{{ c['deriv'] }}
+{# [feature] TODO #}{%- else -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif %}
+
+{% endblock body -%}

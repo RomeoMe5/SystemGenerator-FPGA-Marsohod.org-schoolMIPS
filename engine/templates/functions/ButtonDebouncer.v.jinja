@@ -1,0 +1,48 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{%- extends "../BaseC_.jinja" -%}
+{%- block message -%}
+{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- endblock message -%}
+{%- block content -%}
+{# verilog file content #}
+/*
+ * Synchronizes switch and button inputs with a slow sampled shift register.
+ * Can be customized for different board's internal clocks by parameters.
+ */
+module ButtonDebouncer  #(
+	parameter CLOCK_RATE = {%- if clock_rate -%}{{ clock_rate }}{%- else -%}100000000{%- endif -%}, // board internal clock
+	parameter MILLIS_DELAY = {%- if delay -%}{{ delay }}{%- else -%}100{%- endif -%} // length of delay (in milliseconds)
+)(
+	input wire clk, // internal board's clock
+	input wire in, // signal from button
+	output reg out
+);
+parameter MAX_RATE = (CLOCK_RATE * MILLIS_DELAY) / 2000;
+parameter CNT_WIDTH = $clog2(MAX_RATE);
+
+reg [1:0] swR;
+reg [CNT_WIDTH - 1:0] counter = 0;
+wire swChangeF = (out != swR[1]);
+
+initial begin
+	out <= 1'b0;
+end
+
+always @(posedge clk) begin
+	swR <= {swR[0], in};
+	if (swChangeF) begin
+		counter <= counter + 1'b1;
+		if (counter == MAX_RATE[CNT_WIDTH-1:0]) begin
+			out <= ~out;
+		end
+	end else begin
+		counter <= 0;
+	end
+end
+
+endmodule
+{%- endblock content -%}

@@ -1,0 +1,20 @@
+[improvement]
+* separate registration: some basic functions are available withoud registration
+* simplify registration: leave only email (maybe also company)
+* GUI representation
+
+[feature]
+* add config loading as admin
+* add custom board generation from loaded configs
+* add debounser for buttons
+* add shool MIPS support
+* add admin
+* add "blog" feature to publish additional instructions
+* add "storage" for drivers and etc.
+* add .csv pin assignment export
+* add static files from https://github.com/MIPSfpga/digital-design-lab-manual
+
+[bugs]
+* handle 130 pin for Marsohod3
+* incorrect project_name type
+* incorrect quartus version

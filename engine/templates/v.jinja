@@ -1,0 +1,45 @@
+{#
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
+#}
+{# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
+{%- extends "BaseC_.jinja" -%}
+
+{%- block content -%}
+{{ "" }}
+{%- if assigments -%}
+module {{ project_name }}(
+	{%- for part_name, assig in assigments.items() -%}
+{{ "    " }}//---------- {{ part_name|upper }} ----------//
+		{%- if not loop.last -%}{# Normal generation until last iteration #}
+			{%- for type, rank, value in assig -%}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
+			{%- endfor -%}
+{{ "" }}
+		{%- else -%}{# Separate rule for last iteration #}
+			{%- for type, rank, value in assig -%}
+				{%- if not loop.last -%}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }},
+				{%- else -%}{# Don't type coma after last line #}
+{{ "    " }}{{ type }}{{ "\t" }}{{ rank or "\t" }}{{ "\t" }}{{ value }}
+				{%- endif -%}
+			{%- endfor -%}
+		{%- endif -%}
+	{%- endfor -%}
+);
+{%- else -%}
+module {{ project_name }}();
+{%- endif -%}
+{{ "" }}
+// --------------------------------------- //
+//          REG/WIRE declarations          //
+// --------------------------------------- //
+{{ "\n" }}
+// --------------------------------------- //
+//            Structural coding            //
+// --------------------------------------- //
+{{ "\n" }}
+endmodule // {{ project_name }}
+{{ "" }}
+{%- endblock content -%}
