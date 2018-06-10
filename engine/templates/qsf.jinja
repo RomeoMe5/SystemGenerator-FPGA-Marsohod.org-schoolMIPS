@@ -1,18 +1,18 @@
 {#
-    This template was created by HSE University students
-    Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
-    and should be distribured without any warranty ("as is")
+	This template was created by HSE University students
+	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+	and should be distribured without any warranty ("as is")
 #}
 {# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
 {# [minor] [enhancement] TODO: use dictionary in instance/location user assignments #}
-{%- extends "base_.jinja" -%}
+{%- extends "Base_.jinja" -%}
 
-{%- block body -%}
+{%- block content -%}
 {{ "" }}
 {%- if global_assignments -%}
-    {%- for key, value in global_assignments.items() -%}
+	{%- for key, value in global_assignments.items() -%}
 set_global_assignment -name {{ key|upper }} {{ value }}
-    {%- endfor -%}
+	{%- endfor -%}
 {%- else -%}
 # Place GLOBAL assignments here
 {%- endif -%}
@@ -20,20 +20,20 @@ set_global_assignment -name TOP_LEVEL_ENTITY {{ project_name }}
 set_global_assignment -name SDC_FILE {{ project_name }}.sdc
 {{ "\n" }}
 {%- if user_assignments -%}
-    {%- for part_name, assignments in user_assignments.items() -%}
+	{%- for part_name, assignments in user_assignments.items() -%}
 # -------------------------------------------------------------------------- #
 # {{ part_name|upper }}
 # -------------------------------------------------------------------------- #
-        {%- for instance in assignments['instance'] -%}
+		{%- for instance in assignments['instance'] -%}
 set_instance_assignment -name {{ instance[0]|upper }} "{{ instance[1]|upper }}" -to {{ instance[2]|upper }}
-        {%- endfor -%}
+		{%- endfor -%}
 {{ "" }}
-        {%- for location in assignments['location'] -%}
+		{%- for location in assignments['location'] -%}
 set_location_assignment {{ location[0]|upper }} -to {{ location[1]|upper }}
-        {%- endfor -%}
+		{%- endfor -%}
 {{ "" if loop.last else "\n" }}
-    {%- endfor -%}
+	{%- endfor -%}
 {%- else -%}
 # Place USER assignments here
 {%- endif -%}
-{%- endblock body -%}
+{%- endblock content -%}

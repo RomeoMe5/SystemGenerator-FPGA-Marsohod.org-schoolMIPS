@@ -1,0 +1,26 @@
+{#
+    This template was created by HSE University students
+    Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
+    and should be distribured without any warranty ("as is")
+#}
+/*
+{%- include licenses\_HseLicence.jinja -%}
+*/
+// ------------------------------------------------------------------------ //
+{%- if file_type -%}
+// This '{{ file_type }}' file is created by HSE University System Builder.
+{%- else -%}
+// This file is created by HSE University System Builder.
+{%- endif -%}
+// ------------------------------------------------------------------------ //
+{%- block message -%}{# paste special messages here #}{%- endblock message -%}
+
+{%- block content -%}{# paste main file content here #}{%- endblock content -%}
+
+// ------------------------------------------------------------------------ //
+{%- if file_type -%}
+// End of '{{ file_type }}' file created by HSE University System Builder.
+{%- else -%}
+// End of file created by HSE University System Builder.
+{%- endif -%}
+// ------------------------------------------------------------------------ //
