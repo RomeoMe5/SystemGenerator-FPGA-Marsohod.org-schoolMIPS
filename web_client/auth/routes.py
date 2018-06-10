@@ -109,17 +109,19 @@ def reset_password_request() -> object:
 
     reset_form = ResetPasswordRequestForm()
     if reset_form.validate_on_submit():
-        if not current_app.config['MAIL_SERVER']:  # [debug]
-            token = user.get_verification_token()
-            current_app.logger.debug(
-                "[reset] mailing is disabled, verification token: %s", token
-            )
-            flash(_("This is a debug session: mailing is not supported"))
-            return redirect(url_for("auth.update_password", token=token))
-
         user = User.query.filter_by(_email=reset_form.email.data).first()
         if user:
+            if not current_app.config['MAIL_SERVER']:  # [debug]
+                token = user.get_verification_token()
+                current_app.logger.debug(
+                    "[reset] mailing is disabled, verification token: %s",
+                    token
+                )
+                flash(_("This is a debug session: mailing is not supported"))
+                return redirect(url_for("auth.update_password", token=token))
+
             send_password_update_email(user)
+
         flash(_("Check email for the instructions to reset your password"))
         return redirect(url_for("auth.login"))
 
