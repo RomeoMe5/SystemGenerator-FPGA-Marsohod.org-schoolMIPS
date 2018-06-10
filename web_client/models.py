@@ -17,12 +17,12 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     _email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     _password_hash = db.Column(db.String(128))
-    company = db.Column(db.String(140), index=True)
-    position = db.Column(db.String(140))
-    city = db.Column(db.String(140), index=True)
-    age = db.Column(db.Integer, index=True)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    path = db.Column(db.String(150), unique=True)
+
+    @property
+    def path(self) -> str:
+        return os.path.join(current_app.config['STATIC_PATH'],
+                            self._email.split('@')[0])
 
     @property
     def email(self) -> str:

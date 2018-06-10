@@ -27,6 +27,8 @@ def login() -> object:
         user = User.query.filter_by(_email=form.email.data).first()
 
         if not user or not user.check_password(form.password.data):
+            current_app.logger.info("[login] invalid password: ",
+                                    form.email.data)
             flash(_("Invalid username or password"))
             return redirect(url_for("auth.login"))
 
@@ -59,29 +61,27 @@ def logout() -> object:
 @bp.route('/register', methods=["GET", "POST"])
 def register() -> object:
     if current_user.is_authenticated:
-        current_app.logger.debug("[register] authenticated: %s", current_user)
+        current_app.logger.debug("[reg] authenticated: %s", current_user)
         return redirect(url_for("main.index"))
 
     form = RegistrationForm()
     if form.validate_on_submit():  # assume that form handle all validations
         user = User()
         user.email = form.email.data
-        user.company = form.company.data
-        user.position = form.position.data
-        user.age = form.age.data
-        user.city = form.city.data
         user.password = get_random_str()  # temporary set random password
 
         db.session.add(user)
         db.session.commit()
-        current_app.logger.debug("register new user: %s", user)
+        current_app.logger.debug("[reg] new user: %s with tmp password", user)
 
         try:
-            # [debug] TODO: remove
-            if not current_app.config['MAIL_SERVER']:
+            if not current_app.config['MAIL_SERVER']:  # [debug]
                 token = user.get_verification_token()
-                flash(_("This is a debug session: mailing is not supported!"))
-                return redirect(url_for('auth.update_password', token=token))
+                current_app.logger.debug(
+                    "[reg] mailing is disabled, verification token: %s", token
+                )
+                flash(_("This is a debug session: mailing is not supported"))
+                return redirect(url_for("auth.update_password", token=token))
 
             send_password_update_email(user)
         except BaseException as err:
@@ -109,9 +109,13 @@ def reset_password_request() -> object:
 
     reset_form = ResetPasswordRequestForm()
     if reset_form.validate_on_submit():
-        if not current_app.config['MAIL_SERVER']:
-            flash(_("Sorry, this is debug session: mailing is not supported!"))
-            return redirect(url_for("auth.login"))
+        if not current_app.config['MAIL_SERVER']:  # [debug]
+            token = user.get_verification_token()
+            current_app.logger.debug(
+                "[reset] mailing is disabled, verification token: %s", token
+            )
+            flash(_("This is a debug session: mailing is not supported"))
+            return redirect(url_for("auth.update_password", token=token))
 
         user = User.query.filter_by(_email=reset_form.email.data).first()
         if user:
@@ -129,19 +133,21 @@ def reset_password_request() -> object:
 @bp.route('/update_password/<token>', methods=["GET", "POST"])
 def update_password(token: str) -> object:
     if current_user.is_authenticated:
-        current_app.logger.debug("[password] authenticated: %s", current_user)
+        current_app.logger.debug("[update] authenticated: %s", current_user)
         return redirect(url_for("main.index"))
 
     user = User.verify_token(token)
     if not user:
-        current_app.logger.debug("token %s has expired or invalid", token)
+        current_app.logger.debug(
+            "[update] token %s has expired or invalid", token
+        )
         flash(_("Token expired or invalid."))
         return redirect(url_for("main.index"))
 
     form = SetPasswordForm()
     if form.validate_on_submit():
         user.password = form.password.data
-        current_app.logger.debug("user %s change password", user)
+        current_app.logger.debug("[update] user %s change password", user)
         db.session.commit()
         flash(_("Your password has been updated!"))
         return redirect(url_for("auth.login"))

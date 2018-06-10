@@ -23,6 +23,8 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = _l("Please log in to access this page.")
 
+BASE_DIR = os.path.dirname(__file__)
+
 
 def create_app(config_class: object=Config) -> Flask:
     app = Flask(__name__)
@@ -40,6 +42,15 @@ def create_app(config_class: object=Config) -> Flask:
 
     from web_client.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    from web_client.blog import bp as blog_bp
+    app.register_blueprint(blog_bp, url_prefix="/article")
+
+    from web_client.files import bp as files_bp
+    app.register_blueprint(files_bp, url_prefix="/files")
+
+    from web_client.generate import bp as generate_bp
+    app.register_blueprint(generate_bp)
 
     from web_client.main import bp as main_bp
     app.register_blueprint(main_bp)

@@ -1,6 +1,7 @@
 import string
 from hashlib import md5
 from random import SystemRandom
+from typing import Iterable
 from urllib import parse
 
 
@@ -45,7 +46,8 @@ def get_gravatar_url(email: str,
     return target_url
 
 
-def get_random_str(n: int=25) -> str:
+def get_random_str(n: int=25, alphabet: Iterable=None) -> str:
     """ Generate random string with len == n. """
-    alphabet = string.ascii_uppercase + string.digits
+    if alphabet is None:
+        alphabet = string.ascii_uppercase + string.digits
     return ''.join(SystemRandom().choice(alphabet) for _ in range(n))

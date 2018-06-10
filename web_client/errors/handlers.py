@@ -9,7 +9,7 @@ from web_client.errors import bp
 def not_found_error(error: object) -> tuple:
     prev_page = request.args.get("prev")
     if not prev_page or url_parse(prev_page).netloc:
-        prev_page = url_for("main.index")
+        return render_template("errors/404.html"), 404
     return render_template("errors/404.html", prev_page=prev_page), 404
 
 
@@ -18,5 +18,5 @@ def internal_error(error: object) -> tuple:
     db.session.rollback()
     prev_page = request.args.get("prev")
     if not prev_page or url_parse(prev_page).netloc:
-        prev_page = url_for("main.index")
+        return render_template("errors/500.html"), 500
     return render_template("errors/500.html", prev_page=prev_page), 500
