@@ -1,3 +1,5 @@
+# [feature] TODO: add table for static files
+
 import os
 from datetime import datetime
 from time import time
@@ -7,7 +9,7 @@ from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from web_client import db, login_manager
+from web_client import BASE_DIR, db, login_manager
 from web_client.utils import get_gravatar_url
 
 
@@ -31,8 +33,6 @@ class User(UserMixin, db.Model):
     @email.setter
     def email(self, email: str) -> None:
         self._email = email.strip().lower()
-        self.path = os.path.join(current_app.config['STATIC_PATH'],
-                                 self._email.split('@')[0])
 
     # Is needed for backward compitability
     @property
@@ -80,6 +80,37 @@ class User(UserMixin, db.Model):
 
     def __repr__(self) -> str:
         return f"<User: {self.email}>"
+
+
+class BlogPost(db.Model):
+    """ Represents user of the system. """
+
+    id = db.Column(db.Integer, primary_key=True)
+    _link = db.Column(db.String(325), index=True, unique=True)
+    title = db.Column(db.String(255), index=True, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    @property
+    def link(self) -> str:
+        time = self.timestamp.strftime("%Y%m%d-%H%M%S")
+        return "-".join(("-".join(self.title.lower().split()), time))
+
+    @property
+    def rel_path(self) -> str or None:
+        return "blog/pages/" + self.link + ".html"
+
+    @property
+    def path(self) -> str or None:
+        file_path = os.path.join(BASE_DIR, "templates", self.rel_path)
+        if os.path.exists(file_path):
+            return file_path
+
+    @property
+    def date(self) -> str:
+        return self.timestamp.strftime("%d/%m/%Y %H:%M")
+
+    def __repr__(self) -> str:
+        return f"<Article: {self.link}>"
 
 
 @login_manager.user_loader

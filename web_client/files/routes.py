@@ -1,6 +1,5 @@
 import os
 import re
-from urllib import parse
 
 from flask import (abort, current_app, flash, render_template, send_file,
                    url_for)
@@ -11,7 +10,7 @@ from web_client import BASE_DIR
 from web_client.files import bp
 from web_client.files.utils import decode_token, encode_to_token
 
-FILES_BASE_PATH = os.path.join(BASE_DIR, os.path.join("static", "files"))
+FILES_BASE_PATH = os.path.join(BASE_DIR, "static", "files")
 FORBIDEN_SYMBOLS = re.compile(r"[\\<>[\]?:*\"|]")
 
 

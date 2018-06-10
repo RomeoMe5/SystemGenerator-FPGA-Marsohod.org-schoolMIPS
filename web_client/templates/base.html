@@ -64,18 +64,15 @@
                         </a>
                     </li>
                 {%- else -%}
-                    <li>
-                        <a href="{{ url_for("files.static") }}">Files</a>
-                    </li>
+                    <li><a href="{{ url_for("files.static") }}">Files</a></li>
+                    <li><a href="{{ url_for("blog.articles") }}">Articles</a></li>
                     <!-- <li>
                         <img with="25" height="25" class="img-circle profile-img"
                                 alt="Generic placeholder image"
                                 src="{{ current_user.avatar(25) }}" />
                     </li> -->
                     <li>
-                        <a href="{{ url_for('auth.logout') }}">
-                            {{ _("Logout") }}
-                        </a>
+                        <a href="{{ url_for('auth.logout') }}">{{ _("Logout") }}</a>
                     </li>
                 {%- endif -%}
             </ul>
