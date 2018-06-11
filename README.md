@@ -10,6 +10,8 @@ See `engine_example.py` and `convert_example.py`.
 
 FPGA Marsohod CAD web interface
 -------------------------------
+See `prepare.sh` or `prepare.bat` for more detailed instructions for Linux/Windows.
+
 #### How to run [linux]?
 ```bash
 # first, clone repository
@@ -25,12 +27,18 @@ export STATIC_PATH=.generated # where to store generated configs
 
 # [use '%STATIC_PATH%' for windows]
 mkdir $STATIC_PATH
+mkdir configs
 
 # create database
+flask db init
+flask db migrate
 flask db upgrade
 
 # compile translations (optional)
 flask translate compile
+
+# add existing posts to database
+python3 web_client_config.py
 
 # finally, run application
 flask run --with-threads

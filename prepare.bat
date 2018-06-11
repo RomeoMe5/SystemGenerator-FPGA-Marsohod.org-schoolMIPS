@@ -6,12 +6,9 @@ REM ===== Activate environment =====
 
 REM ===== Install dependencies =====
 REM Dev:
-REM contains web client dependencies
-pip install --no-cache -r requirements.txt
-REM App(s):
-pip install --no-cache -r engine/requirements.txt
-REM Tests:
-pip install --no-cache -r tests/requirements.txt
+pip install --no-cache -r requirements.txt REM contains web client dependencies
+pip install --no-cache -r engine/requirements.txt REM engine
+pip install --no-cache -r tests/requirements.txt REM tests
 
 REM ===== Set environment variables =====
 set FLASK_APP=run_web.py
@@ -29,5 +26,7 @@ flask db upgrade
 flask translate init ru
 flask translate update
 flask translate compile
+
+python web_client_config.py REM add existing posts to database
 
 flask run --with-threads

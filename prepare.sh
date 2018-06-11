@@ -6,11 +6,9 @@ source .venv/bin/activate
 
 # ===== Install dependencies =====
 # Dev:
-sudo pip3 install --no-cache -r requirements.txt  # contains web client dependencies
-# App(s):
-sudo pip3 install --no-cache -r engine/requirements.txt
-# Tests:
-sudo pip3 install --no-cache -r tests/requirements.txt
+sudo pip3 install --no-cache -r requirements.txt # contains web client dependencies
+sudo pip3 install --no-cache -r engine/requirements.txt # engine
+sudo pip3 install --no-cache -r tests/requirements.txt # tests
 
 # ===== Set environment variables =====
 export FLASK_APP=run_web.py
@@ -30,5 +28,7 @@ flask db upgrade
 flask translate init ru
 flask translate update
 flask translate compile
+
+python3 web_client_config.py # add existing posts to database
 
 flask run --with-threads

@@ -27,6 +27,7 @@ simulation/
 db/
 
 # ===== Web Client =====
+migrations/
 bak/
 rsc/
 
