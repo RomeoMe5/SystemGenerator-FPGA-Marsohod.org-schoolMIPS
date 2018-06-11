@@ -46,7 +46,7 @@ class Marsohod3B(GenericBoard):
                 'TMDS': v['TMDS'] if tmds else None,
                 'FTD': v['FTD'] if ftd else None,
                 'FTC': v['FTC'] if ftc else None,
-                'IO': v['IO'] if io else None,
+                'I/O': v['I/O'] if io else None,
                 'OTHERS': v['OTHERS'] if others else None
             }},
             'qpf': {'quartus_version': quartus_version},
@@ -71,7 +71,7 @@ class Marsohod3B(GenericBoard):
                     'TMDS': user_assignments['TMDS'] if tmds else None,
                     'FTD': user_assignments['FTD'] if ftd else None,
                     'FTC': user_assignments['FTC'] if ftc else None,
-                    'IO': user_assignments['IO'] if io else None,
+                    'I/O': user_assignments['I/O'] if io else None,
                     'OTHERS': user_assignments['OTHERS'] if others else None
                 },
 

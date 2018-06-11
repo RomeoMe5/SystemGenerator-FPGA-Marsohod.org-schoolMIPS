@@ -317,7 +317,7 @@ v:
     - - output
       - ''
       - ADC_CLK
-    I/0:
+    I/O:
     - - output
       - "[15:0]"
       - IO

@@ -44,7 +44,7 @@ class Marsohod2B(GenericBoard):
                 'LED': v['LED'] if leds else None,
                 'VGA': v['VGA'] if vga else None,
                 'ADC': v['ADC'] if adc else None,
-                'IO': v['IO'] if io else None,
+                'I/O': v['I/O'] if io else None,
                 'OTHERS': v['OTHERS'] if others else None
             }},
             'qpf': {'quartus_version': quartus_version},
@@ -68,7 +68,7 @@ class Marsohod2B(GenericBoard):
                     'LED': user_assignments['LED'] if leds else None,
                     'VGA': user_assignments['VGA'] if vga else None,
                     'ADC': user_assignments['ADC'] if adc else None,
-                    'IO': user_assignments['IO'] if io else None,
+                    'I/O': user_assignments['I/O'] if io else None,
                     'OTHERS': user_assignments['OTHERS'] if others else None
                 },
 

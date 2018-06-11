@@ -318,7 +318,7 @@ v:
     - - output
       - "[7:0]"
       - FTC
-    I/0:
+    I/O:
     - - output
       - "[19:0]"
       - IO
