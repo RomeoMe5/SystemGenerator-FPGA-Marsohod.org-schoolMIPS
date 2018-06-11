@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  0.0.1\n"
 "Report-Msgid-Bugs-To: dapchelkin@edu.hse.ru\n"
-"POT-Creation-Date: 2018-05-14 11:27+0300\n"
+"POT-Creation-Date: 2018-06-11 07:54+0300\n"
 "PO-Revision-Date: 2018-05-14 11:24+0300\n"
 "Last-Translator: Dmitriy Pchelkin <dapchelkin@edu.hse.ru>\n"
 "Language: ru\n"
@@ -29,77 +29,57 @@ msgstr "Пожалуйста, войдите, чтобы получить дос
 msgid "HSE FPGAMarsohodCAD Failure"
 msgstr "Ошибка приложения"
 
-#: web_client/auth/email.py:12
+#: web_client/auth/email.py:13
 msgid "[HSE FPGAMarsohodCAD] Update Your Password"
 msgstr "[Системный Генератор ПЛИС НИУ ВШЭ] Обновление пароля"
 
-#: web_client/auth/forms.py:13 web_client/auth/forms.py:21
-#: web_client/auth/forms.py:44
+#: web_client/auth/forms.py:12 web_client/auth/forms.py:20
+#: web_client/auth/forms.py:30
 msgid "Email"
 msgstr ""
 
-#: web_client/auth/forms.py:14 web_client/auth/forms.py:49
+#: web_client/auth/forms.py:13 web_client/auth/forms.py:35
 msgid "Password"
 msgstr "Пароль"
 
-#: web_client/auth/forms.py:15
+#: web_client/auth/forms.py:14
 msgid "Remember Me"
 msgstr "Запомнить"
 
-#: web_client/auth/forms.py:16 web_client/auth/routes.py:46
+#: web_client/auth/forms.py:15 web_client/auth/routes.py:48
 #: web_client/templates/auth/login.html:5
 msgid "Sign In"
 msgstr "Войти"
 
-#: web_client/auth/forms.py:22
-msgid "City"
-msgstr "Город"
-
-#: web_client/auth/forms.py:23
-msgid "Company"
-msgstr "Организация"
-
-#: web_client/auth/forms.py:26
-msgid "Position"
-msgstr "Должность"
-
-#: web_client/auth/forms.py:29
-msgid "Age"
-msgstr "Возраст"
-
-#: web_client/auth/forms.py:30 web_client/auth/routes.py:99
-#: web_client/templates/auth/register.html:5 web_client/templates/base.html:53
+#: web_client/auth/forms.py:21 web_client/auth/routes.py:99
+#: web_client/templates/auth/register.html:5 web_client/templates/base.html:63
 msgid "Register"
 msgstr "Зарегистрироваться"
 
-#: web_client/auth/forms.py:35
-msgid "Please enter your actual age."
-msgstr "Пожалуйста, введите свой настоящий возраст."
-
-#: web_client/auth/forms.py:40
+#: web_client/auth/forms.py:26
 msgid "Please use a different email address."
 msgstr "Пожалуйста, воспользуйтесь другим email."
 
-#: web_client/auth/forms.py:45
+#: web_client/auth/forms.py:31
 msgid "Request Password Reset"
 msgstr "Запросить сброс пароля"
 
-#: web_client/auth/forms.py:52
+#: web_client/auth/forms.py:38
 msgid "Repeat Password"
 msgstr "Повторите пароль"
 
-#: web_client/auth/forms.py:55 web_client/auth/routes.py:151
+#: web_client/auth/forms.py:41 web_client/auth/routes.py:159
 #: web_client/templates/auth/update_password.html:5
 msgid "Update Password"
 msgstr "Обновить пароль"
 
-#: web_client/auth/routes.py:30
+#: web_client/auth/routes.py:32
 msgid "Invalid username or password"
 msgstr "Неправильное имя пользователя или пароль"
 
-#: web_client/auth/routes.py:83
-msgid "This is a debug session: mailing is not supported!"
-msgstr "Это отладочная сессия: отправка почты не поддерживается!"
+#: web_client/auth/routes.py:83 web_client/auth/routes.py:120
+msgid "This is a debug session: mailing is not supported"
+msgstr ""
 
 #: web_client/auth/routes.py:89
 msgid "Error occurs while mailing you, please contact support!"
@@ -111,176 +91,173 @@ msgstr ""
 msgid "Check your email address for setting password link!"
 msgstr "На указанный адрес отправлено письмо для установки пароля."
 
-#: web_client/auth/routes.py:113
-msgid "Sorry, this is debug session: mailing is not supported!"
-msgstr "Это отладочная сессия: отправка почты не поддерживается!"
-
-#: web_client/auth/routes.py:119
+#: web_client/auth/routes.py:125
 msgid "Check email for the instructions to reset your password"
 msgstr ""
 "Инструкции по сбросу пароля отправлены на указанный адрес электронной "
 "почты"
 
-#: web_client/auth/routes.py:124
+#: web_client/auth/routes.py:130
 #: web_client/templates/auth/reset_password_request.html:5
 msgid "Reset Password"
 msgstr "Сбросить пароль"
 
-#: web_client/auth/routes.py:138
+#: web_client/auth/routes.py:146
 msgid "Token expired or invalid."
 msgstr "Время действия ссылки истекло."
 
-#: web_client/auth/routes.py:146
+#: web_client/auth/routes.py:154
 msgid "Your password has been updated!"
 msgstr "Ваш пароль был обновлен."
 
-#: web_client/main/forms.py:8 web_client/main/forms.py:22
-#: web_client/main/forms.py:36 web_client/main/forms.py:51
-#: web_client/main/forms.py:66
+#: web_client/generate/forms.py:8 web_client/generate/forms.py:22
+#: web_client/generate/forms.py:36 web_client/generate/forms.py:51
+#: web_client/generate/forms.py:66
 msgid "Project Name"
 msgstr "Название проекта"
 
-#: web_client/main/forms.py:9 web_client/main/forms.py:23
-#: web_client/main/forms.py:37 web_client/main/forms.py:52
+#: web_client/generate/forms.py:9 web_client/generate/forms.py:23
+#: web_client/generate/forms.py:37 web_client/generate/forms.py:52
 msgid "FTDI"
 msgstr ""
 
-#: web_client/main/forms.py:10 web_client/main/forms.py:24
-#: web_client/main/forms.py:38 web_client/main/forms.py:53
-#: web_client/main/forms.py:68
+#: web_client/generate/forms.py:10 web_client/generate/forms.py:24
+#: web_client/generate/forms.py:38 web_client/generate/forms.py:53
+#: web_client/generate/forms.py:68
 msgid "Clock"
 msgstr ""
 
-#: web_client/main/forms.py:11 web_client/main/forms.py:25
-#: web_client/main/forms.py:39 web_client/main/forms.py:54
+#: web_client/generate/forms.py:11 web_client/generate/forms.py:25
+#: web_client/generate/forms.py:39 web_client/generate/forms.py:54
 msgid "Keys"
 msgstr ""
 
-#: web_client/main/forms.py:12 web_client/main/forms.py:26
-#: web_client/main/forms.py:40 web_client/main/forms.py:55
-#: web_client/main/forms.py:72
+#: web_client/generate/forms.py:12 web_client/generate/forms.py:26
+#: web_client/generate/forms.py:40 web_client/generate/forms.py:55
+#: web_client/generate/forms.py:72
 msgid "SDRAM"
 msgstr ""
 
-#: web_client/main/forms.py:13 web_client/main/forms.py:27
-#: web_client/main/forms.py:41 web_client/main/forms.py:56
+#: web_client/generate/forms.py:13 web_client/generate/forms.py:27
+#: web_client/generate/forms.py:41 web_client/generate/forms.py:56
 msgid "Leds"
 msgstr ""
 
-#: web_client/main/forms.py:14 web_client/main/forms.py:28
-#: web_client/main/forms.py:79
+#: web_client/generate/forms.py:14 web_client/generate/forms.py:28
+#: web_client/generate/forms.py:79
 msgid "VGA"
 msgstr ""
 
-#: web_client/main/forms.py:15 web_client/main/forms.py:29
-#: web_client/main/forms.py:71
+#: web_client/generate/forms.py:15 web_client/generate/forms.py:29
+#: web_client/generate/forms.py:71
 msgid "ADC"
 msgstr ""
 
-#: web_client/main/forms.py:16 web_client/main/forms.py:30
-#: web_client/main/forms.py:45 web_client/main/forms.py:60
+#: web_client/generate/forms.py:16 web_client/generate/forms.py:30
+#: web_client/generate/forms.py:45 web_client/generate/forms.py:60
 msgid "I/O"
 msgstr ""
 
-#: web_client/main/forms.py:17 web_client/main/forms.py:31
-#: web_client/main/forms.py:46 web_client/main/forms.py:61
+#: web_client/generate/forms.py:17 web_client/generate/forms.py:31
+#: web_client/generate/forms.py:46 web_client/generate/forms.py:61
 msgid "Other"
 msgstr "Прочее"
 
-#: web_client/main/forms.py:18 web_client/main/forms.py:32
-#: web_client/main/forms.py:47 web_client/main/forms.py:62
+#: web_client/generate/forms.py:18 web_client/generate/forms.py:32
+#: web_client/generate/forms.py:47 web_client/generate/forms.py:62
+#: web_client/generate/forms.py:81
 msgid "Generate"
 msgstr ""
 
-#: web_client/main/forms.py:42 web_client/main/forms.py:57
+#: web_client/generate/forms.py:42 web_client/generate/forms.py:57
 msgid "TMDS"
 msgstr ""
 
-#: web_client/main/forms.py:43 web_client/main/forms.py:58
+#: web_client/generate/forms.py:43 web_client/generate/forms.py:58
 msgid "FTD"
 msgstr ""
 
-#: web_client/main/forms.py:44 web_client/main/forms.py:59
+#: web_client/generate/forms.py:44 web_client/generate/forms.py:59
 msgid "FTC"
 msgstr ""
 
-#: web_client/main/forms.py:67
+#: web_client/generate/forms.py:67
 msgid "Audio"
 msgstr ""
 
-#: web_client/main/forms.py:69
+#: web_client/generate/forms.py:69
 msgid "I2C Audio and Video Input"
 msgstr ""
 
-#: web_client/main/forms.py:70
+#: web_client/generate/forms.py:70
 msgid "Key"
 msgstr ""
 
-#: web_client/main/forms.py:73
+#: web_client/generate/forms.py:73
 msgid "Seg7"
 msgstr ""
 
-#: web_client/main/forms.py:74
+#: web_client/generate/forms.py:74
 msgid "IR"
 msgstr ""
 
-#: web_client/main/forms.py:75
+#: web_client/generate/forms.py:75
 msgid "Led"
 msgstr ""
 
-#: web_client/main/forms.py:76
+#: web_client/generate/forms.py:76
 msgid "PS2"
 msgstr ""
 
-#: web_client/main/forms.py:77
+#: web_client/generate/forms.py:77
 msgid "SW"
 msgstr ""
 
-#: web_client/main/forms.py:78
+#: web_client/generate/forms.py:78
 msgid "Video Input"
 msgstr ""
 
-#: web_client/main/forms.py:80
+#: web_client/generate/forms.py:80
 msgid "HPS"
 msgstr ""
 
-#: web_client/templates/base.html:10 web_client/templates/base.html:25
+#: web_client/templates/base.html:11 web_client/templates/base.html:26
 msgid "HSE Marsohod CAD"
 msgstr "Системный Генератор ПЛИС НИУ ВШЭ"
 
-#: web_client/templates/base.html:19
+#: web_client/templates/base.html:20
 msgid "Toggle navigation"
 msgstr ""
 
-#: web_client/templates/base.html:48
+#: web_client/templates/base.html:58
 msgid "Login"
 msgstr "Войти"
 
-#: web_client/templates/base.html:64
+#: web_client/templates/base.html:75
 msgid "Logout"
 msgstr "Выйти"
 
-#: web_client/templates/base.html:96
+#: web_client/templates/base.html:106
 msgid "Created by HSE University students"
 msgstr "Сделали студенты НИУ ВШЭ"
 
-#: web_client/templates/base.html:98
+#: web_client/templates/base.html:108
 msgid "Dmitriy Pchelkin"
 msgstr "Дмитрий Пчелкин"
 
-#: web_client/templates/base.html:100
+#: web_client/templates/base.html:110
 msgid "and"
 msgstr "и"
 
-#: web_client/templates/base.html:102
+#: web_client/templates/base.html:112
 msgid "Alexey Ivanov"
 msgstr "Алексей Иванов"
 
-#: web_client/templates/base.html:106
+#: web_client/templates/base.html:116
 msgid "Report issue"
 msgstr "Сообщить о проблеме"
 
-#: web_client/templates/base.html:110
+#: web_client/templates/base.html:120
 msgid "Contribute"
 msgstr "Содействовать"
 
@@ -299,6 +276,11 @@ msgstr "Забыли пароль?"
 #: web_client/templates/auth/login.html:19
 msgid "Click to Reset It"
 msgstr "Нажмите для сброса"
+
+#: web_client/templates/blog/page.html:9 web_client/templates/errors/404.html:6
+#: web_client/templates/errors/500.html:8
+msgid "Back"
+msgstr "Назад"
 
 #: web_client/templates/email/set_password.html:1
 #, python-format
@@ -337,10 +319,10 @@ msgstr "Команда Системного Генератора ПЛИС НИУ
 msgid "Page Not Found"
 msgstr "Страница не найдена"
 
-#: web_client/templates/errors/404.html:5
-#: web_client/templates/errors/500.html:7
-msgid "Back"
-msgstr "Назад"
+#: web_client/templates/errors/404.html:8
+#: web_client/templates/errors/500.html:10
+msgid "Go to main page"
+msgstr ""
 
 #: web_client/templates/errors/500.html:4
 msgid "An unexpected error has occurred :("
@@ -349,7 +331,34 @@ msgstr "Произошла неизвестная ошибка :("
 #: web_client/templates/errors/500.html:5
 msgid ""
 "The administrator has been notified.\n"
-"             Sorry for the inconvenience!"
+"            Sorry for the inconvenience!"
 msgstr ""
-"Администрация была уведомлена.\n"
-"             Приносим изменения за предоставленные неудобства!"
+
+#~ msgid "City"
+#~ msgstr "Город"
+
+#~ msgid "Company"
+#~ msgstr "Организация"
+
+#~ msgid "Position"
+#~ msgstr "Должность"
+
+#~ msgid "Age"
+#~ msgstr "Возраст"
+
+#~ msgid "Please enter your actual age."
+#~ msgstr "Пожалуйста, введите свой настоящий возраст."
+
+#~ msgid "This is a debug session: mailing is not supported!"
+#~ msgstr "Это отладочная сессия: отправка почты не поддерживается!"
+
+#~ msgid "Sorry, this is debug session: mailing is not supported!"
+#~ msgstr "Это отладочная сессия: отправка почты не поддерживается!"
+
+#~ msgid ""
+#~ "The administrator has been notified.\n"
+#~ "             Sorry for the inconvenience!"
+#~ msgstr ""
+#~ "Администрация была уведомлена.\n"
+#~ "             Приносим изменения за предоставленные неудобства!"
+
