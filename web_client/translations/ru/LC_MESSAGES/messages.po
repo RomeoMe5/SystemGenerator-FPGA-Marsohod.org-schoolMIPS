@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: dapchelkin@edu.hse.ru\n"
-"POT-Creation-Date: 2018-06-12 20:05+0300\n"
-"PO-Revision-Date: 2018-06-12 20:12+0300\n"
+"POT-Creation-Date: 2018-06-12 20:28+0300\n"
+"PO-Revision-Date: 2018-06-12 20:35+0300\n"
 "Last-Translator: Dmitriy Pchelkin <dapchelkin@edu.hse.ru>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -109,6 +109,10 @@ msgstr "Время действия ссылки истекло."
 #: web_client/auth/routes.py:154
 msgid "Your password has been updated!"
 msgstr "Ваш пароль был обновлен."
+
+#: web_client/blog/routes.py:36 web_client/templates/base.html:68
+msgid "Articles"
+msgstr "Статьи"
 
 #: web_client/generate/forms.py:8 web_client/generate/forms.py:22
 #: web_client/generate/forms.py:36 web_client/generate/forms.py:51
@@ -244,10 +248,6 @@ msgstr "Войти"
 #: web_client/templates/base.html:67
 msgid "Files"
 msgstr "Файлы"
-
-#: web_client/templates/base.html:68
-msgid "Articles"
-msgstr "Статьи"
 
 #: web_client/templates/base.html:75
 msgid "Logout"

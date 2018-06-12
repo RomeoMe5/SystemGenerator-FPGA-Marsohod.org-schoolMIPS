@@ -1,4 +1,5 @@
 from flask import abort, current_app, render_template, url_for
+from flask_babel import _
 from flask_login import login_required
 
 from engine.boards import BOARDS
@@ -32,7 +33,7 @@ def articles(link: str = None) -> object:
 
     return render_template(
         "blog/posts.html",
-        title="Articles",
+        title=_("Articles"),
         blog_posts=articles,
         boards=BOARDS
     )
