@@ -20,14 +20,17 @@ mkdir %STATIC_PATH%
 REM ===== Run application =====
 REM WEB:
 flask db init
-flask db migrate
+flask db migrate -m "initial"
 flask db upgrade
 
-REM if not translations exists
+REM if no translations exists
 flask translate init ru
+REM extract strings to translate
 flask translate update
+REM make translations ready to use for app
 flask translate compile
 
-python web_client_config.py REM add existing posts to database
+REM add existing posts to database
+python web_client_config.py
 
 flask run --with-threads

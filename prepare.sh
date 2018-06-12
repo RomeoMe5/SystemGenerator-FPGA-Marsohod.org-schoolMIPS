@@ -22,13 +22,17 @@ mkdir configs
 # ===== Run application =====
 # WEB:
 flask db init
-flask db migrate
+flask db migrate -m "initial"
 flask db upgrade
 
+# if no translations exists
 flask translate init ru
+# extract strings to translate
 flask translate update
+# make translations ready to use for app
 flask translate compile
 
-python3 web_client_config.py # add existing posts to database
+# add existing posts to database
+python3 web_client_config.py
 
 flask run --with-threads
