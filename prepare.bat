@@ -23,6 +23,7 @@ flask db init
 flask db migrate
 flask db upgrade
 
+REM if not translations exists
 flask translate init ru
 flask translate update
 flask translate compile

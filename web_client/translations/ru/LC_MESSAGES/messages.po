@@ -7,19 +7,20 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  0.0.1\n"
+"Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: dapchelkin@edu.hse.ru\n"
-"POT-Creation-Date: 2018-06-11 07:54+0300\n"
-"PO-Revision-Date: 2018-05-14 11:24+0300\n"
+"POT-Creation-Date: 2018-06-12 20:05+0300\n"
+"PO-Revision-Date: 2018-06-12 20:12+0300\n"
 "Last-Translator: Dmitriy Pchelkin <dapchelkin@edu.hse.ru>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 "
+"&& (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+"X-Generator: Poedit 2.0.8\n"
 
 #: web_client/__init__.py:24
 msgid "Please log in to access this page."
@@ -36,7 +37,7 @@ msgstr "[Системный Генератор ПЛИС НИУ ВШЭ] Обно�
 #: web_client/auth/forms.py:12 web_client/auth/forms.py:20
 #: web_client/auth/forms.py:30
 msgid "Email"
-msgstr ""
+msgstr "Адрес электронной почты"
 
 #: web_client/auth/forms.py:13 web_client/auth/forms.py:35
 msgid "Password"
@@ -79,13 +80,13 @@ msgstr "Неправильное имя пользователя или паро
 
 #: web_client/auth/routes.py:83 web_client/auth/routes.py:120
 msgid "This is a debug session: mailing is not supported"
-msgstr ""
+msgstr "Внимание: это отладочная сессия, отправка электронной почты отключена"
 
 #: web_client/auth/routes.py:89
 msgid "Error occurs while mailing you, please contact support!"
 msgstr ""
-"Во время отправки сообщения на указанный email произошла ошибка! "
-"Пожалуйста, свяжитесь с поддержкой."
+"Во время отправки сообщения на указанный email произошла ошибка! Пожалуйста, "
+"свяжитесь с поддержкой."
 
 #: web_client/auth/routes.py:94
 msgid "Check your email address for setting password link!"
@@ -94,8 +95,7 @@ msgstr "На указанный адрес отправлено письмо д�
 #: web_client/auth/routes.py:125
 msgid "Check email for the instructions to reset your password"
 msgstr ""
-"Инструкции по сбросу пароля отправлены на указанный адрес электронной "
-"почты"
+"Инструкции по сбросу пароля отправлены на указанный адрес электронной почты"
 
 #: web_client/auth/routes.py:130
 #: web_client/templates/auth/reset_password_request.html:5
@@ -125,12 +125,12 @@ msgstr ""
 #: web_client/generate/forms.py:38 web_client/generate/forms.py:53
 #: web_client/generate/forms.py:68
 msgid "Clock"
-msgstr ""
+msgstr "Генератор частоты"
 
 #: web_client/generate/forms.py:11 web_client/generate/forms.py:25
 #: web_client/generate/forms.py:39 web_client/generate/forms.py:54
 msgid "Keys"
-msgstr ""
+msgstr "Кнопки"
 
 #: web_client/generate/forms.py:12 web_client/generate/forms.py:26
 #: web_client/generate/forms.py:40 web_client/generate/forms.py:55
@@ -141,7 +141,7 @@ msgstr ""
 #: web_client/generate/forms.py:13 web_client/generate/forms.py:27
 #: web_client/generate/forms.py:41 web_client/generate/forms.py:56
 msgid "Leds"
-msgstr ""
+msgstr "Светодиоды"
 
 #: web_client/generate/forms.py:14 web_client/generate/forms.py:28
 #: web_client/generate/forms.py:79
@@ -156,7 +156,7 @@ msgstr ""
 #: web_client/generate/forms.py:16 web_client/generate/forms.py:30
 #: web_client/generate/forms.py:45 web_client/generate/forms.py:60
 msgid "I/O"
-msgstr ""
+msgstr "Пины общего назначения"
 
 #: web_client/generate/forms.py:17 web_client/generate/forms.py:31
 #: web_client/generate/forms.py:46 web_client/generate/forms.py:61
@@ -167,7 +167,7 @@ msgstr "Прочее"
 #: web_client/generate/forms.py:47 web_client/generate/forms.py:62
 #: web_client/generate/forms.py:81
 msgid "Generate"
-msgstr ""
+msgstr "Создать"
 
 #: web_client/generate/forms.py:42 web_client/generate/forms.py:57
 msgid "TMDS"
@@ -183,19 +183,19 @@ msgstr ""
 
 #: web_client/generate/forms.py:67
 msgid "Audio"
-msgstr ""
+msgstr "Аудио"
 
 #: web_client/generate/forms.py:69
 msgid "I2C Audio and Video Input"
-msgstr ""
+msgstr "I2C аудио и видео вход"
 
 #: web_client/generate/forms.py:70
 msgid "Key"
-msgstr ""
+msgstr "Кнопка"
 
 #: web_client/generate/forms.py:73
 msgid "Seg7"
-msgstr ""
+msgstr "Семи-сегментный индикатор"
 
 #: web_client/generate/forms.py:74
 msgid "IR"
@@ -203,7 +203,7 @@ msgstr ""
 
 #: web_client/generate/forms.py:75
 msgid "Led"
-msgstr ""
+msgstr "Светодиод"
 
 #: web_client/generate/forms.py:76
 msgid "PS2"
@@ -215,7 +215,7 @@ msgstr ""
 
 #: web_client/generate/forms.py:78
 msgid "Video Input"
-msgstr ""
+msgstr "Видео вход"
 
 #: web_client/generate/forms.py:80
 msgid "HPS"
@@ -227,11 +227,27 @@ msgstr "Системный Генератор ПЛИС НИУ ВШЭ"
 
 #: web_client/templates/base.html:20
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Показать навигацию"
+
+#: web_client/templates/base.html:36
+msgid "Configs Generator"
+msgstr "Генератор конфигураций"
+
+#: web_client/templates/base.html:39
+msgid "Board type"
+msgstr "Тип платы"
 
 #: web_client/templates/base.html:58
 msgid "Login"
 msgstr "Войти"
+
+#: web_client/templates/base.html:67
+msgid "Files"
+msgstr "Файлы"
+
+#: web_client/templates/base.html:68
+msgid "Articles"
+msgstr "Статьи"
 
 #: web_client/templates/base.html:75
 msgid "Logout"
@@ -261,6 +277,14 @@ msgstr "Сообщить о проблеме"
 msgid "Contribute"
 msgstr "Содействовать"
 
+#: web_client/templates/index.html:5
+msgid "HSE University System Builder for Marsohod boards."
+msgstr "Системный генератор ПЛИС НИУ ВШЭ"
+
+#: web_client/templates/index.html:8
+msgid "This is just a draft of <b>index page</b>."
+msgstr "Это черновик <b>главной страницы</b>"
+
 #: web_client/templates/auth/_about.jinja:2
 msgid "This is FPGA Marsohod CAD web client."
 msgstr "Системный Генератор ПЛИС НИУ ВШЭ: веб-клиент"
@@ -282,6 +306,18 @@ msgstr "Нажмите для сброса"
 msgid "Back"
 msgstr "Назад"
 
+#: web_client/templates/blog/posts.html:9 web_client/templates/files/static.html:9
+msgid "#"
+msgstr "№"
+
+#: web_client/templates/blog/posts.html:10
+msgid "Article Title"
+msgstr "Название статьи"
+
+#: web_client/templates/blog/posts.html:11
+msgid "Date"
+msgstr "Дата"
+
 #: web_client/templates/email/set_password.html:1
 #, python-format
 msgid "Dear %(username)s"
@@ -297,15 +333,13 @@ msgstr "нажмите здесь"
 
 #: web_client/templates/email/set_password.html:8
 msgid ""
-"Alternatively, you can paste the following link in your browser's address"
-" bar"
+"Alternatively, you can paste the following link in your browser's address bar"
 msgstr "Кроме того, вы можете вставить следующую ссылку в адресную строку браузера"
 
 #: web_client/templates/email/set_password.html:10
 msgid "If you have not requested a password update simply ignore this message"
 msgstr ""
-"Если вы не запрашивали обновление пароля, просто проигнорируйте это "
-"сообщение"
+"Если вы не запрашивали обновление пароля, просто проигнорируйте это сообщение"
 
 #: web_client/templates/email/set_password.html:11
 msgid "Sincerely"
@@ -319,10 +353,9 @@ msgstr "Команда Системного Генератора ПЛИС НИУ
 msgid "Page Not Found"
 msgstr "Страница не найдена"
 
-#: web_client/templates/errors/404.html:8
-#: web_client/templates/errors/500.html:10
+#: web_client/templates/errors/404.html:8 web_client/templates/errors/500.html:10
 msgid "Go to main page"
-msgstr ""
+msgstr "Вернуться на главную"
 
 #: web_client/templates/errors/500.html:4
 msgid "An unexpected error has occurred :("
@@ -333,6 +366,20 @@ msgid ""
 "The administrator has been notified.\n"
 "            Sorry for the inconvenience!"
 msgstr ""
+"Администрация была уведомлена.\n"
+"            Приносим извинения за предоставленные неудобства!"
+
+#: web_client/templates/files/static.html:10
+msgid "Name"
+msgstr "Имя"
+
+#: web_client/templates/files/static.html:11
+msgid "Type"
+msgstr "Тип"
+
+#: web_client/templates/files/static.html:12
+msgid "Size"
+msgstr "Размер"
 
 #~ msgid "City"
 #~ msgstr "Город"
@@ -361,4 +408,3 @@ msgstr ""
 #~ msgstr ""
 #~ "Администрация была уведомлена.\n"
 #~ "             Приносим изменения за предоставленные неудобства!"
-
