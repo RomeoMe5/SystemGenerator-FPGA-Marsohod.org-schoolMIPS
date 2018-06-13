@@ -13,7 +13,7 @@ sudo pip3 install --no-cache -r tests/requirements.txt # tests
 # ===== Set environment variables =====
 export FLASK_APP=run_web.py
 export FLASK_DEBUG=1
-export STATIC_PATH=.generated
+export STATIC_PATH=.gen
 
 mkdir $STATIC_PATH
 
@@ -33,6 +33,6 @@ flask translate update
 flask translate compile
 
 # add existing posts to database
-python3 web_client_config.py
+python3 web_add_existing_posts.py
 
 flask run --with-threads

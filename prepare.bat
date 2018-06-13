@@ -13,7 +13,7 @@ pip install --no-cache -r tests/requirements.txt REM tests
 REM ===== Set environment variables =====
 set FLASK_APP=run_web.py
 set FLASK_DEBUG=1
-set STATIC_PATH=.generated
+set STATIC_PATH=.gen
 
 mkdir %STATIC_PATH%
 
@@ -31,6 +31,6 @@ REM make translations ready to use for app
 flask translate compile
 
 REM add existing posts to database
-python web_client_config.py
+python web_add_existing_posts.py
 
 flask run --with-threads
