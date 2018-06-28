@@ -1,21 +1,20 @@
 """ Rendering interface """
 
 import os
-import re
-from collections import Callable
 from datetime import datetime
 from functools import wraps
+from typing import Any, Callable
 
-from engine.utils import PATHS
-from engine.utils.log import LOGGER, log
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
+from engine.utils import PATHS
+from engine.utils.log import LOGGER, log
+from engine.utils.misc import none_safe
+
 try:
-    # global config imports
     from engine_config import COPYRIGHT
-except ImportError as err:
-    # default values
+except ImportError as exc:
     COPYRIGHT = "Higher School for Economics University"
 
 
@@ -38,10 +37,10 @@ def load_template(path: str, file_type: str=None) -> Callable:
     """
     def decor(func: Callable) -> Callable:
         @wraps(func)
-        def wrapper(*args, **kwargs) -> object:
+        def wrapper(*args, **kwargs) -> Any:
             f_type = file_type  # because of naming scope conflicts
             if not f_type:
-                f_type = path.split()[0]  # func.__name__
+                f_type = path.split()[0]
                 LOGGER.debug("Assume file type is '%s'.", f_type)
             LOGGER.debug("Loading template '%s'...", path)
             return func(
@@ -86,18 +85,18 @@ class Render(object):
     @staticmethod
     @load_template("qpf.jinja")
     def qpf(project_name: str,
-            quartus_version: str="15.1.0",
+            quartus_version: str,
+            meta_info: dict=None,
+            revisions: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qpf files """
-        meta_info = {
+        meta_info = meta_info or {}
+        meta_info.update({
             'date': Render.format_date(quoted=False, sep=True),
             'quartus_version': quartus_version
-        }
-        meta_info.update(kwargs.pop('meta_info', {}))
-
-        revisions = {'project_revision': project_name}
-        revisions.update(kwargs.pop('revisions', {}))
-
+        })
+        revisions = revisions or {}
+        revisions.update({'project_revision': project_name})
         return Render._render(
             project_name=project_name,
             meta_info=meta_info,
@@ -110,25 +109,25 @@ class Render(object):
     def qsf(project_name: str,
             family: str,
             device: str,
-            original_quartus_version: str='"9.0"',
-            last_quartus_version: str='"9.0"',
+            original_quartus_version: str="9.0",
+            last_quartus_version: str="9.0",
             project_output_directory: str=None,
             user_assignments: dict=None,
+            global_assignments: dict=None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
-        if not project_output_directory:
-            project_output_directory = "project_output"
-        global_assignments = {
+        global_assignments = global_assignments or {}
+        project_output_directory = project_output_directory or "project_output"
+        global_assignments.update({
             'project_creation_time_date': Render.format_date().upper(),
-            'family': family,
+            'family': f"\"{family}\"",
             'device': device,
-            'original_quartus_version': original_quartus_version,
-            'last_quartus_version': last_quartus_version,
+            'original_quartus_version': f"\"{original_quartus_version}\"",
+            'last_quartus_version': f"\"{last_quartus_version}\"",
             'top_level_entity': f"\"{project_name}\"",
             'project_output_directory': project_output_directory,
-            # [minor] [wtf?] TODO 'sdc_file': f"{project_name}.sdc"
-        }
-        global_assignments.update(kwargs.pop('global_assignments', {}))
+            # [feature] [minor] TODO 'sdc_file': f"{project_name}.sdc"
+        })
         return Render._render(
             project_name=project_name,
             global_assignments=global_assignments,
@@ -137,12 +136,14 @@ class Render(object):
         )
 
     # [bug] TODO: fix bug in template rendering instead of using regexes
+    # [feature] TODO: add correct sdc generation
     @staticmethod
     @load_template("sdc.jinja")
     def sdc(project_name: str, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
+        import re  # to fix comments rendering
+
         rendered = Render._render(project_name=project_name, **kwargs)
-        # fix comments rendering
         rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)
         return rendered
 
@@ -154,6 +155,28 @@ class Render(object):
         """ Template rendering interface for .v files """
         return Render._render(
             project_name=project_name,
-            assigments=assigments,
+            assigments=assigments or {},
+            **kwargs
+        )
+
+    @staticmethod
+    def functions(name: str,
+                  clock_rate: int=None,  # eq to clock_freq
+                  clock_freq: int=None,
+                  delay: int=None,  # debouncer (millis)
+                  width: int=None,  # dmx
+                  out_freq: int=None,  # generator
+                  baud_rate: int=None,  # uart
+                  **kwargs) -> str:
+        """ Template rendering interface for additional functions """
+        path = f"functions/{name}"
+        return none_safe()(Render._render)(
+            template=ENV.get_template(path),
+            clock_rate=clock_rate or clock_freq,
+            clock_freq=clock_rate or clock_freq,
+            delay=delay,
+            width=width,
+            out_freq=out_freq,
+            baud_rate=baud_rate,
             **kwargs
         )

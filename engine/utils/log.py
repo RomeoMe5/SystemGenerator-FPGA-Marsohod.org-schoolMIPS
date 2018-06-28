@@ -1,11 +1,10 @@
 import os
-from collections import Callable
 from functools import wraps
+from typing import Any, Callable
 
 try:
-    from engine_config import LOGGER  # global config logger import
-except ImportError as err:
-    # default logging configuration
+    from engine_config import LOGGER
+except ImportError as exc:
     import logging
     from logging.handlers import RotatingFileHandler
     from engine.utils.globals import PATHS
@@ -25,20 +24,20 @@ except ImportError as err:
     FILE_HANDLER.setLevel(LOG_LEVEL)
     LOGGER.addHandler(FILE_HANDLER)
 
-    LOGGER.warning(err)
+    LOGGER.debug(exc)
 
 
 def log(func: Callable) -> Callable:
     """ Logging function/method behavior """
 
     @wraps(func)
-    def wrapper(*args, **kwargs) -> None:
-        LOGGER.debug("ENTER(%s)", func.__name__)
+    def wrapper(*args, **kwargs) -> Any:
+        LOGGER.debug("<%s> ENTER", func.__name__)
         for arg in args:
-            LOGGER.debug("ARG::%s", arg)
+            LOGGER.debug("<%s> ARG  \t%s", func.__name__, arg)
         for key, value in kwargs.items():
-            LOGGER.debug("KWARG::%s=%s", key, value)
+            LOGGER.debug("<%s> KWARG\t%s=%s", func.__name__, key, value)
         result = func(*args, **kwargs)
-        LOGGER.debug("EXIT(%s)::%s", func.__name__, result)
+        LOGGER.debug("<%s> EXIT \t%s", func.__name__, result)
         return result
     return wrapper
