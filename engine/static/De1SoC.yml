@@ -1,10 +1,11 @@
+# [bug] TODO: add correct clock_rate
 qpf:
-  quartus_version: 15.1.0
+  quartus_version: '15.1.0'
 qsf:
-  family: '"Cyclone V"'
+  family: 'Cyclone V'
   device: 5CSEMA5F31C6
-  original_quartus_version: '"15.1.0"'
-  last_quartus_version: '"15.1.0"'
+  original_quartus_version: '15.1.0'
+  last_quartus_version: '15.1.0'
   project_output_directory: output_files
   global_assignments:
     device_filter_package: FBGA
@@ -620,3 +621,7 @@ v:
     - - output
       - ''
       - HPS_USB_STP
+func:
+  clock_rate: 100000000
+misc:
+  message: "THIS CLASS SHOULD BE USED ONLY FOR DEBUGGING.\nPlease, use the oficial Altera app for generating configs for this type of devices."

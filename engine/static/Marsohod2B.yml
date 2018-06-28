@@ -1,10 +1,11 @@
+# [bug] TODO: add correct clock_rate
 qpf:
   quartus_version: '9.0'
 qsf:
-  family: '"Cyclone IV"'
+  family: 'Cyclone IV'
   device: EP4CE6E22C8N
-  original_quartus_version: '"9.0 SP2"'
-  last_quartus_version: '"9.0 SP2"'
+  original_quartus_version: '9.0 SP2'
+  last_quartus_version: '9.0 SP2'
   project_output_directory: output_files
   global_assignments:
     min_core_junction_temp: 0
@@ -334,3 +335,5 @@ v:
     - - output
       - ''
       - ASDO
+func:
+  clock_rate: 100000000

@@ -1,10 +1,10 @@
 qpf:
-  quartus_version: 15.1.0
+  quartus_version: '15.1.0'
 qsf:
-  family: '"MAX 10"'
+  family: 'MAX 10'
   device: 10M50SAE144C8GES
-  original_quartus_version: '"15.1.0"'
-  last_quartus_version: '"15.1.0"'
+  original_quartus_version: '15.1.0'
+  last_quartus_version: '15.1.0'
   project_output_directory: output_files
   global_assignments:
     min_core_junction_temp: 0
@@ -329,3 +329,5 @@ v:
     - - input
       - ''
       - RESERVED
+func:
+  clock_rate: 100000000
