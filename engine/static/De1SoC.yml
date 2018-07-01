@@ -12,7 +12,7 @@ qsf:
     device_filter_pin_count: 896
     device_filter_speed_grade: 6
   user_assignments:
-    audio:
+    Audio:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -45,7 +45,7 @@ qsf:
         - AUD_DACLRCK
       - - PIN_G7
         - AUD_XCK
-    clock:
+    Clock:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -68,7 +68,7 @@ qsf:
         - CLOCK4_50
       - - PIN_AF14
         - CLOCK_50
-    i2c for audio and video-in:
+    I2C for Audio and Video-In:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -81,7 +81,7 @@ qsf:
         - FPGA_I2C_SCLK
       - - PIN_K12
         - FPGA_I2C_SDAT
-    key:
+    Key:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -621,7 +621,7 @@ v:
     - - output
       - ''
       - HPS_USB_STP
-func:
-  clock_rate: 100000000
+  func:
+    clock_rate: 100000000
 misc:
   message: "THIS CLASS SHOULD BE USED ONLY FOR DEBUGGING.\nPlease, use the oficial Altera app for generating configs for this type of devices."

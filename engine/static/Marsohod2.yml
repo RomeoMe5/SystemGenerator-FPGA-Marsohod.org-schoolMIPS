@@ -1,4 +1,3 @@
-# [bug] TODO: add correct clock_rate
 qpf:
   quartus_version: '9.0'
 qsf:
@@ -23,11 +22,11 @@ qsf:
         - FTDI_BD2
       - - PIN_10
         - FTDI_BD3
-    CLOCK:
+    Clock:
       location:
       - - PIN_25
         - CLK100MHZ
-    KEY:
+    Key:
       location:
       - - PIN_23
         - KEY0
@@ -109,7 +108,7 @@ qsf:
         - SDRAM_WE
       - - PIN_44
         - SDRAM_CLK
-    LED:
+    Led:
       location:
       - - PIN_79
         - LED[3]
@@ -177,7 +176,7 @@ qsf:
         - ADC_D[7]
       - - PIN_86
         - ADC_CLK
-    I/O:
+    i/o:
       location:
       - - PIN_101
         - IO[0]
@@ -211,7 +210,7 @@ qsf:
         - IO[14]
       - - PIN_125
         - IO[15]
-    OTHERS:
+    Others:
       location:
       - - PIN_12
         - DCLK
@@ -249,11 +248,11 @@ v:
     - - output
       - ''
       - FTDI_BD3
-    CLOCK:
+    Clock:
     - - input
       - ''
       - CLK100MHZ
-    KEY:
+    Key:
     - - input
       - ''
       - KEY0
@@ -291,7 +290,7 @@ v:
     - - input
       - ''
       - SDRAM_CLK
-    LED:
+    Led:
     - - output
       - "[3:0]"
       - LED
@@ -318,11 +317,11 @@ v:
     - - output
       - ''
       - ADC_CLK
-    I/O:
+    i/o:
     - - output
       - "[15:0]"
       - IO
-    OTHERS:
+    Others:
     - - output
       - ''
       - DCLK

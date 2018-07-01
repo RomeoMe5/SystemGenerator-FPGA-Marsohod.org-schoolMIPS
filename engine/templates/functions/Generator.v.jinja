@@ -14,8 +14,8 @@
  * to {OUT_FREQ}.
  */
 module Generator  #(
-	parameter CLOCK_FREQ = {%- if clock_freq -%}{{ clock_freq }}{%- else -%}100000000{%- endif -%}, // board internal clock
-	parameter OUT_FREQ = {%- if out_freq -%}{{ out_freq }}{%- else -%}1000000{%- endif -%} // output frequency
+	parameter CLOCK_FREQ = {{ clock_freq }}, // board internal clock
+	parameter OUT_FREQ = {{ out_freq }} // output frequency
 )(
 	input wire clk, // board clock
 	output reg out

@@ -15,8 +15,8 @@
  * Able to operate 8 bits of serial data, one start bit, one stop bit.
  */
 module Uart8  #(
-	parameter CLOCK_RATE = {%- if clock_rate -%}{{ clock_rate }}{%- else -%}100000000{%- endif -%}, // board internal clock
-	parameter BAUD_RATE = {%- if baud_rate -%}{{ baud_rate }}{%- else -%}9600{%- endif -%}
+	parameter CLOCK_RATE = {{ clock_rate }}, // board internal clock
+	parameter BAUD_RATE = {{ baud_rate }}
 )(
 	input wire clk,
 

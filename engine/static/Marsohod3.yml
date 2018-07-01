@@ -22,11 +22,11 @@ qsf:
         - FTDI_BD2
       - - PIN_136
         - FTDI_BD3
-    CLOCK:
+    Clock:
       location:
       - - PIN_26
         - CLK100MHZ
-    KEY:
+    Key:
       location:
       - - PIN_130
         - KEY0
@@ -106,7 +106,7 @@ qsf:
         - SDRAM_WE
       - - PIN_41
         - SDRAM_CLK
-    LED:
+    Led:
       location:
       - - PIN_81
         - LED[7]
@@ -178,7 +178,7 @@ qsf:
         - FTC[6]
       - - PIN_6
         - FTC[7]
-    I/O:
+    i/o:
       location:
       - - PIN_89
         - IO[0]
@@ -220,7 +220,7 @@ qsf:
         - IO[18]
       - - PIN_118
         - IO[19]
-    OTHERS:
+    Others:
       location:
       - - PIN_123
         - RESERVED
@@ -254,11 +254,11 @@ v:
     - - output
       - ''
       - FTDI_BD3
-    CLOCK:
+    Clock:
     - - input
       - ''
       - CLK100MHZ
-    KEY:
+    Key:
     - - input
       - ''
       - KEY0
@@ -302,7 +302,7 @@ v:
     - - input
       - ''
       - SDRAM_CLK
-    LED:
+    Led:
     - - output
       - "[7:0]"
       - LED
@@ -318,11 +318,11 @@ v:
     - - output
       - "[7:0]"
       - FTC
-    I/O:
+    i/o:
     - - output
       - "[19:0]"
       - IO
-    OTHERS:
+    Others:
     - - input
       - ''
       - BOOT_SEL

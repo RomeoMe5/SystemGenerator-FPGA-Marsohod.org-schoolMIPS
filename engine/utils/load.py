@@ -23,13 +23,17 @@ class Loader(object):
             return fin.read()  # read plain text
 
     @staticmethod
-    def load_static(filename: str,
-                    path_to_static: str=PATHS.STATIC,
+    def load_static(path: str,
+                    path_to_static: str=None,
                     loader_params: dict=None,
+                    encoding: str=None,
                     **kwargs) -> Any:
         """ Loads content of static file from engine 'static' folder """
-        filepath = Loader.get_static_path(filename, path_to_static)
-        return Loader.load(filepath, loader_params, **kwargs)
+        filepath = path
+        if path_to_static is not None:
+            filepath = Loader.get_static_path(path, path_to_static)
+        content = Loader.load(filepath, loader_params, **kwargs)
+        return content.decode(encoding) if encoding is not None else content
 
     @staticmethod
     def get_static_path(filename: str,

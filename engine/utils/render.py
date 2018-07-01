@@ -155,18 +155,18 @@ class Render(object):
         """ Template rendering interface for .v files """
         return Render._render(
             project_name=project_name,
-            assigments=assigments or {},
+            assigments=assigments,
             **kwargs
         )
 
     @staticmethod
     def functions(name: str,
-                  clock_rate: int=None,  # eq to clock_freq
+                  clock_rate: int=100000000,  # eq to clock_freq
                   clock_freq: int=None,
-                  delay: int=None,  # debouncer (millis)
-                  width: int=None,  # dmx
-                  out_freq: int=None,  # generator
-                  baud_rate: int=None,  # uart
+                  delay: int=100,  # debouncer (millis)
+                  width: int=2,  # dmx
+                  out_freq: int=1000000,  # generator
+                  baud_rate: int=9600,  # uart
                   **kwargs) -> str:
         """ Template rendering interface for additional functions """
         path = f"functions/{name}"

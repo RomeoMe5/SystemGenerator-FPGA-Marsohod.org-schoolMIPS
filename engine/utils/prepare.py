@@ -110,7 +110,7 @@ class Archiver(object):
 
     @staticmethod
     def to_tar_flow(files: dict,
-                    path: str,
+                    path: str=None,
                     in_memory: bool=False) -> io.BytesIO:
         """ Write tar I/O to tar file """
         tar_io = Archiver.get_tar_io(files)
@@ -192,7 +192,7 @@ class Archiver(object):
         return Archiver._archive(*filenames, **params)
 
     # [feature] TODO: implement extraction
-    # Note: this function signature refer to public method
+    # NOTE: this function signature refer to public method
     # but was hidden until method will be finished
     @staticmethod
     def _extract(path: str, destination: str = ".", **kwargs) -> int:
