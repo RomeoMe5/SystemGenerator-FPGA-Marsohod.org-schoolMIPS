@@ -11,7 +11,7 @@ sudo pip3 install --no-cache -r engine/requirements.txt # engine
 sudo pip3 install --no-cache -r tests/requirements.txt # tests
 
 # ===== Set environment variables =====
-export FLASK_APP=run_web.py
+# export FLASK_APP=app.py
 export FLASK_DEBUG=1
 export STATIC_PATH=.gen
 

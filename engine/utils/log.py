@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Any, Callable
 
 try:
-    from engine_config import LOGGER
+    from configs.engine import LOGGER
 except ImportError as exc:
     import logging
     from logging.handlers import RotatingFileHandler

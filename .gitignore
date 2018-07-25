@@ -1,4 +1,5 @@
 # ===== Common =====
+.pytest_cache/
 __pycache__/
 .generated/
 .vscode/
@@ -12,8 +13,12 @@ temp/
 logs/
 log/
 
-.env
+*.env
 *tmp*
+
+*.ovpn
+*.ppk
+*.key
 
 *.py[cod]
 *.log
@@ -28,7 +33,6 @@ simulation/
 db/
 
 # ===== Web Client =====
-migrations/
 bak/
 rsc/
 

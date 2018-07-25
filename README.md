@@ -22,7 +22,7 @@ pip install --no-cache -r requirements.txt
 pip install --no-cache -r engine/requirements.txt
 
 # set environment variables [use 'set' instead of 'export' for winfows]
-export FLASK_APP=run_web.py
+# export FLASK_APP=app.py
 export STATIC_PATH=.generated # where to store generated configs
 
 # [use '%STATIC_PATH%' for windows]
@@ -38,7 +38,7 @@ flask db upgrade
 flask translate compile
 
 # add existing posts to database
-python3 web_client_config.py
+python3 web_add_existing_posts.py
 
 # finally, run application
 flask run --with-threads

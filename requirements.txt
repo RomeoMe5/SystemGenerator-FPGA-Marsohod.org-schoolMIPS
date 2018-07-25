@@ -1,24 +1,39 @@
-# Web-Client dependencies
-alembic==0.9.7
-Babel==2.5.3
-Flask==0.12.2
+dill==0.2.8.2
+Flask==1.0.2
 Flask-Babel==0.11.2
 Flask-Bootstrap==3.3.7.1
+Flask-HTTPAuth==3.2.4
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
-Flask-Migrate==2.1.1
+Flask-Migrate==2.2.1
+Flask-Moment==0.6.0
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 Jinja2==2.10
-Mako==1.0.7
-PyJWT==1.5.3
+Markdown==2.6.11
+PyJWT==1.6.4
 python-dotenv==0.8.2
-SQLAlchemy==1.2.1
-WTForms==2.1
+PyYaml==3.13
+SQLAlchemy==1.2.9
+WTForms==2.2.1
+
+# Pruposed
+# elasticsearch
+# guess-language-spirit  # unused
+# pyLinguist
+# redis==2.10.6
+# rq==0.11.0
 
 # Dev dependencies
-autopep8==1.3.3
-isort==4.2.15
-jedi==0.11.1
+autopep8==1.3.5
+httpie==0.9.9
+isort==4.3.4
+jedi==0.12.1
 pep8==1.7.1
-pylint==1.8.1
+pycodestyle==2.4.0
+pylint==1.9.2
+pytest==3.6.3
+
+# Deployment
+# psycopg2
+# gunicorn

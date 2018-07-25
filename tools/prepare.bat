@@ -11,7 +11,7 @@ pip install --no-cache -r engine/requirements.txt REM engine
 pip install --no-cache -r tests/requirements.txt REM tests
 
 REM ===== Set environment variables =====
-set FLASK_APP=run_web.py
+REM set FLASK_APP=app.py
 set FLASK_DEBUG=1
 set STATIC_PATH=.gen
 

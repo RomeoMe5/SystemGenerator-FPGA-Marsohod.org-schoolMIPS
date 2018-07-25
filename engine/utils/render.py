@@ -13,7 +13,7 @@ from engine.utils.log import LOGGER, log
 from engine.utils.misc import none_safe
 
 try:
-    from engine_config import COPYRIGHT
+    from configs.engine import COPYRIGHT
 except ImportError as exc:
     COPYRIGHT = "Higher School for Economics University"
 
