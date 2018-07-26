@@ -1,7 +1,7 @@
 from flask import current_app, render_template
 from flask_babel import _
 
-from web_client.email import send_email
+from web_client.utils import send_email
 from web_client.models import User
 
 

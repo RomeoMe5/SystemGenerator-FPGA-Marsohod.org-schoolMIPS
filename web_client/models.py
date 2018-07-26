@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
                            default=False)
 
     # optional
-    _avatarS = db.Column(db.String(256))
+    _avatarS = db.Column(db.String(256))  # small
     _avatar = db.Column(db.String(256))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     del_dt = db.Column(db.DateTime)
@@ -60,7 +60,7 @@ class User(UserMixin, db.Model):
 
     # NOTE email address should be validated in forms
     @email.setter
-    def email(self, email: str) -> NoReturn:
+    def email(self, value: str) -> NoReturn:
         self._email = escape(value.strip().lower())
 
     # NOTE it's only needed to define setter
@@ -69,9 +69,9 @@ class User(UserMixin, db.Model):
         return
 
     @password.setter
-    def password(self, password: str) -> NoReturn:
+    def password(self, value: str) -> NoReturn:
         """ Set's password hash for current user. """
-        self._password_hash = generate_password_hash(password)
+        self._password_hash = generate_password_hash(value)
 
     @property
     def avatar(self) -> str:

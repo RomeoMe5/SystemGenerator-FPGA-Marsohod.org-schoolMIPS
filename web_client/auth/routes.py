@@ -1,5 +1,5 @@
-import os
-import shutil
+from functools import wraps
+from typing import Callable
 
 from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
@@ -9,86 +9,100 @@ from werkzeug.urls import url_parse
 
 from web_client import db
 from web_client.auth import bp
-from web_client.auth.email import send_password_update_email
 from web_client.auth.forms import (LoginForm, RegistrationForm,
                                    ResetPasswordRequestForm, SetPasswordForm)
+from web_client.auth.utils import send_password_update_email
 from web_client.models import User
 from web_client.utils import get_random_str
 
 
-@bp.route('/login', methods=["GET", "POST"])
-def login() -> object:
-    if current_user.is_authenticated:
-        current_app.logger.debug("[login] authenticated: %s", current_user)
-        return redirect(url_for("main.index"))
+def filter_authenticated(func: Callable) -> Callable:
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> object:
+        if current_user.is_authenticated:
+            current_app.logger.debug("Already authenticated: %s", current_user)
+            return redirect(url_for("main.index"))
+        return func(*args, **kwargs)
+    return wrapper
 
+
+def get_debug_token(user: User) -> object:
+    token = user.verification_token
+    current_app.logger.debug("[debug session] verification token: %s", token)
+    flash("This is a debug session: mailing is not supported")
+    return redirect(url_for("auth.update_password", token=token))
+
+
+@bp.route("/login", methods=["GET", "POST"])
+@filter_authenticated
+def login() -> object:
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(_email=form.email.data).first()
+        email = form.email.data.strip().lower()
+        user = User.query.filter_by(is_deleted=False, _email=email).first()
 
         if not user or not user.check_password(form.password.data):
-            current_app.logger.info("[login] invalid password: ",
-                                    form.email.data)
+            msg = "Invalid password: %s"
+            if not user:
+                msg = "User not found: %s"
+            current_app.logger.info(msg, email)
             flash(_("Invalid username or password"))
             return redirect(url_for("auth.login"))
 
+        current_app.logger.info("Sign in user: %s", user)
         login_user(user, remember=form.remember_me.data)
-        current_app.logger.info("login user: %s", user)
-
-        if not os.path.exists(user.path):
-            current_app.logger.debug("Create dir: %s", user.path)
-            os.mkdir(user.path)
 
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc:
             next_page = url_for("main.index")
-
         return redirect(next_page)
 
     return render_template("auth/login.html", title=_("Sign In"), form=form)
 
 
-@bp.route('/logout')
+@bp.route("/logout")
 def logout() -> object:
-    if os.path.exists(current_user.path):
-        current_app.logger.debug("Remove dir: %s", current_user.path)
-        shutil.rmtree(current_user.path)
-    current_app.logger.info("logout user: %s", current_user)
+    current_app.logger.info("Logout user: %s", current_user)
     logout_user()
     return redirect(url_for("auth.login"))
 
 
-@bp.route('/register', methods=["GET", "POST"])
+@bp.route("/register", methods=["GET", "POST"])
+@filter_authenticated
 def register() -> object:
-    if current_user.is_authenticated:
-        current_app.logger.debug("[reg] authenticated: %s", current_user)
-        return redirect(url_for("main.index"))
-
     form = RegistrationForm()
-    if form.validate_on_submit():  # assume that form handle all validations
-        user = User()
-        user.email = form.email.data
-        user.password = get_random_str()  # temporary set random password
+    # assume that form handle all validations
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        old_user = User.query.filter_by(is_deleted=True, _email=email).first()
+        if old_user is not None:
+            current_app.logger.info("Remove existing user: %s", old_user)
+            db.session.delete(old_user)
+            db.session.commit()
 
+        user = User()
+        user.email = email
+        user.username = email.split("@")[0]
+        user.password = get_random_str()  # NOTE temporary set random password
+
+        current_app.logger.info("Register user with tmp password: %s", user)
         db.session.add(user)
         db.session.commit()
-        current_app.logger.debug("[reg] new user: %s with tmp password", user)
+
+        if current_app.config['DEBUG']:
+            return get_debug_token(user)
 
         try:
-            if not current_app.config['MAIL_SERVER']:  # [debug]
-                token = user.get_verification_token()
-                current_app.logger.debug(
-                    "[reg] mailing is disabled, verification token: %s", token
-                )
-                flash(_("This is a debug session: mailing is not supported"))
-                return redirect(url_for("auth.update_password", token=token))
-
             send_password_update_email(user)
-        except BaseException as err:
-            current_app.logger.debug("can't send email:\n%s", err)
-            flash(_("Error occurs while mailing you, please contact support!"))
+        except BaseException as exc:
+            current_app.logger.warning("Can't send email to %s: %s", user, exc)
+            current_app.logger.debug("Delete user: %s", user)
             db.session.delete(user)  # remove created user
             db.session.commit()
+            current_app.logger.debug("Add old user: %s", old_user)
+            db.session.add(old_user)
+            db.session.commit()
+            flash(_("Error occurs while mailing you, please contact support!"))
             return redirect(url_for("auth.register"))
 
         flash(_("Check your email address for setting password link!"))
@@ -101,55 +115,45 @@ def register() -> object:
     )
 
 
-@bp.route('/reset_password_request', methods=["GET", "POST"])
-def reset_password_request() -> object:
-    if current_user.is_authenticated:
-        current_app.logger.debug("[reset] authenticated: %s", current_user)
-        return redirect(url_for("main.index"))
-
-    reset_form = ResetPasswordRequestForm()
-    if reset_form.validate_on_submit():
-        user = User.query.filter_by(_email=reset_form.email.data).first()
-        if user:
-            if not current_app.config['MAIL_SERVER']:  # [debug]
-                token = user.get_verification_token()
-                current_app.logger.debug(
-                    "[reset] mailing is disabled, verification token: %s",
-                    token
-                )
-                flash(_("This is a debug session: mailing is not supported"))
-                return redirect(url_for("auth.update_password", token=token))
-
-            send_password_update_email(user)
-
+@bp.route("/reset", methods=["GET", "POST"])
+@filter_authenticated
+def reset() -> object:
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        user = User.query.filter_by(is_deleted=False, _email=email).first()
+        if user is not None:
+            if current_app.config['DEBUG']:
+                return get_debug_token(user)
+            try:
+                send_password_update_email(user)
+            except BaseException as exc:
+                current_app.logger.warning("Can't send email to %s: %s",
+                                           user, exc)
+                flash(_("Error occurs while mailing you, "
+                        "please contact support!"))
+                return redirect(url_for("auth.register"))
         flash(_("Check email for the instructions to reset your password"))
         return redirect(url_for("auth.login"))
-
     return render_template(
-        "auth/reset_password_request.html",
+        "auth/reset.html",
         title=_("Reset Password"),
-        form=reset_form
+        form=form
     )
 
 
-@bp.route('/update_password/<token>', methods=["GET", "POST"])
+@bp.route("/update_password/<token>", methods=["GET", "POST"])
 def update_password(token: str) -> object:
-    if current_user.is_authenticated:
-        current_app.logger.debug("[update] authenticated: %s", current_user)
-        return redirect(url_for("main.index"))
-
     user = User.verify_token(token)
-    if not user:
-        current_app.logger.debug(
-            "[update] token %s has expired or invalid", token
-        )
+    if user is None:
+        current_app.logger.debug("Token %s has expired or invalid", token)
         flash(_("Token expired or invalid."))
         return redirect(url_for("main.index"))
 
     form = SetPasswordForm()
     if form.validate_on_submit():
         user.password = form.password.data
-        current_app.logger.debug("[update] user %s change password", user)
+        current_app.logger.debug("User %s change password", user)
         db.session.commit()
         flash(_("Your password has been updated!"))
         return redirect(url_for("auth.login"))
