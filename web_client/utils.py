@@ -1,8 +1,30 @@
+import re
 import string
 from hashlib import md5
 from random import SystemRandom
 from typing import Iterable
 from urllib import parse
+
+INVALID_CHARS = re.compile(r'[\/:*?"><|]')
+
+
+class PERMISSIONS(object):
+    ADMIN = 1
+    MODERATOR = 2
+    USER = 3
+    GUEST = 4
+
+    values = {ADMIN, MODERATOR, USER, GUEST}
+
+
+class FILE_TYPES(object):
+    FILE = 1
+    DIR = 2
+
+    values = {
+        FILE: "file",
+        DIR: "folder"
+    }
 
 
 def get_gravatar_url(email: str,
@@ -51,3 +73,10 @@ def get_random_str(n: int=25, alphabet: Iterable=None) -> str:
     if alphabet is None:
         alphabet = string.ascii_uppercase + string.digits
     return ''.join(SystemRandom().choice(alphabet) for _ in range(n))
+
+
+def get_uri(resource_name: str, length: int=64) -> str:
+    if length - 32 < 0:
+        raise ValueError("length should be >= 32")
+    salt = get_random_str(length - 32)
+    return md5(resource_name.encode("utf-8")).hexdigest() + salt

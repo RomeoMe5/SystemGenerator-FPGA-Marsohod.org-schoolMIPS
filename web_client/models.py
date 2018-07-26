@@ -1,72 +1,116 @@
-# [feature] TODO: add table for static files
-
 import os
 from datetime import datetime
 from time import time
+from typing import NoReturn
 
 import jwt
-from flask import current_app
+import markdown as md
+from flask import current_app, url_for
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import escape, secure_filename
 
-from web_client import BASE_DIR, db, login_manager
-from web_client.utils import get_gravatar_url
+from web_client import FILES_PATH, db, login_manager
+from web_client.utils import (FILE_TYPES, INVALID_CHARS, PERMISSIONS,
+                              get_gravatar_url, get_uri)
 
 
 class User(UserMixin, db.Model):
-    """ Represents user of the system. """
-
+    """ Represents user of the system """
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    _email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    _password_hash = db.Column(db.String(128))
+
+    _username = db.Column(db.String(128), nullable=False)
+    _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
+    _password_hash = db.Column(db.String(128), nullable=False)
+    _permission_level = db.Column(db.Integer, nullable=False, index=True,
+                                  default=PERMISSIONS.USER)
+    reg_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    is_deleted = db.Column(db.Boolean, nullable=False, index=True,
+                           default=False)
+
+    # optional
+    _avatarS = db.Column(db.String(256))
+    _avatar = db.Column(db.String(256))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    del_dt = db.Column(db.DateTime)
+    restore_dt = db.Column(db.DateTime)
+    university = db.Column(db.String(128), index=True)
+    city = db.Column(db.String(128), index=True)
+    course = db.Column(db.Integer)
+    faculty = db.Column(db.String(128), index=True)
+
+    # relations
+    posts = db.relationship("Post", backref="author", lazy="dynamic")
+    files = db.relationship("File", backref="author", lazy="dynamic")
+    comments = db.relationship("Comment", backref="author", lazy="dynamic")
+    images = db.relationship("Image", backref="author", lazy="dynamic")
 
     @property
-    def path(self) -> str:
-        return os.path.join(current_app.config['STATIC_PATH'],
-                            self._email.split('@')[0])
+    def username(self) -> str:
+        return self._username
+
+    @username.setter
+    def username(self, value: str) -> NoReturn:
+        self._username = escape(value.strip())
 
     @property
     def email(self) -> str:
         return self._email
 
+    # NOTE email address should be validated in forms
     @email.setter
-    def email(self, email: str) -> None:
-        self._email = email.strip().lower()
+    def email(self, email: str) -> NoReturn:
+        self._email = escape(value.strip().lower())
 
-    # Is needed for backward compitability
+    # NOTE it's only needed to define setter
     @property
-    def password(self) -> None:
+    def password(self) -> NoReturn:
         return
 
     @password.setter
-    def password(self, password: str) -> None:
+    def password(self, password: str) -> NoReturn:
         """ Set's password hash for current user. """
         self._password_hash = generate_password_hash(password)
 
-    def avatar(self, size: int=80) -> str:
-        """ Get link to user picture in gravatar. """
-        return get_gravatar_url(self._email, size=size)
+    @property
+    def avatar(self) -> str:
+        """ Get link to user picture (512 pixels) """
+        if not self._avatar:
+            self._avatar = get_gravatar_url(self._email, size=512)
+        return self._avatar
 
-    def check_password(self, password: str) -> bool:
-        """ Verify password is correct for current user. """
-        return check_password_hash(self._password_hash, password)
+    @property
+    def avatar_s(self) -> str:
+        """ Get link to small user picture (128 pixels) """
+        if not self._avatarS:
+            self._avatarS = get_gravatar_url(self._email, size=128)
+        return self._avatarS
 
-    def get_verification_token(self,
-                               expires_in: float or int=60 * 60 * 24,
-                               encoding: str="utf-8") -> str:
+    @property
+    def permissions(self) -> int:
+        return self._permission_level
+
+    @permissions.setter
+    def permissions(self, value: int) -> NoReturn:
+        if value not in PERMISSIONS.values:
+            raise ValueError("Unknown permission level: %s", value)
+        self._permission_level = value
+
+    @property
+    def verification_token(self) -> str:
         """ Generate verification token for general proposes. """
         return jwt.encode(
             {
                 'verification': self.id,
-                'exp': time() + expires_in
+                'exp': time() + current_app.config['TOKEN_TTL']
             },
             current_app.config['SECRET_KEY'],
             algorithm="HS256"
-        ).decode(encoding)
+        ).decode("utf-8")
 
     @staticmethod
-    def verify_token(token: bytes) -> object or None:
+    def verify_token(token: bytes) -> object or NoReturn:
         """ Check verification token is correct for current user. """
         try:
             user_id = jwt.decode(
@@ -75,42 +119,256 @@ class User(UserMixin, db.Model):
                 algorithms=['HS256']
             )['verification']
             return User.query.get(user_id)
-        except BaseException as err:
-            current_app.logger.info("Invalid token:\n%s", err)
+        except BaseException as exc:
+            current_app.logger.debug("Invalid token:\n%s", exc)
+
+    def check_password(self, password: str) -> bool:
+        """ Verify password is correct for current user. """
+        return check_password_hash(self._password_hash, password)
+
+    def delete(self) -> NoReturn:
+        self.is_deleted = True
+        self.del_dt = datetime.utcnow()
+
+    def restore(self) -> NoReturn:
+        self.is_deleted = False
+        self.restore_dt = datetime.utcnow()
 
     def __repr__(self) -> str:
-        return f"<User: {self.email}>"
+        if self.is_deleted:
+            return f"<[-]User[{self.id}]: '{self.username}' '{self.email}'>"
+        return f"<User[{self.id}]: '{self.username}' '{self.email}'>"
 
 
-class BlogPost(db.Model):
-    """ Represents user of the system. """
-
+class Post(db.Model):
+    """ Represents artible post """
+    __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
-    _link = db.Column(db.String(325), index=True, unique=True)
-    title = db.Column(db.String(255), index=True, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    _title = db.Column(db.String(255), nullable=False, index=True)
+    _text = db.Column(db.Text, nullable=False)
+    _link = db.Column(db.String(325), nullable=False, index=True, unique=True)
+    _watch_count = db.Column(db.Integer, nullable=False, default=0)
+    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    edited_dt = db.Column(db.DateTime)
+
+    # relations
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    comments = db.relationship("Comment", backref="post", lazy="dynamic")
+    images = db.relationship("Image", backref="post", lazy="dynamic")
+
+    @property
+    def title(self) -> str:
+        return self._title
 
     @property
     def link(self) -> str:
-        time = self.timestamp.strftime("%Y%m%d-%H%M%S")
-        return "-".join(("-".join(self.title.lower().split()), time))
+        return self._link
+
+    # NOTE: title should be validated in forms
+    @title.setter
+    def title(self, value: str) -> NoReturn:
+        self._title = escape(value.strip())
+        if self._link:
+            return
+        self._link = "-".join((
+            "-".join(INVALID_CHARS.sub(value.strip().lower(), '').split()),
+            self.create_dt.strftime("%Y%m%d-%H%M%S")
+        ))
 
     @property
-    def rel_path(self) -> str or None:
-        return "blog/pages/" + self.link + ".html"
+    def created_date(self) -> str:
+        return self.create_dt.strftime("%d/%m/%Y %H:%M")
 
     @property
-    def path(self) -> str or None:
-        file_path = os.path.join(BASE_DIR, "templates", self.rel_path)
-        if os.path.exists(file_path):
-            return file_path
+    def edited_date(self) -> str or NoReturn:
+        if self.edited_dt:
+            return self.edited_dt.strftime("%d/%m/%Y %H:%M")
 
     @property
-    def date(self) -> str:
-        return self.timestamp.strftime("%d/%m/%Y %H:%M")
+    def text(self) -> str:
+        return self._text
+
+    @text.setter
+    def text(self, value: str) -> NoReturn:
+        if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
+            self.edited_dt = datetime.utcnow()
+        self._text = md.markdown(escape(value.strip()), output_format="html5")
+
+    @property
+    def watches(self) -> int:
+        return self._watch_count
+
+    def watched(slef) -> int:
+        self._watch_count += 1
+        return self._watch_count
+
+    def delete(self) -> NoReturn:
+        for comment in self.comments:
+            db.session.delete(comment)
+        for image in self.images:
+            # [dev] TODO remove images from storage
+            db.session.delete(image)
 
     def __repr__(self) -> str:
-        return f"<Article: {self.link}>"
+        return f"<Post[{self.id}]: <{self.watches}> {self.title}>"
+
+
+class File(db.Model):
+    """ Represents stored files """
+    __tablename__ = "file"
+    id = db.Column(db.Integer, primary_key=True)
+
+    _name = db.Column(db.String(128), nullable=False, index=True)
+    _uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
+    _type = db.Column(db.Integer, nullable=False, default=FILE_TYPES.FILE)
+    _load_count = db.Column(db.Integer, nullable=False, default=0)
+    _size = db.Column(db.Integer, nullable=False)
+    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    @property
+    def size(self) -> float:
+        return self._size / 1024  # in bytes
+
+    @size.setter
+    def size(self, value: int) -> NoReturn:
+        if value < 0:
+            raise ValueError("Size should be > 0")
+        self._size = value
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def uri(self) -> str:
+        return self._uri
+
+    @name.setter
+    def name(self, value: str) -> NoReturn:
+        self._name = secure_filename(value)
+        uri = get_uri(value)
+        while File.query.filter_by(_uri=uri).first() is not None:
+            uri = get_uri(value)
+        self._uri = uri
+
+    @property
+    def ftype(self) -> str:
+        return FILE_TYPES.values[self._type]
+
+    @ftype.setter
+    def ftype(self, value: int) -> NoReturn:
+        if value not in FILE_TYPES.values:
+            raise ValueError("Invalid file type: %s", value)
+        self._type = value
+
+    @property
+    def path(self) -> str or NoReturn:
+        return os.path.join(FILES_PATH, self._uri)
+
+    @property
+    def link(self) -> str:
+        return url_for("files.storage", uri=self._uri)
+
+    @property
+    def loaded(self) -> int:
+        return self._load_count
+
+    def load(self) -> int:
+        self._load_count += 1
+        return self._load_count
+
+    def __repr__(self) -> str:
+        return f"<File[{self.id}]: <{self.loaded}> {self.name} [{self.uri}]>"
+
+
+class Comment(db.Model):
+    """ Represents posts' comments """
+    __tablename__ = "comment"
+    id = db.Column(db.Integer, primary_key=True)
+
+    _text = db.Column(db.Text, nullable=False)
+    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    edited_dt = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @text.setter
+    def text(self, value: str) -> NoReturn:
+        if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
+            self.edited_dt = datetime.utcnow()
+        # NOTE markdown enabled
+        self._text = md.markdown(escape(value.strip()), output_format="html5")
+
+    def __repr__(self) -> str:
+        return f"<Comment[{self.id}]: {self.author.email} > {self.post.title}>"
+
+
+class Image(db.Model):
+    """ Represents posts' resources (images) """
+    __tablename__ = "image"
+    id = db.Column(db.Integer, primary_key=True)
+
+    _uri = db.Column(db.String(64), nullable=False, index=True, unique=True)
+    _fmt = db.Column(db.String(16), nullable=False)
+    _size = db.Column(db.Integer, nullable=False)
+    _load_count = db.Column(db.Integer, nullable=False, default=0)
+    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    resolution = db.Column(db.String(32))
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+
+    @property
+    def size(self) -> float:
+        return self._size / 1024  # in bytes
+
+    @size.setter
+    def size(self, value: int) -> NoReturn:
+        if value < 0:
+            raise ValueError("Size should be > 0")
+        self._size = value
+
+    # NOTE it's only needed to define setter
+    @property
+    def name(self) -> NoReturn:
+        return
+
+    @property
+    def fmt(self) -> str:
+        return self._fmt
+
+    @property
+    def uri(self) -> str:
+        return self._uri
+
+    @name.setter
+    def name(self, value: str) -> NoReturn:
+        val = value.strip().lower()
+        self._fmt = val.split(".")[-1]
+        uri = get_uri(value)
+        while Image.query.filter_by(_uri=uri).first() is not None:
+            uri = get_uri(value)
+        self._uri = uri
+
+    @property
+    def loaded(self) -> int:
+        return self._load_count
+
+    def load(self) -> int:
+        self._load_count += 1
+        return self._load_count
+
+    def __repr__(self) -> str:
+        return (f"<Image[{self.id}]: <{self.loaded}> {self.user.email} ->"
+                f" {self.post.title}>")
 
 
 @login_manager.user_loader

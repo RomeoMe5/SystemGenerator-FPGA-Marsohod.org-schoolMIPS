@@ -9,9 +9,9 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+from configs.web_client import Config
 from web_client.log import (enable_email_error_notifications,
                             enable_logging_to_file, enable_logging_to_stdout)
-from web_client_config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -24,6 +24,9 @@ login_manager.login_view = "auth.login"
 login_manager.login_message = _l("Please log in to access this page.")
 
 BASE_DIR = os.path.dirname(__file__)
+STATIC_PATH = os.path.join(BASE_DIR, "static")
+POSTS_PATH = os.path.join(STATIC_PATH, "posts")
+FILES_PATH = os.path.join(STATIC_PATH, "files")
 
 
 def create_app(config_class: object=Config) -> Flask:
@@ -55,12 +58,28 @@ def create_app(config_class: object=Config) -> Flask:
     from web_client.main import bp as main_bp
     app.register_blueprint(main_bp)
 
-    if not app.debug and not app.testing:
-        enable_email_error_notifications(app)
-        if app.config['LOG_TO_STDOUT']:
-            enable_logging_to_stdout(app)
-        else:
-            enable_logging_to_file(app)
+    if not app.debug and not app.testing and not app.config['DEBUG']:
+        enable_email_error_notifications(
+            app,
+            app.config['LOG_LEVEL'],
+            app.config['LOG_FORMAT']
+        )
+    if app.config['LOG_TO_STDOUT']:
+        enable_logging_to_stdout(
+            app,
+            app.config['LOG_LEVEL'],
+            app.config['LOG_FORMAT']
+        )
+    else:
+        enable_logging_to_file(
+            app,
+            app.config['LOG_LEVEL'],
+            app.config['LOG_FORMAT'],
+            app.config['LOG_PATH'],
+            app.config['LOG_NAME'],
+            app.config['LOG_MAXBYTES'],
+            app.config['LOG_BACKUPCOUNT']
+        )
 
     return app
 
