@@ -22,7 +22,7 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     email = StringField(
         _l("Email"),
-        validators=[DataRequired(), Email()],
+        validators=[DataRequired(), Email(), Length(max=128)],
         description=_l("Supported email providers: mail, yandex, gmail, "
                        "rambler, outlook")
     )
@@ -31,11 +31,13 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email: StringField) -> NoReturn:
         email = email.data.strip().lower()
         if VALID_EMAIL_DOMAIN.search(email) is None:
-            current_app.logger.debug("[auth] invalid domain: %s", email)
+            current_app.logger.debug("Invalid domain: %s", email)
+            del email
             raise ValidationError(_l("Unsupported email domain"))
         user = User.query.filter_by(is_deleted=False, _email=email).first()
         if user is not None:
-            current_app.logger.debug("[auth] existing email: %s", email)
+            current_app.logger.debug("Existing email: %s", email)
+            del email, user
             raise ValidationError(_l("Please, use a different email address"))
 
 

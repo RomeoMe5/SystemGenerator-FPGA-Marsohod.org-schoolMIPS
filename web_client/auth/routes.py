@@ -47,6 +47,7 @@ def login() -> object:
                 msg = "User not found: %s"
             current_app.logger.info(msg, email)
             flash(_("Invalid username or password"))
+            del msg
             return redirect(url_for("auth.login"))
 
         current_app.logger.info("Sign in user: %s", user)
@@ -82,8 +83,15 @@ def register() -> object:
 
         user = User()
         user.email = email
-        user.username = email.split("@")[0]
         user.password = get_random_str()  # NOTE temporary set random password
+
+        user.username = "_".join((email.split("@")[0], get_random_str(7)))
+        _user = User.query.filter_by(is_deleted=False,
+                                     _username=user.username).firts()
+        while _user is not None:
+            user.username = "_".join((email.split("@")[0], get_random_str(7)))
+
+        del _user, email
 
         current_app.logger.info("Register user with tmp password: %s", user)
         db.session.add(user)
@@ -104,6 +112,8 @@ def register() -> object:
             db.session.commit()
             flash(_("Error occurs while mailing you, please contact support!"))
             return redirect(url_for("auth.register"))
+        finally:
+            del old_user
 
         flash(_("Check your email address for setting password link!"))
         return redirect(url_for("auth.login"))
@@ -120,8 +130,10 @@ def register() -> object:
 def reset() -> object:
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        email = form.email.data.strip().lower()
-        user = User.query.filter_by(is_deleted=False, _email=email).first()
+        user = User.query.filter_by(
+            is_deleted=False,
+            _email=form.email.data.strip().lower()
+        ).first()
         if user is not None:
             if current_app.config['DEBUG']:
                 return get_debug_token(user)
