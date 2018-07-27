@@ -38,4 +38,6 @@ class Config(object):
 
     LANGUAGES = ("ru", "en")
 
+    POSTS_PER_PAGE = 25
+
     TOKEN_TTL = 60 * 60 * 24  # expires in one day

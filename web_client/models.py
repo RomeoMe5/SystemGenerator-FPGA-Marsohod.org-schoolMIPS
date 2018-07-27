@@ -20,8 +20,9 @@ class User(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
 
-    _username = db.Column(db.String(128), nullable=False)
-    _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
+    _username = db.Column(db.String(128), nullable=False, index=True,
+                          unique=True)
+    _email = db.Column(db.String(256), nullable=False, index=True, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
     _permission_level = db.Column(db.Integer, nullable=False, index=True,
                                   default=PERMISSIONS.USER)
@@ -35,10 +36,11 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     del_dt = db.Column(db.DateTime)
     restore_dt = db.Column(db.DateTime)
-    university = db.Column(db.String(128), index=True)
-    city = db.Column(db.String(128), index=True)
     course = db.Column(db.Integer)
-    faculty = db.Column(db.String(128), index=True)
+    _university = db.Column(db.String(128), index=True)
+    _city = db.Column(db.String(128), index=True)
+    _faculty = db.Column(db.String(128), index=True)
+    _del_reason = db.Column(db.String(256))
 
     # relations
     posts = db.relationship("Post", backref="author", lazy="dynamic")
@@ -47,12 +49,49 @@ class User(UserMixin, db.Model):
     images = db.relationship("Image", backref="author", lazy="dynamic")
 
     @property
+    def del_reason(self) -> str:
+        return self._del_reason
+
+    @del_reason.setter
+    def del_reason(self, value: str) -> NoReturn:
+        if value.strip():
+            self._del_reason = escape(value.strip().lower())
+
+    @property
+    def university(self) -> str:
+        return self._university
+
+    @university.setter
+    def university(self, value: str) -> NoReturn:
+        if value.strip():
+            self._university = escape(value.strip().lower())
+
+    @property
+    def city(self) -> str:
+        return self._city
+
+    @city.setter
+    def city(self, value: str) -> NoReturn:
+        if value.strip():
+            self._city = escape(value.strip().lower())
+
+    @property
+    def faculty(self) -> str:
+        return self._faculty
+
+    @faculty.setter
+    def faculty(self, value: str) -> NoReturn:
+        if value.strip():
+            self._faculty = escape(value.strip().lower())
+
+    @property
     def username(self) -> str:
         return self._username
 
     @username.setter
     def username(self, value: str) -> NoReturn:
-        self._username = escape(value.strip())
+        if value.strip():
+            self._username = escape(value.strip().lower())
 
     @property
     def email(self) -> str:

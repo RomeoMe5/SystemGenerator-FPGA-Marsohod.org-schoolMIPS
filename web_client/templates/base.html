@@ -28,8 +28,8 @@
         </div>
         {# Navbar content #}
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            {%- if boards -%}
-                {# render links to all available borders #}
+            {#{%- if boards -%}
+                {# render links to all available borders # }
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -48,7 +48,7 @@
                         </ul>
                     </li>
                 </ul>
-            {%- endif -%}
+            {%- endif -%}#}
 
             <ul class="nav navbar-nav navbar-right">
                 {# Account actions #}
@@ -64,15 +64,22 @@
                         </a>
                     </li>
                 {%- else -%}
-                    <li><a href="{{ url_for("files.static") }}">{{ _("Files") }}</a></li>
-                    <li><a href="{{ url_for("blog.articles") }}">{{ _("Articles") }}</a></li>
-                    <!-- <li>
+                    {#<li><a href="{{ url_for("files.static") }}">{{ _("Files") }}</a></li>
+                    <li><a href="{{ url_for("blog.articles") }}">{{ _("Articles") }}</a></li>#}
+                    {#<li>
                         <img with="25" height="25" class="img-circle profile-img"
                                 alt="Generic placeholder image"
-                                src="{{ current_user.avatar(25) }}" />
-                    </li> -->
+                                src="{{ current_user.avatar_s }}" />
+                    </li>#}
                     <li>
-                        <a href="{{ url_for('auth.logout') }}">{{ _("Logout") }}</a>
+                        <a href="{{ url_for('profile.user', username=current_user.username) }}">
+                            {{ _("Profile") }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('auth.logout') }}">
+                            {{ _("Logout") }}
+                        </a>
                     </li>
                 {%- endif -%}
             </ul>
@@ -96,7 +103,6 @@
     {# application content needs to be provided in the app_content block #}
     {%- block app_content -%}{%- endblock -%}
 </div>
-<br/>
 <br/>
 
 {%- block footer -%}{# Custom footer #}
@@ -124,3 +130,47 @@
     </footer>
 {%- endblock footer -%}
 {%- endblock content -%}
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+
+    <script>
+        $(function() /* startup code */ {
+            var timer = null;
+            var xhr = null;
+            $('.user_popup').hover(
+                function(event) {
+                    var elem = $(event.currentTarget);
+                    timer = setTimeout(function() {
+                        timer = null;
+                        xhr = $.ajax('/profile/' + elem.first().text().trim() + '/popup').done(function(data) {
+                            xhr = null;
+                            elem.popover({
+                                trigger: 'manual',
+                                html: true,
+                                animation: false,
+                                container: elem,
+                                content: data
+                            }).popover('show');
+                            flask_moment_render_all();
+                        });
+                    }, 400);
+                },
+                function(event) {
+                    // mouse out event handler
+                    var elem = $(event.currentTarget);
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    } else if (xhr) {
+                        xhr.abort();
+                        xhr = null;
+                    } else {
+                        elem.popover('destroy');
+                    }
+                }
+            )
+        });
+    </script>
+{% endblock %}

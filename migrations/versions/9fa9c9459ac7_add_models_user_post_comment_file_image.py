@@ -1,8 +1,8 @@
 """add models: User, Post, Comment, File, Image
 
-Revision ID: ffd286642324
+Revision ID: 9fa9c9459ac7
 Revises: 
-Create Date: 2018-07-26 11:37:55.740679
+Create Date: 2018-07-27 11:10:01.158328
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ffd286642324'
+revision = '9fa9c9459ac7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,18 +31,18 @@ def upgrade():
     sa.Column('last_seen', sa.DateTime(), nullable=True),
     sa.Column('del_dt', sa.DateTime(), nullable=True),
     sa.Column('restore_dt', sa.DateTime(), nullable=True),
-    sa.Column('university', sa.String(length=128), nullable=True),
-    sa.Column('city', sa.String(length=128), nullable=True),
     sa.Column('course', sa.Integer(), nullable=True),
-    sa.Column('faculty', sa.String(length=128), nullable=True),
+    sa.Column('_university', sa.String(length=128), nullable=True),
+    sa.Column('_city', sa.String(length=128), nullable=True),
+    sa.Column('_faculty', sa.String(length=128), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_user__city'), 'user', ['_city'], unique=False)
     op.create_index(op.f('ix_user__email'), 'user', ['_email'], unique=True)
+    op.create_index(op.f('ix_user__faculty'), 'user', ['_faculty'], unique=False)
     op.create_index(op.f('ix_user__permission_level'), 'user', ['_permission_level'], unique=False)
-    op.create_index(op.f('ix_user_city'), 'user', ['city'], unique=False)
-    op.create_index(op.f('ix_user_faculty'), 'user', ['faculty'], unique=False)
+    op.create_index(op.f('ix_user__university'), 'user', ['_university'], unique=False)
     op.create_index(op.f('ix_user_is_deleted'), 'user', ['is_deleted'], unique=False)
-    op.create_index(op.f('ix_user_university'), 'user', ['university'], unique=False)
     op.create_table('file',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('_name', sa.String(length=128), nullable=False),
@@ -111,11 +111,11 @@ def downgrade():
     op.drop_index(op.f('ix_file__uri'), table_name='file')
     op.drop_index(op.f('ix_file__name'), table_name='file')
     op.drop_table('file')
-    op.drop_index(op.f('ix_user_university'), table_name='user')
     op.drop_index(op.f('ix_user_is_deleted'), table_name='user')
-    op.drop_index(op.f('ix_user_faculty'), table_name='user')
-    op.drop_index(op.f('ix_user_city'), table_name='user')
+    op.drop_index(op.f('ix_user__university'), table_name='user')
     op.drop_index(op.f('ix_user__permission_level'), table_name='user')
+    op.drop_index(op.f('ix_user__faculty'), table_name='user')
     op.drop_index(op.f('ix_user__email'), table_name='user')
+    op.drop_index(op.f('ix_user__city'), table_name='user')
     op.drop_table('user')
     # ### end Alembic commands ###

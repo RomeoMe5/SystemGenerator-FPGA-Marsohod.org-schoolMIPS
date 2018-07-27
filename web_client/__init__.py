@@ -7,17 +7,19 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 
 from configs.web_client import Config
 from web_client.log import (enable_email_error_notifications,
                             enable_logging_to_file, enable_logging_to_stdout)
 
-db = SQLAlchemy()
-migrate = Migrate()
-mail = Mail()
-bootstrap = Bootstrap()
 babel = Babel()
+bootstrap = Bootstrap()
+db = SQLAlchemy()
+mail = Mail()
+migrate = Migrate()
+moment = Moment()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
@@ -33,12 +35,13 @@ def create_app(config_class: object=Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    db.init_app(app)
-    migrate.init_app(app, db)
-    mail.init_app(app)
-    bootstrap.init_app(app)
     babel.init_app(app)
+    bootstrap.init_app(app)
+    db.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
+    migrate.init_app(app, db)
+    moment.init_app(app)
 
     from web_client.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
@@ -46,14 +49,17 @@ def create_app(config_class: object=Config) -> Flask:
     from web_client.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    from web_client.blog import bp as blog_bp
-    app.register_blueprint(blog_bp, url_prefix="/article")
+    from web_client.profile import bp as profile_bp
+    app.register_blueprint(profile_bp, url_prefix="/profile")
 
-    from web_client.files import bp as files_bp
-    app.register_blueprint(files_bp, url_prefix="/files")
+    # from web_client.blog import bp as blog_bp
+    # app.register_blueprint(blog_bp, url_prefix="/article")
 
-    from web_client.generate import bp as generate_bp
-    app.register_blueprint(generate_bp)
+    # from web_client.files import bp as files_bp
+    # app.register_blueprint(files_bp, url_prefix="/files")
+
+    # from web_client.generate import bp as generate_bp
+    # app.register_blueprint(generate_bp)
 
     from web_client.main import bp as main_bp
     app.register_blueprint(main_bp)

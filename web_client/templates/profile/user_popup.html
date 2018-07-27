@@ -1,0 +1,31 @@
+<table class="table">
+    <tr>
+        <td width="64" style="border: 0px;">
+            <img src="{{ user.avatar_s }}">
+        </td>
+        <td style="border: 0px;">
+            <p>
+                <a href="{{ url_for('profile.user', username=user.username) }}">
+                    {{ user.username }}
+                </a>
+            </p>
+            <small>
+                {% if user.city %}
+                    <p>{{ user.city }}</p>
+                {% endif %}
+                {% if user.university %}
+                    <p>{{ user.university }}</p>
+                {% endif %}
+                {% if user.faculty %}
+                    <p>{{ user.faculty }}</p>
+                {% endif %}
+                {% if user.course %}
+                    <p>{{ user.course }} {{ _('cource') }}</p>
+                {% endif %}
+                {% if user.last_seen %}
+                    <p> {% include "_last_seen.jinja" %} </p>
+                {% endif %}
+            </small>
+        </td>
+    </tr>
+</table>
