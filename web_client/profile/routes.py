@@ -24,11 +24,14 @@ def before_request() -> NoReturn:
 def user(username: str) -> object:
     user = User.query.filter_by(is_deleted=False,
                                 _username=username).first_or_404()
-    posts = user.posts.order_by(Post.create_dt.desc()).paginate(
-        request.args.get("page", 1, type=int),
-        current_app.config['POSTS_PER_PAGE'],
-        True  # enable 404 error
-    )
+    posts = (user.posts
+             .filter_by(visible=True)
+             .order_by(Post.create_dt.desc())
+             .paginate(
+                 request.args.get("page", 1, type=int),
+                 current_app.config['POSTS_PER_PAGE'],
+                 True  # enable 404 error
+             ))
 
     next_page_url = None
     if posts.has_next:

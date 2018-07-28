@@ -1,7 +1,7 @@
-{% if user.last_seen and (current_user.last_seen - user.last_seen).seconds < 60 %}
+{%- if user.last_seen and (current_user.last_seen - user.last_seen).seconds < 60 -%}
     {{ _("Online") }}
-{% elif user.last_seen and (current_user.last_seen - user.last_seen).seconds < 60*60*24 %}
+{%- elif user.last_seen and (current_user.last_seen - user.last_seen).seconds < 60*60*24 -%}
     {{ _("Last seen") }} {{ moment(user.last_seen).calendar() }}
-{% else %}
+{%- else -%}
     {{ _("Last seen long time ago...") }}
-{% endif %}
+{%- endif -%}

@@ -1,0 +1,15 @@
+{%-if user.city -%}
+    <p>{{ user.city }}</p>
+{%-endif -%}
+{%-if user.university -%}
+    <p>{{ user.university }}</p>
+{%-endif -%}
+{%-if user.faculty -%}
+    <p>{{ user.faculty }}</p>
+{%-endif -%}
+{%-if user.course -%}
+    <p>{{ user.course }} {{ _('cource') }}</p>
+{%-endif -%}
+{%-if user.last_seen -%}
+    <p> {%-include "_last_seen.jinja" -%} </p>
+{%-endif -%}

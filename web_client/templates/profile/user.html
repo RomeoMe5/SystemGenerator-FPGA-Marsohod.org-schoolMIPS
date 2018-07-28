@@ -1,50 +1,37 @@
-{% extends "base.html" %}
+{%- extends "base.html" -%}
 
-{% block app_content %}
-    <table class="table table-hover">
-        <tr valign="top">
-            <td width="256px">
-                <a href="{{ url_for('profile.user', username=user.username) }}">
-                    <img src="{{ user.avatar }}" />
+{%- block app_content -%}
+<table class="table table-hover">
+    <tr valign="top">
+        <td width="256px">
+            <a href="{{ url_for('profile.user', username=user.username) }}">
+                <img src="{{ user.avatar }}" />
+            </a>
+        </td>
+        <td>
+            <h1>{{ user.username | capitalize }}</h1>
+
+            {%- include "_user_info.jinja" -%}
+
+            {%- if user == current_user -%}
+            <p>
+                <a href="{{ url_for('profile.edit') }}">
+                    {{ _("Edit your profile") }}
                 </a>
-            </td>
-            <td>
-                <h1>{{ user.username | capitalize }}</h1>
-                {% if user.city %}
-                    <p>{{ user.city }}</p>
-                {% endif %}
-                {% if user.university %}
-                    <p>{{ user.university }}</p>
-                {% endif %}
-                {% if user.faculty %}
-                    <p>{{ user.faculty }}</p>
-                {% endif %}
-                {% if user.course %}
-                    <p>{{ user.course }} {{ _('cource') }}</p>
-                {% endif %}
-                <p>
-                    {% include "_last_seen.jinja" %}
-                </p>
-                {% if user == current_user %}
-                    <p>
-                        <a href="{{ url_for('profile.edit') }}">
-                            {{ _("Edit your profile") }}
-                        </a>
-                    </p>
-                    <p>
-                        <a href="{{ url_for('profile.delete') }}">
-                            {{ _("Deactivate account") }}
-                        </a>
-                    </p>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
-    <hr>
+            </p>
+            <p>
+                <a href="{{ url_for('profile.delete') }}">
+                    {{ _("Deactivate account") }}
+                </a>
+            </p>
+            {%- endif -%}
+        </td>
+    </tr>
+</table>
+<hr>
 
-    {% for post in posts %}
-        {% include "_post.jinja" %}
-    {% endfor %}
+{%- include "_posts.jinja" -%}
 
-    {% include "_pagginate.jinja" %}
-{% endblock %}
+{%- include "_pagginate.jinja" -%}
+
+{%- endblock -%}

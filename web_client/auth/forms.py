@@ -14,7 +14,7 @@ from web_client.utils import VALID_EMAIL_DOMAIN
 class LoginForm(FlaskForm):
     email = StringField(_l("Email"), validators=[DataRequired(), Email()])
     password = PasswordField(_l("Password"), validators=[DataRequired()])
-    remember_me = BooleanField(_l("Remember Me"))
+    remember_me = BooleanField(_l("Remember Me"), default=True)
     submit = SubmitField(_l("Sign In"))
 
 

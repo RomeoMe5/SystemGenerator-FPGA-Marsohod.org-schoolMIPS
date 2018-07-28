@@ -6,7 +6,7 @@ from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
 from werkzeug.utils import escape
 from wtforms import BooleanField, IntegerField, Label, StringField, SubmitField
-from wtforms.validators import (DataRequired, Length, NumberRange,
+from wtforms.validators import (DataRequired, Length, NumberRange, Optional,
                                 ValidationError)
 
 from web_client.models import User
@@ -18,10 +18,19 @@ class EditProfileForm(FlaskForm):
         validators=[DataRequired(), Length(min=3, max=64)],
         description=_l("Should be unique")
     )
-    city = StringField(_l("City"), validators=[Length(max=64)])
-    university = StringField(_l("University"), validators=[Length(max=64)])
-    faculty = StringField(_l("Faculty"), validators=[Length(max=64)])
-    course = IntegerField(_l("Course"), validators=[NumberRange(min=1, max=6)])
+    city = StringField(_l("City"), validators=[Length(max=64), Optional()])
+    university = StringField(
+        _l("University"),
+        validators=[Length(max=64), Optional()]
+    )
+    faculty = StringField(
+        _l("Faculty"),
+        validators=[Length(max=64), Optional()]
+    )
+    course = IntegerField(
+        _l("Course"),
+        validators=[NumberRange(min=1, max=6), Optional()]
+    )
     submit = SubmitField(_l("Submit"))
 
     def __init__(self, original_username: str, *args, **kwargs) -> NoReturn:
@@ -46,6 +55,8 @@ class EditProfileForm(FlaskForm):
 
 class DeleteProfileForm(FlaskForm):
     note = Label("note", _l("This action can't be undone. Are you sure?"))
-    reason = StringField(_l("Provide the reason"),
-                         validators=[Length(max=128)])
+    reason = StringField(
+        _l("Provide the reason"),
+        validators=[Length(max=128), Optional()]
+    )
     submit = SubmitField(_l("Deactivate account"))
