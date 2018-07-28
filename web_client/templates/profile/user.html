@@ -3,9 +3,9 @@
 {%- block app_content -%}
 <table class="table table-hover">
     <tr valign="top">
-        <td width="256px">
+        <td width="300px">
             <a href="{{ url_for('profile.user', username=user.username) }}">
-                <img src="{{ user.avatar }}" />
+                <img width="256px" src="{{ user.avatar }}" />
             </a>
         </td>
         <td>

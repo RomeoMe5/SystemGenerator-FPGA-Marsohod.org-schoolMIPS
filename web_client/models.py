@@ -28,9 +28,9 @@ class User(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
 
-    _username = db.Column(db.String(128), nullable=False, index=True,
+    _username = db.Column(db.String(64), nullable=False, index=True,
                           unique=True)
-    _email = db.Column(db.String(256), nullable=False, index=True, unique=True)
+    _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
     _permission_level = db.Column(db.Integer, nullable=False, index=True,
                                   default=PERMISSIONS.USER)
@@ -46,7 +46,7 @@ class User(UserMixin, db.Model):
     restore_dt = db.Column(db.DateTime)
     course = db.Column(db.Integer)
     _university = db.Column(db.String(128), index=True)
-    _city = db.Column(db.String(128), index=True)
+    _city = db.Column(db.String(64), index=True)
     _faculty = db.Column(db.String(128), index=True)
     _del_reason = db.Column(db.String(256))
 
@@ -71,7 +71,7 @@ class User(UserMixin, db.Model):
     @del_reason.setter
     def del_reason(self, value: str) -> NoReturn:
         if value.strip():
-            self._del_reason = escape(value.strip().lower())
+            self._del_reason = value.strip().lower()
 
     @property
     def university(self) -> str:
@@ -80,7 +80,7 @@ class User(UserMixin, db.Model):
     @university.setter
     def university(self, value: str) -> NoReturn:
         if value.strip():
-            self._university = escape(value.strip().lower())
+            self._university = value.strip()
 
     @property
     def city(self) -> str:
@@ -89,7 +89,7 @@ class User(UserMixin, db.Model):
     @city.setter
     def city(self, value: str) -> NoReturn:
         if value.strip():
-            self._city = escape(value.strip().lower())
+            self._city = value.strip().lower()
 
     @property
     def faculty(self) -> str:
@@ -98,7 +98,7 @@ class User(UserMixin, db.Model):
     @faculty.setter
     def faculty(self, value: str) -> NoReturn:
         if value.strip():
-            self._faculty = escape(value.strip().lower())
+            self._faculty = value.strip()
 
     @property
     def username(self) -> str:
@@ -107,7 +107,7 @@ class User(UserMixin, db.Model):
     @username.setter
     def username(self, value: str) -> NoReturn:
         if value.strip():
-            self._username = escape(value.strip().lower())
+            self._username = value.strip().lower()
 
     @property
     def email(self) -> str:
@@ -116,7 +116,7 @@ class User(UserMixin, db.Model):
     # NOTE email address should be validated in forms
     @email.setter
     def email(self, value: str) -> NoReturn:
-        self._email = escape(value.strip().lower())
+        self._email = value.strip().lower()
 
     # NOTE it's only needed to define setter
     @property
@@ -200,7 +200,7 @@ class Post(db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
 
-    _title = db.Column(db.String(280), nullable=False, index=True)
+    _title = db.Column(db.String(140), nullable=False, index=True)
     _text = db.Column(db.Text, nullable=False)
     _uri = db.Column(db.String(325), nullable=False, index=True, unique=True)
     _watch_count = db.Column(db.Integer, nullable=False, default=0)
@@ -215,7 +215,7 @@ class Post(db.Model):
 
     @property
     def was_edited(self) -> bool:
-        return self.edited_date is not None
+        return self.edited_dt is not None
 
     @property
     def title(self) -> str:
@@ -233,41 +233,42 @@ class Post(db.Model):
     def del_link(self) -> str:
         return url_for("blog.delete", uri=self._uri)
 
+    @property
+    def edit_link(self) -> str:
+        return url_for("blog.edit", uri=self._uri)
+
     # NOTE: title should be validated in forms
     @title.setter
     def title(self, value: str) -> NoReturn:
-        self._title = escape(value.strip())
-        was_edited()
+        self._title = value.strip()
+        self.was_edited()
         if self._uri:
             return
+        if not self.create_dt:
+            self.create_dt = datetime.utcnow()
         self._uri = "-".join((
             "-".join(INVALID_CHARS.sub(value.strip().lower(), '').split()),
             self.create_dt.strftime("%Y%m%d-%H%M%S")
         ))
 
     @property
-    def created_date(self) -> str:
-        return self.create_dt.strftime("%d/%m/%Y %H:%M")
-
-    @property
-    def edited_date(self) -> str or NoReturn:
-        if self.edited_dt:
-            return self.edited_dt.strftime("%d/%m/%Y %H:%M")
-
-    @property
     def text(self) -> str:
+        return md.markdown(escape(self._text), output_format="html5")
+
+    @property
+    def raw_text(self) -> str:
         return self._text
 
     @text.setter
     def text(self, value: str) -> NoReturn:
-        self._text = md.markdown(escape(value.strip()), output_format="html5")
-        was_edited()
+        self._text = value.strip()
+        self.was_edited()
 
     @property
     def watches(self) -> int:
         return self._watch_count
 
-    def watched(slef) -> int:
+    def watched(self) -> int:
         self._watch_count += 1
         return self._watch_count
 
@@ -279,6 +280,8 @@ class Post(db.Model):
             db.session.delete(image)
 
     def was_edited(self) -> NoReturn:
+        if not self.create_dt:
+            return
         if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
             self.edited_dt = datetime.utcnow()
 
@@ -293,7 +296,7 @@ class File(db.Model):
     __tablename__ = "file"
     id = db.Column(db.Integer, primary_key=True)
 
-    _name = db.Column(db.String(128), nullable=False, index=True)
+    _name = db.Column(db.String(64), nullable=False, index=True)
     _uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
     _load_count = db.Column(db.Integer, nullable=False, default=0)
     _size = db.Column(db.Integer, nullable=False)
@@ -304,7 +307,9 @@ class File(db.Model):
     files = db.relationship(
         "File",
         secondary=file_dirs,
-        backref=db.backref("files", lazy="dynamic"),
+        primaryjoin=(file_dirs.c.file_id == id),
+        secondaryjoin=(file_dirs.c.dir_id == id),
+        backref=db.backref("dirs", lazy="dynamic"),
         lazy="dynamic"
     )
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -376,27 +381,24 @@ class Comment(db.Model):
 
     @property
     def was_edited(self) -> bool:
-        return self.edited_date is not None
-
-    @property
-    def created_date(self) -> str:
-        return self.create_dt.strftime("%d/%m/%Y %H:%M")
-
-    @property
-    def edited_date(self) -> str or NoReturn:
-        if self.edited_dt:
-            return self.edited_dt.strftime("%d/%m/%Y %H:%M")
+        return self.edited_dt is not None
 
     @property
     def text(self) -> str:
+        return md.markdown(escape(self._text), output_format="html5")
+
+    @property
+    def raw_text(self) -> str:
         return self._text
 
     @text.setter
     def text(self, value: str) -> NoReturn:
+        if not self.create_dt:
+            self.create_dt = datetime.utcnow()
         if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
             self.edited_dt = datetime.utcnow()
         # NOTE markdown enabled
-        self._text = md.markdown(escape(value.strip()), output_format="html5")
+        self._text = value.strip()
 
     def __repr__(self) -> str:
         return f"<Comment[{self.id}]: {self.author.email} > {self.post.title}>"

@@ -7,9 +7,7 @@
                 <th>{{ _("Author") }}</th>
                 <th>{{ _("Watches") }}</th>
                 <th>{{ _("Date") }}</th>
-                {%- if post.author == current_user -%}
-                    <th>{{ _("Actions") }}</th>
-                {%- endif -%}
+                <th>{{ _("Actions") }}</th>
             </tr>
         </thead>
         <tbody>
@@ -34,11 +32,11 @@
                     {{ post.watches }}
                 </td> {# watches count #}
                 <td>
-                    {{ _('%(when)s', when=moment(post.created_date).fromNow()) }}
+                    {{ _('%(when)s', when=moment(post.create_dt).fromNow()) }}
                 </td> {# created timestamp #}
                 {%- if post.author == current_user -%}
                     <td>
-                        <a href="{{ post.del_link }}">
+                        <a href="{{ post.edit_link }}">
                             {{ _('edit') }}
                         </a>
                     </td> {# edit / actions #}

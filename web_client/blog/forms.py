@@ -25,16 +25,16 @@ class EditPostForm(FlaskForm):
         _l("Should this post be visible by others?"),
         default=True
     )
-    submit = SubmitField(_l("Add New Post"))
+    submit = SubmitField(_l("Submit"))
 
     def __init__(self, original_title: str=None, *args, **kwargs) -> NoReturn:
-        super(EditProfileForm, self).__init__(*args, **kwargs)
+        super(EditPostForm, self).__init__(*args, **kwargs)
         self.original_title = None
         if original_title is not None:
-            self.original_title = escape(original_title.strip())
+            self.original_title = original_title.strip()
 
     def validate_title(self, title: StringField) -> NoReturn:
-        title = escape(title.data.strip())
+        title = title.data.strip()
         if title == self.original_title:
             del title
             return
@@ -55,7 +55,7 @@ class UploadImageForm(FlaskForm):
 
 
 class EditCommentForm(FlaskForm):
-    text = TextAreaField(_l("Comment Text"), validators=[DataRequired()])
+    text = TextAreaField(_l("Add Comment"), validators=[DataRequired()])
     submit = SubmitField(_l("Submit"))
 
 

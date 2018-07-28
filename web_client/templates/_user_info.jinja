@@ -1,5 +1,5 @@
 {%-if user.city -%}
-    <p>{{ user.city }}</p>
+    <p>{{ user.city | capitalize }}</p>
 {%-endif -%}
 {%-if user.university -%}
     <p>{{ user.university }}</p>
@@ -8,7 +8,7 @@
     <p>{{ user.faculty }}</p>
 {%-endif -%}
 {%-if user.course -%}
-    <p>{{ user.course }} {{ _('cource') }}</p>
+    <p>{{ user.course }} {{ _('course') }}</p>
 {%-endif -%}
 {%-if user.last_seen -%}
     <p> {%-include "_last_seen.jinja" -%} </p>

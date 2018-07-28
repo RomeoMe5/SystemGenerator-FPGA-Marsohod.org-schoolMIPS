@@ -4,7 +4,6 @@ from typing import NoReturn
 from flask import current_app
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
-from werkzeug.utils import escape
 from wtforms import BooleanField, IntegerField, Label, StringField, SubmitField
 from wtforms.validators import (DataRequired, Length, NumberRange, Optional,
                                 ValidationError)
@@ -21,11 +20,11 @@ class EditProfileForm(FlaskForm):
     city = StringField(_l("City"), validators=[Length(max=64), Optional()])
     university = StringField(
         _l("University"),
-        validators=[Length(max=64), Optional()]
+        validators=[Length(max=128), Optional()]
     )
     faculty = StringField(
         _l("Faculty"),
-        validators=[Length(max=64), Optional()]
+        validators=[Length(max=128), Optional()]
     )
     course = IntegerField(
         _l("Course"),
@@ -35,12 +34,12 @@ class EditProfileForm(FlaskForm):
 
     def __init__(self, original_username: str, *args, **kwargs) -> NoReturn:
         super(EditProfileForm, self).__init__(*args, **kwargs)
-        self.original_username = escape(original_username)
+        self.original_username = original_username
 
     def validate_username(self, username: StringField) -> NoReturn:
         if re.search(r"\W", username.data.strip()) is not None:
             raise ValidationError(_l("Please, choose username without spaces"))
-        username = escape(username.data.strip().lower())
+        username = username.data.strip().lower()
         if username == self.original_username:
             del username
             return
@@ -57,6 +56,6 @@ class DeleteProfileForm(FlaskForm):
     note = Label("note", _l("This action can't be undone. Are you sure?"))
     reason = StringField(
         _l("Provide the reason"),
-        validators=[Length(max=128), Optional()]
+        validators=[Length(max=256), Optional()]
     )
     submit = SubmitField(_l("Deactivate account"))

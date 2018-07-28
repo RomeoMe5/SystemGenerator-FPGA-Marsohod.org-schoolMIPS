@@ -87,7 +87,7 @@ def register() -> object:
 
         user.username = "_".join((email.split("@")[0], get_random_str(7)))
         _user = User.query.filter_by(is_deleted=False,
-                                     _username=user.username).firts()
+                                     _username=user.username).first()
         while _user is not None:
             user.username = "_".join((email.split("@")[0], get_random_str(7)))
 

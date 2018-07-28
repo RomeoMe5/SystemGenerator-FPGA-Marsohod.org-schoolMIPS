@@ -1,4 +1,5 @@
 {%- extends "base.html" -%}
+{%- import 'bootstrap/wtf.html' as wtf -%}
 
 {%- block app_content -%}
 <h1 class="sub-header">{{ title }}</h1>
@@ -6,50 +7,51 @@
 <p>
     <a href="{{ post.author.link }}">
         <span class="user_popup">
-            {{ post.author.username }}
+            {{ post.author.username or _("unknown") }}
         </span>
     </a>
-    | {{ post.created_date }}
-    {%- if post.was_edited -%}
-        | {{ post.edited_date }}
-    {%- endif -%}
-    | {{ post.watches }}
-    {%- if post.author == current_user -%}
+    | {{ moment(post.create_dt).fromNow() }}
+    | {{ post.watches }} {{ _(" watches") }}
+    {% if post.author == current_user %}
         |
-        <a href="{{ url_for('blog.edit', uri=post.uri) }}">
+        <a href="{{ post.edit_link }}">
             {{ _("Edit article") }}
         </a>
     {%- endif -%}
 </p>
 
 <div class="lead main article">
-    {{ post.text }}
-<div>
-<hr>
+    {% autoescape false %}{{ post.text }}{% endautoescape %}
+</div>
+<hr />
 
 {%- for comment in comments -%}
-<div class="row">
-    <div class="col-md-4">
-        <p>
-            <a href="{{ comment.author.link }}">
-                <span class="user_popup">
-                    {{ comment.author.username }}
-                </span>
-            </a>
-        </p>
-        <p>{{ comment.created_date }}</p>
-        {%- if comment.was_edited -%}
-            <p>{{ comment.edited_date }}</p>
-        {%- endif -%}
-    </div>
-    <div class="col-md-8">
-        <p>{{ comment.text }}</p>
-    </div>
-</div>
-<br>
+<table class="table table-hover">
+<tr>
+    <td width="70px">
+        <a href="{{ comment.author.link }}">
+            <img width="35px" src="{{ comment.author.avatar_s }}" />
+        </a>
+    </td>
+    <td>
+        {%- set user_link -%}
+            <span class="user_popup">
+                <a href="{{ comment.author.link }}">
+                    {{ comment.author.username or "unknown" }}
+                </a>
+            </span>
+        {%- endset -%}
+        {{ _('%(username)s said %(when)s',
+            username=user_link, when=moment(comment.create_dt).fromNow()) }}
+        <br>
+        <span id="comment{{ comment.id }}">
+            {%- autoescape false -%}{{ comment.text }}{%- endautoescape -%}
+        </span>
+    </td>
+</tr>
+</table>
 {%- endfor -%}
 
-<h3>{{ _("Add comment") }}</h3>
 <div class="row">
     <div class="col-md-6">
         {{ wtf.quick_form(form) }}

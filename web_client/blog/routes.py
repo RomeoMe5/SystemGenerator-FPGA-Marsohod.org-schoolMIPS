@@ -2,10 +2,12 @@ from datetime import datetime
 from functools import wraps
 from typing import Callable, NoReturn
 
-from flask import abort, current_app, flash, render_template, request, url_for
+from flask import (abort, current_app, flash, redirect, render_template,
+                   request, url_for)
 from flask_babel import _
 from flask_login import current_user, login_required
 
+from web_client import db
 from web_client.blog import bp
 from web_client.blog.forms import (EditCommentForm, EditPostForm,
                                    UploadImageForm)
@@ -58,7 +60,36 @@ def posts() -> object:
     )
 
 
-@bp.route("/new")
+@bp.route("/drafts")
+@login_required
+@filter_non_admins
+def drafts() -> object:
+    posts = (Post.query
+             .filter_by(author=current_user)
+             .order_by(Post.create_dt.desc())
+             .paginate(
+                 request.args.get("page", 1, type=int),
+                 current_app.config['POSTS_PER_PAGE'],
+                 True  # enable 404 error
+             ))
+
+    next_page_url = None
+    if posts.has_next:
+        next_page_url = url_for("blog.posts", page=posts.next_num)
+    prev_page_url = None
+    if posts.has_prev:
+        prev_page_url = url_for("blog.posts", page=posts.prev_num)
+
+    return render_template(
+        "blog/posts.html",
+        title=_("Drafts of Articles"),
+        posts=posts.items,
+        next_page_url=next_page_url,
+        prev_page_url=prev_page_url
+    )
+
+
+@bp.route("/new", methods=["GET", "POST"])
 @login_required
 @filter_non_admins
 def add() -> object:
@@ -68,13 +99,12 @@ def add() -> object:
         post.title = form.title.data
         post.text = form.text.data
         post.visible = form.visible.data
-        post.user = current_user
+        post.author = current_user
 
         current_app.logger.info("Add new post %s", post)
         db.session.add(post)
         db.session.commit()
 
-        del post
         flash(_("New post created!"))
         return redirect(post.link)
 
@@ -85,7 +115,7 @@ def add() -> object:
     )
 
 
-@bp.route("/edit/<uri>")
+@bp.route("/edit/<uri>", methods=["GET", "POST"])
 @login_required
 @filter_non_admins
 def edit(uri: str) -> object:
@@ -103,7 +133,7 @@ def edit(uri: str) -> object:
         return redirect(post.link)
     elif request.method == "GET":
         form.title.data = post.title
-        form.text.data = post.text
+        form.text.data = post.raw_text
         form.visible.data = post.visible
 
     return render_template(
@@ -129,12 +159,12 @@ def delete(uri: str) -> object:
     return redirect(url_for("blog.posts"))
 
 
-@bp.route("/post/<uri>")
+@bp.route("/post/<uri>", methods=["GET", "POST"])
 @login_required
 def view(uri: str) -> object:
     # NOTE only visible posts can be viewed
     post = Post.query.filter_by(_uri=uri).first_or_404()
-    if not post.visible and post.user != current_user:
+    if not post.visible and post.author != current_user:
         abort(404)
     comments = post.comments.order_by(Comment.create_dt.desc()).all()
     form = EditCommentForm()
@@ -142,15 +172,16 @@ def view(uri: str) -> object:
         comment = Comment()
         comment.text = form.text.data
         comment.post = post
-        comment.user = current_user
+        comment.author = current_user
         current_app.logger.info("Add new comment: %s", comment)
         db.session.add(comment)
         db.session.commit()
         del comment
         flash(_("New comment created!"))
         return redirect(post.link)
-    else:
+    elif post.author != current_user:
         post.watched()
+        db.session.commit()
 
     return render_template(
         "blog/view.html",
@@ -161,7 +192,7 @@ def view(uri: str) -> object:
     )
 
 
-@bp.route("/comment/edit/<int:cid>")
+@bp.route("/comment/edit/<int:cid>", methods=["GET", "POST"])
 @login_required
 def edit_comment(cid: int) -> object:
     comment = Comment.query.filter_by(id=cid,
@@ -174,7 +205,7 @@ def edit_comment(cid: int) -> object:
         flash(_("Comment saved!"))
         return redirect(post.link)
     elif request.method == "GET":
-        form.text.data = comment.text
+        form.text.data = comment.raw_text
 
     del comment
     return render_template(

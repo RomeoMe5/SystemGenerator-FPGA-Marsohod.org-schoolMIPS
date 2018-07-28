@@ -86,6 +86,13 @@
                         {{ _("Articles") }}
                     </a>
                 </li>
+                {%- if current_user.can_edit_posts -%}
+                <li>
+                    <a href="{{ url_for('blog.drafts') }}">
+                        {{ _("Drafts") }}
+                    </a>
+                </li>
+                {%- endif -%}
                 <li>
                     <a href="{{ url_for('auth.logout') }}">
                         {{ _("Logout") }}
