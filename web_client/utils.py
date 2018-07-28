@@ -17,22 +17,11 @@ VALID_EMAIL_DOMAIN = re.compile(r"(?i)@((gmail|outlook)\.com|(mail|rambler)\."
 
 
 class PERMISSIONS(object):
-    ADMIN = 1
-    MODERATOR = 2
-    USER = 3
-    GUEST = 4
+    ADMIN = 100
+    MODERATOR = 50
+    USER = 1
 
-    values = {ADMIN, MODERATOR, USER, GUEST}
-
-
-class FILE_TYPES(object):
-    FILE = 1
-    DIR = 2
-
-    values = {
-        FILE: "file",
-        DIR: "folder"
-    }
+    values = {ADMIN, MODERATOR, USER}
 
 
 def get_gravatar_url(email: str,

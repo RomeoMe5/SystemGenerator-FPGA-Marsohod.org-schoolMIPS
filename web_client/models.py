@@ -11,8 +11,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import escape, secure_filename
 
 from web_client import FILES_PATH, db, login_manager
-from web_client.utils import (FILE_TYPES, INVALID_CHARS, PERMISSIONS,
-                              get_gravatar_url, get_uri)
+from web_client.utils import (INVALID_CHARS, PERMISSIONS, get_gravatar_url,
+                              get_uri)
+
+
+file_dirs = db.Table(
+    "file_dirs",
+    db.Model.metadata,
+    db.Column("file_id", db.Integer, db.ForeignKey("file.id")),  # left
+    db.Column("dir_id", db.Integer, db.ForeignKey("file.id"))  # right
+)
 
 
 class User(UserMixin, db.Model):
@@ -47,6 +55,14 @@ class User(UserMixin, db.Model):
     files = db.relationship("File", backref="author", lazy="dynamic")
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
     images = db.relationship("Image", backref="author", lazy="dynamic")
+
+    @property
+    def can_edit_posts(self) -> bool:
+        return self._permission_level >= PERMISSIONS.MODERATOR
+
+    @property
+    def link(self) -> str:
+        return url_for("profile.user", username=self._username)
 
     @property
     def del_reason(self) -> str:
@@ -184,10 +200,11 @@ class Post(db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
 
-    _title = db.Column(db.String(255), nullable=False, index=True)
+    _title = db.Column(db.String(280), nullable=False, index=True)
     _text = db.Column(db.Text, nullable=False)
-    _link = db.Column(db.String(325), nullable=False, index=True, unique=True)
+    _uri = db.Column(db.String(325), nullable=False, index=True, unique=True)
     _watch_count = db.Column(db.Integer, nullable=False, default=0)
+    visible = db.Column(db.Boolean, nullable=False, index=True, default=True)
     create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     edited_dt = db.Column(db.DateTime)
 
@@ -197,20 +214,33 @@ class Post(db.Model):
     images = db.relationship("Image", backref="post", lazy="dynamic")
 
     @property
+    def was_edited(self) -> bool:
+        return self.edited_date is not None
+
+    @property
     def title(self) -> str:
         return self._title
 
     @property
+    def uri(self) -> str:
+        return self._uri
+
+    @property
     def link(self) -> str:
-        return self._link
+        return url_for("blog.view", uri=self._uri)
+
+    @property
+    def del_link(self) -> str:
+        return url_for("blog.delete", uri=self._uri)
 
     # NOTE: title should be validated in forms
     @title.setter
     def title(self, value: str) -> NoReturn:
         self._title = escape(value.strip())
-        if self._link:
+        was_edited()
+        if self._uri:
             return
-        self._link = "-".join((
+        self._uri = "-".join((
             "-".join(INVALID_CHARS.sub(value.strip().lower(), '').split()),
             self.create_dt.strftime("%Y%m%d-%H%M%S")
         ))
@@ -230,9 +260,8 @@ class Post(db.Model):
 
     @text.setter
     def text(self, value: str) -> NoReturn:
-        if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
-            self.edited_dt = datetime.utcnow()
         self._text = md.markdown(escape(value.strip()), output_format="html5")
+        was_edited()
 
     @property
     def watches(self) -> int:
@@ -249,8 +278,14 @@ class Post(db.Model):
             # [dev] TODO remove images from storage
             db.session.delete(image)
 
+    def was_edited(self) -> NoReturn:
+        if (datetime.utcnow() - self.create_dt).total_seconds() > 1:
+            self.edited_dt = datetime.utcnow()
+
     def __repr__(self) -> str:
-        return f"<Post[{self.id}]: <{self.watches}> {self.title}>"
+        if self.visible:
+            return f"<Post[{self.id}]: <{self.watches}> {self.title}>"
+        return f"<[-]Post[{self.id}]: <{self.watches}> {self.title}>"
 
 
 class File(db.Model):
@@ -260,12 +295,23 @@ class File(db.Model):
 
     _name = db.Column(db.String(128), nullable=False, index=True)
     _uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
-    _type = db.Column(db.Integer, nullable=False, default=FILE_TYPES.FILE)
     _load_count = db.Column(db.Integer, nullable=False, default=0)
     _size = db.Column(db.Integer, nullable=False)
     create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    is_dir = db.Column(db.Boolean, nullable=False, index=True, default=False)
 
+    # assotiations
+    files = db.relationship(
+        "File",
+        secondary=file_dirs,
+        backref=db.backref("files", lazy="dynamic"),
+        lazy="dynamic"
+    )
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    @property
+    def link(self) -> str:
+        return url_for("files.storage", uri=self._uri)
 
     @property
     def size(self) -> float:
@@ -287,21 +333,10 @@ class File(db.Model):
 
     @name.setter
     def name(self, value: str) -> NoReturn:
-        self._name = secure_filename(value)
-        uri = get_uri(value)
-        while File.query.filter_by(_uri=uri).first() is not None:
-            uri = get_uri(value)
-        self._uri = uri
-
-    @property
-    def ftype(self) -> str:
-        return FILE_TYPES.values[self._type]
-
-    @ftype.setter
-    def ftype(self, value: int) -> NoReturn:
-        if value not in FILE_TYPES.values:
-            raise ValueError("Invalid file type: %s", value)
-        self._type = value
+        self._name = secure_filename(os.path.basename(value))
+        self._uri = get_uri(value)
+        while File.query.filter_by(_uri=self._uri).first() is not None:
+            self._uri = get_uri(value)
 
     @property
     def path(self) -> str or NoReturn:
@@ -319,6 +354,10 @@ class File(db.Model):
         self._load_count += 1
         return self._load_count
 
+    def delete(self) -> NoReturn:
+        if not self.is_dir:
+            os.remove(self.path)
+
     def __repr__(self) -> str:
         return f"<File[{self.id}]: <{self.loaded}> {self.name} [{self.uri}]>"
 
@@ -334,6 +373,19 @@ class Comment(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+
+    @property
+    def was_edited(self) -> bool:
+        return self.edited_date is not None
+
+    @property
+    def created_date(self) -> str:
+        return self.create_dt.strftime("%d/%m/%Y %H:%M")
+
+    @property
+    def edited_date(self) -> str or NoReturn:
+        if self.edited_dt:
+            return self.edited_dt.strftime("%d/%m/%Y %H:%M")
 
     @property
     def text(self) -> str:
@@ -364,6 +416,12 @@ class Image(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+
+    # [dev] TODO add url for image
+    @property
+    def link(self) -> str:
+        self.load()
+        return self.uri
 
     @property
     def size(self) -> float:
