@@ -8,9 +8,11 @@
         {{ wtf.quick_form(form) }}
     </div>
 </div>
+<br />
+
 {%- if post -%}
     <p>
-        <a href="{{ post.del_link }}">
+        <a class="btn btn-default" rode="button" href="{{ post.del_link }}">
             {{ _('delete') }}
         </a>
     </p>

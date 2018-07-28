@@ -23,7 +23,12 @@
 <div class="lead main article">
     {% autoescape false %}{{ post.text }}{% endautoescape %}
 </div>
-<hr />
+
+<p>
+    <a class="btn btn-default" rode="button" href="{{ url_for('blog.posts') }}">
+        {{ _("Back") }}
+    </a>
+</p>
 
 {%- for comment in comments -%}
 <table class="table table-hover">

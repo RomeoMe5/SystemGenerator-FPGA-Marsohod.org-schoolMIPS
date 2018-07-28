@@ -5,7 +5,7 @@
 
 {%- if current_user.can_edit_posts -%}
 <p>
-    <a href="{{ url_for('blog.add') }}">
+    <a class="btn btn-default" rode="button" href="{{ url_for('blog.add') }}">
         {{ _("Add new article") }}
     </a>
 </p>

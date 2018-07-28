@@ -49,8 +49,6 @@ def enable_logging_to_file(app: Flask,
         file_handler.setFormatter(logging.Formatter(fmt))
     app.logger.addHandler(file_handler)
 
-    app.logger.debug("Logging to file setup successfully.")
-
 
 def enable_logging_to_stdout(app: Flask,
                              level: int=logging.INFO,
@@ -60,5 +58,3 @@ def enable_logging_to_stdout(app: Flask,
         stream_handler.setFormatter(logging.Formatter(fmt))
     stream_handler.setLevel(level)
     app.logger.addHandler(stream_handler)
-
-    app.logger.debug("Logging to stdout setup successfully.")

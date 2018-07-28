@@ -65,7 +65,7 @@ def posts() -> object:
 @filter_non_admins
 def drafts() -> object:
     posts = (Post.query
-             .filter_by(author=current_user)
+             .filter_by(author=current_user, visible=False)
              .order_by(Post.create_dt.desc())
              .paginate(
                  request.args.get("page", 1, type=int),

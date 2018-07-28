@@ -38,7 +38,8 @@ class EditProfileForm(FlaskForm):
 
     def validate_username(self, username: StringField) -> NoReturn:
         if re.search(r"\W", username.data.strip()) is not None:
-            raise ValidationError(_l("Please, choose username without spaces"))
+            raise ValidationError(_l("Please, choose username without"
+                                     " special symbols"))
         username = username.data.strip().lower()
         if username == self.original_username:
             del username
