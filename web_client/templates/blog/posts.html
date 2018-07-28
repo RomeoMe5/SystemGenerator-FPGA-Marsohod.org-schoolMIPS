@@ -2,24 +2,15 @@
 
 {%- block app_content -%}
 <h2 class="sub-header">{{ title }}</h2>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>{{ _("#") }}</th>
-                <th>{{ _("Article Title") }}</th>
-                <th>{{ _("Date") }}</th>
-            </tr>
-        </thead>
-        <tbody>
-{%- for blog_title, blog_date, link in blog_posts -%}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="{{ link }}">{{ blog_title }}</a></td>
-                <td>{{ blog_date }}</td>
-            </tr>
-{%- endfor -%}
-        </tbody>
-    </table>
-</div>
+
+{%- if current_user.can_edit_posts -%}
+<p>
+    <a href="{{ url_for('blog.add') }}">
+        {{ _("Add new article") }}
+    </a>
+</p>
+{%- endif -%}
+
+{%- include "_posts.jinja" -%}
+{%- include "_pagginate.jinja" -%}
 {%- endblock -%}

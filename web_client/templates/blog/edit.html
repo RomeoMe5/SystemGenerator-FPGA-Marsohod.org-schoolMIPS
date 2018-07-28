@@ -1,0 +1,18 @@
+{%- extends "base.html" -%}
+{%- import 'bootstrap/wtf.html' as wtf -%}
+
+{%- block app_content -%}
+<h1>{{ title }}</h1>
+<div class="row">
+    <div class="col-md-8">
+        {{ wtf.quick_form(form) }}
+    </div>
+</div>
+{%- if post -%}
+    <p>
+        <a href="{{ post.del_link }}">
+            {{ _('delete') }}
+        </a>
+    </p>
+{%- endif -%}
+{%- endblock -%}
