@@ -96,13 +96,24 @@ class Archiver(object):
         with tarfile.open(fileobj=tar_io, mode="w") as tar_fout:
             for file_name, file_line in files.items():
                 try:
-                    tarinfo = tarfile.TarInfo(file_name)
-                    file_line_byte = io.BytesIO(file_line.encode('utf-8'))
-                    tarinfo.size = io.StringIO().write(file_line)
-                    tar_fout.addfile(tarinfo, fileobj=file_line_byte)
-                    LOGGER.debug(
-                        "   Add file '%s' to tar I/O, content(binary): '%s",
-                        file_name, file_line_byte)
+                    if isinstance(file_line, dict):
+                        for fname, fline in file_line.items():
+                            tarinfo = tarfile.TarInfo(file_name + '\\' + fname)
+                            file_line_byte = io.BytesIO(fline.encode('utf-8'))
+                            tar_fout.addfile(tarinfo, fileobj=file_line_byte)
+                            LOGGER.debug(
+                                "   Add file '%s' to tar I/O, \
+                                    content(binary): '%s",
+                                file_name, file_line_byte)
+                    else:
+                        tarinfo = tarfile.TarInfo(file_name)
+                        file_line_byte = io.BytesIO(file_line.encode('utf-8'))
+                        tarinfo.size = io.StringIO().write(file_line)
+                        tar_fout.addfile(tarinfo, fileobj=file_line_byte)
+                        LOGGER.debug(
+                            "   Add file '%s' to tar I/O, \
+                                content(binary): '%s",
+                            file_name, file_line_byte)
                 except tarfile.TarError as exc:
                     LOGGER.warning("'%s' wasn't added!\n%s", file_name, exc)
         LOGGER.debug("Return tar I/O")
@@ -110,6 +121,7 @@ class Archiver(object):
 
     @staticmethod
     def to_tar_flow(files: dict,
+                    mips: dict=None,
                     path: str=None,
                     in_memory: bool=False) -> io.BytesIO:
         """ Write tar I/O to tar file """
