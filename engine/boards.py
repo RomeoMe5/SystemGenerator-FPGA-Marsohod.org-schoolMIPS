@@ -17,9 +17,11 @@ class GenericBoard(object):
     FUNCTIONS = ("ButtonDebouncer", "Demultiplexer",
                  "Generator", "Seven", "Uart8")
 
-    def __init__(self, config_path: str, message: str=None) -> NoReturn:
+    def __init__(self, board_name: str, message: str=None) -> NoReturn:
         """ :param config_path - path to config static file """
-        self._static_path = config_path
+        self.board_name = board_name
+        self._static_path = '\\'.join((PATHS.STATIC,
+                                       ".".join((board_name, "yml"))))
         self.reset()
         self._project_name = self.DEFAULT_PROJECT_NAME
         self.message = message or self._misc.get("message")
@@ -63,7 +65,7 @@ class GenericBoard(object):
         self._qpf = configs.get("qpf", {})
         self._qsf = configs.get("qsf", {})
         self._sdc = configs.get("sdc", {})
-        self._v = configs.get("v", {}).get("assigments", {})
+        self._v = configs.get("v", {}).get("assignments", {})
         self._func = configs.get("v", {}).get("func", {})
         self._misc = configs.get("misc", {})
         self._functions = self.FUNCTIONS
@@ -78,16 +80,18 @@ class GenericBoard(object):
         return self
 
     def setup(self,
-              project_name: str=None,
-              flt: dict=None,
-              conf: dict=None,
-              func: dict=None,
-              project_output_directory: str=None,
-              message: str=None,
-              reset: bool=True) -> object:
+              project_name: str = None,
+              flt: dict = None,
+              conf: dict = None,
+              func: dict = None,
+              mips_type: str = None,
+              project_output_directory: str = None,
+              message: str = None,
+              reset: bool = True) -> object:
         """ Setup board configuration """
         flt = flt or {}
         func = func or {}
+        self.mips_type = mips_type
         if reset:
             self.reset()
 
@@ -97,7 +101,8 @@ class GenericBoard(object):
                     del params[key]
             return params
 
-        self._qsf['user_assignments'] = _filter(self._qsf['user_assignments'])
+        self._qsf['user_assignments'] = _filter(
+            self._qsf['user_assignments'])
         self._v = _filter(self._v)
         self._functions = tuple(f for f in self.FUNCTIONS if func.get(f))
         self.project_name = project_name
@@ -105,6 +110,13 @@ class GenericBoard(object):
         self._func.update(conf or {})
         self._qsf['project_output_directory'] = \
             project_output_directory or self._qsf['project_output_directory']
+        self._mips_v = {}
+        self._mips_qsf = {}
+        if self.mips_type:
+            if self.board_name.find("marsohod3") > -1:
+                mips_configs = Loader.load(PATHS.STATIC + "\\SchoolMips.yml")
+                self._mips_qsf = mips_configs.get('qsf', {})
+                self._mips_v = mips_configs.get('v', {})
         return self
 
     def generate(self, project_name: str=None, **kwargs) -> object:
@@ -113,14 +125,17 @@ class GenericBoard(object):
             self.setup(project_name=project_name, **kwargs)
 
         self.configs = {
-            'LICENSE': Loader.load_static("LICENSE", encoding="utf-8")
+            'LICENSE': Loader.load_static("LICENSE")
         }
+
         self.configs.update(dict(zip(
             map(lambda x: ".".join((self.project_name, x)),
                 ("v", "qpf", "qsf", "sdc")),
-            (Render.v(self.project_name, assigments=self._v),
+            (Render.v(self.project_name, assignments=self._v,
+                      **self._mips_v),
              Render.qpf(self.project_name, **self._qpf),
-             Render.qsf(self.project_name, **self._qsf),
+             Render.qsf(self.project_name, **self._qsf,
+                        mips=self._mips_qsf),
              Render.sdc(self.project_name, **self._sdc))
         )))
         self.configs.update(dict(zip(
@@ -128,6 +143,15 @@ class GenericBoard(object):
             map(lambda x: Render.functions(".".join((x, "v.jinja")),
                                            **self._func), self._functions)
         )))
+
+        self.mips_configs = {}
+        if self.mips_type:
+            mips_path = '\\'.join((PATHS.MIPS, self.mips_type, 'src'))
+            files = os.listdir(mips_path)
+            for file in files:
+                self.mips_configs.update({
+                    file: Loader.load_static('\\'.join((mips_path, file)))
+                })
         return self
 
     def dump(self, path: str=None) -> object:
@@ -140,6 +164,14 @@ class GenericBoard(object):
             with open(os.path.join(path, filename), 'wt') as fout:
                 LOGGER.debug("Creating '%s'...", fout.name)
                 fout.write(content)
+
+        if self.mips_configs:
+            mips_path = path + '\mips'
+            create_dirs(mips_path, rewrite=False)
+            for filename, content in self.mips_configs.items():
+                with open(os.path.join(mips_path, filename), 'wt') as fout:
+                    LOGGER.debug("Creating '%s'...", fout.name)
+                    fout.write(content)
         return self
 
     def archive(self, path: str=None, in_memory: bool=False) -> object:
@@ -147,6 +179,8 @@ class GenericBoard(object):
         if not path and not in_memory:
             LOGGER.debug("Assume path is project_name='%s'", self.project_name)
             path = self.project_name
+        if self.mips_configs:
+            self.configs.update({'mips': self.mips_configs})
         Archiver.to_tar_flow(self.configs, path=path, in_memory=in_memory)
 
 
@@ -159,6 +193,4 @@ class Board(GenericBoard):
         if board_name not in BOARDS:
             LOGGER.error("Incorrect board name: %s", board_name)
             raise ValueError(f"Incorrect board name: {board_name}")
-        super(Board, self).__init__(
-            os.path.join(PATHS.STATIC, ".".join((board_name, "yml")))
-        )
+        super(Board, self).__init__(board_name)

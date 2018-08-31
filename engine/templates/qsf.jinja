@@ -18,6 +18,15 @@ set_global_assignment -name {{ key|upper }} {{ value }}
 {%- endif -%}
 set_global_assignment -name TOP_LEVEL_ENTITY {{ project_name }}
 set_global_assignment -name SDC_FILE {{ project_name }}.sdc
+
+{%- if mips -%}
+	{%- for key, value in mips.items() -%}
+		{%- for val in value -%}
+set_global_assignment -name {{key}} {{val}}
+		{%- endfor -%}
+	{%- endfor -%}
+{%- endif -%}
+
 {{ "\n" }}
 {%- if user_assignments -%}
 	{%- for part_name, assignments in user_assignments.items() -%}

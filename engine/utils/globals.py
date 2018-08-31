@@ -14,6 +14,7 @@ class PATHS:
 PATHS.BASE = os.path.abspath(os.path.dirname(PATHS.ROOT))
 PATHS.STATIC = os.path.join(PATHS.ROOT, "static")
 PATHS.TEMPL = os.path.join(PATHS.ROOT, "templates")
+PATHS.MIPS = os.path.join(PATHS.STATIC, "school_mips")
 
 # for configs, in order of significance (priority)
 # [feature] TODO: add "xml", "csv"
