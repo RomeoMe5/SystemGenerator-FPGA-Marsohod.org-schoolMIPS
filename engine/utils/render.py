@@ -150,13 +150,22 @@ class Render(object):
     @staticmethod
     @load_template("v.jinja")
     def v(project_name: str,
-          assigments: dict=None,
+          assignments: dict=None,
+          wires: dict=None,
+          structures: dict=None,
           **kwargs) -> str:
         """ Template rendering interface for .v files """
+
+        print("assign = ", assignments)
+        print("wire = ", wires)
+        print("struct = ", structures)
+        print("=" * 100)
         return Render._render(
             project_name=project_name,
-            assigments=assigments,
-            **kwargs
+            assignments=assignments,
+            wires=wires,
+            structures=structures,
+            ** kwargs
         )
 
     @staticmethod
