@@ -11,6 +11,7 @@ qsf:
     max_core_junction_temp: 85
     device_filter_package: EQFP
     error_check_frequency_divisor: 2
+    enable_configuration_pins: 'OFF'
   user_assignments:
     FTDI:
       location:
