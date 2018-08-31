@@ -8,9 +8,9 @@
 
 {%- block content -%}
 {{ "" }}
-{%- if assigments -%}
+{%- if assignments -%}
 module {{ project_name }}(
-	{%- for part_name, assig in assigments.items() -%}
+	{%- for part_name, assig in assignments.items() -%}
 {{ "    " }}//---------- {{ part_name|upper }} ----------//
 		{%- if not loop.last -%}{# Normal generation until last iteration #}
 			{%- for type, rank, value in assig -%}
@@ -36,9 +36,42 @@ module {{ project_name }}();
 //          REG/WIRE declarations          //
 // --------------------------------------- //
 {{ "\n" }}
+{%- if wires -%}
+	{%- for bits, name, size, assigname, assigsize in wires -%}
+		{%- if not loop.last -%}
+			{%- if assigname == '' -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}},
+			{%- else -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}{{" = "}}{{assigname}}{{assigsize}},
+			{%- endif -%}
+		{%- else -%}{# Separate rule for last iteration #}
+{%- if assigname == '' -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}
+			{%- else -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}{{" = "}}{{assigname}}{{assigsize}}
+			{%- endif -%}
+		{%- endif -%}
+	{%- endfor -%}
+{%- endif -%}
+{{ "\n" }}
 // --------------------------------------- //
 //            Structural coding            //
 // --------------------------------------- //
+{{ "\n" }}
+{%- if structures -%}
+	{%- for name, signature in structures.items() -%}
+{{"    "}}{{name}}{{" "}}{{name}}
+{{"    "}}(
+		{%- for input_name, input  in signature -%}
+			{%- if not loop.last -%}
+{{"        "}}.{{input_name}}{{"\t\t"}}({{input}} ),
+			{%- else -%}{# Separate rule for last iteration #}
+{{"        "}}.{{input_name}}{{"\t\t"}}({{input}} )
+			{%- endif -%}
+		{%- endfor -%}
+{{"    "}});
+	{%- endfor -%}
+{%- endif -%}
 {{ "\n" }}
 endmodule // {{ project_name }}
 {{ "" }}

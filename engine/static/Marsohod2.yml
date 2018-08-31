@@ -234,7 +234,7 @@ sdc:
   set_minimum_delay: []
   set_load: []
 v:
-  assigments:
+  assignments:
     FTDI:
     - - input
       - ''

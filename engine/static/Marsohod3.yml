@@ -11,6 +11,7 @@ qsf:
     max_core_junction_temp: 85
     device_filter_package: EQFP
     error_check_frequency_divisor: 2
+    ENABLE_CONFIGURATION_PINS: OFF
   user_assignments:
     FTDI:
       location:
@@ -240,7 +241,7 @@ sdc:
   set_minimum_delay: []
   set_load: []
 v:
-  assigments:
+  assignments:
     FTDI:
     - - input
       - ''
@@ -329,5 +330,49 @@ v:
     - - input
       - ''
       - RESERVED
+  # bits, name, size, assigname, assigsize
+  wires:
+    - - ''
+      - clk
+      - ''
+      - ''
+      - ''
+    - - ''
+      - clkIn
+      - ''
+      - CLK100MHZ
+      - ''
+    - - ''
+      - 'rst_n'
+      - ''
+      - 'KEY0'
+      - ''
+    - - ''
+      - clkEnable
+      - ''
+      - ~KEY1
+      - ''
+    - - "[31:0]"
+      - ''
+      - regData
+      - ''
+      - ''
+  structures:
+    sm_top:
+      - - clkIn
+        - clkIn
+      - - rst_n
+        - rst_n
+      - - clkDevide
+        - "4'b1000"
+      - - clkEnable
+        - clkEnable
+      - - clk
+        - clk
+      - - regAddr
+        - 4'b0010
+      - - regData
+        - regData
+
 func:
   clock_rate: 100000000
