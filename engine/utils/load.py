@@ -15,7 +15,9 @@ class Loader(object):
         """ Loads content of static file from any location """
         file_format = filepath.split('.')[-1].lower()
         loader_params = loader_params or {}
-        with open(filepath, 'rb', **kwargs) as fin:
+        # TODO is needed read binary?
+        # with open(filepath, 'rb', **kwargs) as fin:
+        with open(filepath, 'r', **kwargs) as fin:
             LOGGER.debug("Loading '%s' content...", filepath)
             for extension in SUPPORTED_EXTENSIONS:
                 if file_format == extension:

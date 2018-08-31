@@ -114,7 +114,8 @@ class Render(object):
             project_output_directory: str=None,
             user_assignments: dict=None,
             global_assignments: dict=None,
-            **kwargs) -> str:
+            mips: dict=None,
+            ** kwargs) -> str:
         """ Template rendering interface for .qsf files """
         global_assignments = global_assignments or {}
         project_output_directory = project_output_directory or "project_output"
@@ -124,7 +125,6 @@ class Render(object):
             'device': device,
             'original_quartus_version': f"\"{original_quartus_version}\"",
             'last_quartus_version': f"\"{last_quartus_version}\"",
-            'top_level_entity': f"\"{project_name}\"",
             'project_output_directory': project_output_directory,
             # [feature] [minor] TODO 'sdc_file': f"{project_name}.sdc"
         })
@@ -132,6 +132,7 @@ class Render(object):
             project_name=project_name,
             global_assignments=global_assignments,
             user_assignments=user_assignments,
+            mips=mips,
             **kwargs
         )
 
