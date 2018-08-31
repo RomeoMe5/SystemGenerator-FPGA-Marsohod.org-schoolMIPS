@@ -12,6 +12,7 @@ build/
 temp/
 logs/
 log/
+migrations/
 
 *.env
 *tmp*
