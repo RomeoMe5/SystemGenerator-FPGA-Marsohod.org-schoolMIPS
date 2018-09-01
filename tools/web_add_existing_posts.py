@@ -1,9 +1,11 @@
 import os
+import sys
 from datetime import datetime
 
 from web_client import BASE_DIR, create_app, db
 from web_client.models import Post
 
+sys.path.append(os.getcwd())
 app = create_app()
 POSTS_LIST_PATH = os.path.join(BASE_DIR, "templates", "blog", "pages.list")
 

@@ -5,10 +5,9 @@
 import sys
 import os
 
-sys.path.append(os.getcwd())
 from engine import Board
 
-
+sys.path.append(os.getcwd())
 if __name__ == "__main__":
     # it's possible specify project name as first script's positional argument
     project_name = "tmp" if len(sys.argv) < 2 else sys.argv[1]
