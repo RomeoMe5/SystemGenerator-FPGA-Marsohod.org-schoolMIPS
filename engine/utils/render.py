@@ -109,6 +109,7 @@ class Render(object):
     def qsf(project_name: str,
             family: str,
             device: str,
+            func: None,
             original_quartus_version: str="9.0",
             last_quartus_version: str="9.0",
             project_output_directory: str=None,
@@ -133,7 +134,8 @@ class Render(object):
             global_assignments=global_assignments,
             user_assignments=user_assignments,
             mips=mips,
-            **kwargs
+            func=func,
+            ** kwargs
         )
 
     # [bug] TODO: fix bug in template rendering instead of using regexes
@@ -144,8 +146,6 @@ class Render(object):
     def sdc(project_name: str, mips: str, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
         import re  # to fix comments rendering
-        print(mips, '=' * 100)
-
         rendered = Render._render(
             project_name=project_name, mips=mips, ** kwargs)
         rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)

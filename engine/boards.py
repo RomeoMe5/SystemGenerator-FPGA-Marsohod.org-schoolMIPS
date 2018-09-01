@@ -16,6 +16,8 @@ class GenericBoard(object):
     DEFAULT_PROJECT_NAME = "generated_project"
     FUNCTIONS = ("ButtonDebouncer", "Demultiplexer",
                  "Generator", "Seven", "Uart8")
+    MIPS_TYPES = ["simple", "mmio", "irq", "pipeline", "pipeline_irq",
+                  "pipeline_ahb"]
 
     def __init__(self, board_name: str, message: str=None) -> NoReturn:
         """ :param config_path - path to config static file """
@@ -91,6 +93,10 @@ class GenericBoard(object):
         """ Setup board configuration """
         flt = flt or {}
         func = func or {}
+        if mips_type:
+            if mips_type not in self.MIPS_TYPES:
+                LOGGER.error("Unsupportable mips type: %s", mips_type)
+                mips_type = None
         self.mips_type = mips_type
         if reset:
             self.reset()
@@ -134,15 +140,16 @@ class GenericBoard(object):
             (Render.v(self.project_name, assignments=self._v,
                       **self._mips_v),
              Render.qpf(self.project_name, **self._qpf),
-             Render.qsf(self.project_name, **self._qsf,
+             Render.qsf(self.project_name, func=self._functions, **self._qsf,
                         mips=self._mips_qsf),
              Render.sdc(self.project_name, mips=self.mips_type, **self._sdc))
         )))
-        self.configs.update(dict(zip(
+
+        self.configs.update({'functions': dict(zip(
             map(lambda x: ".".join((x, "v")), self._functions),
             map(lambda x: Render.functions(".".join((x, "v.jinja")),
-                                           **self._func), self._functions)
-        )))
+                                           **self._func), self._functions)))
+        })
 
         # Generate additional configs for SchoolMIPS
         self.mips_configs = {}
@@ -166,9 +173,17 @@ class GenericBoard(object):
             path = self.project_name
         create_dirs(path, rewrite=False)
         for filename, content in self.configs.items():
-            with open(os.path.join(path, filename), 'wt') as fout:
-                LOGGER.debug("Creating '%s'...", fout.name)
-                fout.write(content)
+            if isinstance(content, dict):
+                if len(content):
+                    create_dirs('\\'.join((path, filename)), rewrite=False)
+                    for fname, fcontent in content.items():
+                        with open(os.path.join(path, filename, fname), 'wt') as fout:
+                            LOGGER.debug("Creating '%s'...", fout.name)
+                            fout.write(fcontent)
+            else:
+                with open(os.path.join(path, filename), 'wt') as fout:
+                    LOGGER.debug("Creating '%s'...", fout.name)
+                    fout.write(content)
 
         if self.mips_configs:
             mips_path = path + '\mips'

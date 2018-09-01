@@ -17,8 +17,11 @@ if __name__ == "__main__":
     board = Board("Marsohod3").generate(project_name).dump(project_name)
     board.reset()  # reset board to full setup
     # generate project with keys support and save it with path == project name
-    board.setup(flt={'key': True}, mips_type='pipeline_ahb').generate().dump()
+    board.setup(flt={'key': True, 'led': True, 'clock': True},
+                func={'Seven': True, 'Uart8': True},
+                mips_type='simple').generate().dump()
     # regenerate project with keys and Seven func and
     # arcive generated project with path == project name
-    board.generate(flt={'key': True, 'led': True},
-                   func={'Seven': True}, mips_type='simple').archive()
+    board.generate(flt={'key': True, 'led': True, 'clock': True},
+                   func={'Seven': True, 'Uart8': True},
+                   mips_type='simple').archive()
