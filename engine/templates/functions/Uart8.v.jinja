@@ -197,7 +197,7 @@ always @(posedge clk) begin
 		DATA_BITS: begin
 			if (&clockCount) begin // save one bit of received data
 				clockCount <= 4'b0;
-				// TODO: check the most popular value
+				// TODO check the most popular value
 				receivedData[bitIdx] <= inputSw[0];
 				if (&bitIdx) begin
 					bitIdx <= 3'b0;

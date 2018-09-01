@@ -11,7 +11,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 # ===== Logging =====
 LOG_LEVEL = logging.DEBUG
-LOG_NAME = f"{__name__}.log"
+LOG_NAME = "engine.log"
 LOG_PATH = os.path.join(BASE_DIR, "logs")
 LOG_FORMAT = "[%(asctime)s] %(levelname)s " \
              "[%(name)s.{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s"
