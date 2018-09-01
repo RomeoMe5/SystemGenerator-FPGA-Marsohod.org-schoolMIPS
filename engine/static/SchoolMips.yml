@@ -5,8 +5,6 @@ qsf:
     - "mips/sm_hex_display.v"
     - "mips/sm_cpu.v"
   SEARCH_PATH:
-    - ".."
-    - "../program"
     - "mips/"
 
 v:
@@ -53,3 +51,5 @@ v:
         - 4'b0010
       - - regData
         - regData
+sdc:
+

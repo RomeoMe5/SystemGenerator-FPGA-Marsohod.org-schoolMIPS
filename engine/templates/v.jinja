@@ -38,18 +38,10 @@ module {{ project_name }}();
 {{ "\n" }}
 {%- if wires -%}
 	{%- for bits, name, size, assigname, assigsize in wires -%}
-		{%- if not loop.last -%}
-			{%- if assigname == '' -%}
-{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}},
-			{%- else -%}
-{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}{{" = "}}{{assigname}}{{assigsize}},
-			{%- endif -%}
-		{%- else -%}{# Separate rule for last iteration #}
-{%- if assigname == '' -%}
-{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}
-			{%- else -%}
-{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}{{" = "}}{{assigname}}{{assigsize}}
-			{%- endif -%}
+		{%- if assigname == '' -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}};
+		{%- else -%}
+{{"    wire"}}{{bits}}{{"\t"}}{{name}}{{"\t"}}{{size}}{{" = "}}{{assigname}}{{assigsize}};
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}

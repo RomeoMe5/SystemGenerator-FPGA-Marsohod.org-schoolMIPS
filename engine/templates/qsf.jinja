@@ -18,6 +18,7 @@ set_global_assignment -name {{ key|upper }} {{ value }}
 {%- endif -%}
 set_global_assignment -name TOP_LEVEL_ENTITY {{ project_name }}
 set_global_assignment -name SDC_FILE {{ project_name }}.sdc
+set_global_assignment -name VERILOG_FILE {{project_name}}.v
 
 {%- if mips -%}
 	{%- for key, value in mips.items() -%}

@@ -138,13 +138,16 @@ class Render(object):
 
     # [bug] TODO: fix bug in template rendering instead of using regexes
     # [feature] TODO: add correct sdc generation
+    # [bug] TODO: fix mips sdc generation
     @staticmethod
     @load_template("sdc.jinja")
-    def sdc(project_name: str, **kwargs) -> str:
+    def sdc(project_name: str, mips: str, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
         import re  # to fix comments rendering
+        print(mips, '=' * 100)
 
-        rendered = Render._render(project_name=project_name, **kwargs)
+        rendered = Render._render(
+            project_name=project_name, mips=mips, ** kwargs)
         rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)
         return rendered
 
@@ -157,10 +160,6 @@ class Render(object):
           **kwargs) -> str:
         """ Template rendering interface for .v files """
 
-        print("assign = ", assignments)
-        print("wire = ", wires)
-        print("struct = ", structures)
-        print("=" * 100)
         return Render._render(
             project_name=project_name,
             assignments=assignments,

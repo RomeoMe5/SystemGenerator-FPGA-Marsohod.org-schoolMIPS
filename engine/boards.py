@@ -136,7 +136,7 @@ class GenericBoard(object):
              Render.qpf(self.project_name, **self._qpf),
              Render.qsf(self.project_name, **self._qsf,
                         mips=self._mips_qsf),
-             Render.sdc(self.project_name, **self._sdc))
+             Render.sdc(self.project_name, mips=self.mips_type, **self._sdc))
         )))
         self.configs.update(dict(zip(
             map(lambda x: ".".join((x, "v")), self._functions),
@@ -144,8 +144,13 @@ class GenericBoard(object):
                                            **self._func), self._functions)
         )))
 
+        # Generate additional configs for SchoolMIPS
         self.mips_configs = {}
         if self.mips_type:
+            self.mips_configs.update({
+                'program.hex': Loader.load_static(
+                    '\\'.join((PATHS.MIPS, 'program.hex')))
+            })
             mips_path = '\\'.join((PATHS.MIPS, self.mips_type, 'src'))
             files = os.listdir(mips_path)
             for file in files:

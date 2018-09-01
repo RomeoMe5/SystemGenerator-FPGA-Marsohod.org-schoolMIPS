@@ -104,7 +104,7 @@ class Archiver(object):
                             LOGGER.debug(
                                 "   Add file '%s' to tar I/O, \
                                     content(binary): '%s",
-                                file_name, file_line_byte)
+                                fname, file_line_byte)
                     else:
                         tarinfo = tarfile.TarInfo(file_name)
                         file_line_byte = io.BytesIO(file_line.encode('utf-8'))
