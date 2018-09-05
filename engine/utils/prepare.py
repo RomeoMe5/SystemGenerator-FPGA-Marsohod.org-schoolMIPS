@@ -118,14 +118,12 @@ class Archiver(object):
         return tar_io
 
     @staticmethod
-    async def to_tar_flow(files: dict, path: str) -> io.BytesIO:
+    async def to_tar_flow(files: dict, path: str) -> NoReturn:
         """ Write tar I/O to tar file """
-        tar_io = await Archiver.get_tar_io(files)
         with open(path + ".tar", 'wb') as tar_fout:
             LOGGER.debug("Creating '%s' tar file", path)
-            tar_fout.write(tar_io.getvalue())
+            tar_fout.write((await Archiver.get_tar_io(files)).getvalue())
             LOGGER.info("'%s' file created", path)
-        return tar_io
 
     @staticmethod
     async def archive(destination: str,

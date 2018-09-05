@@ -161,8 +161,10 @@ class Render(object):
                         width: int=2,  # dmx
                         out_freq: int=1000000,  # generator
                         baud_rate: int=9600,  # uart
+                        fmt: str="v.jinja",
                         **kwargs) -> str:
         """ Template rendering interface for additional functions """
+        name = f"{name}.{fmt}" if fmt else name
         return await none_safe()(Render._render)(
             template=ENV.get_template(f"functions/{name}"),
             clock_rate=clock_rate or clock_freq,
