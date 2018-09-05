@@ -1,4 +1,4 @@
-[feature]
+[future]
 ☐ add custom board generation from loaded configs
 ☐ add config loading as admin
 ☐ add debounser for buttons
