@@ -13,9 +13,9 @@ from engine.utils.misc import none_safe
 from engine.utils.prepare import Archiver, Convertor, Loader, create_dirs
 from engine.utils.render import ENV, Render, load_template
 from tests import TEST_DIR, free_test_dir, logging
-from tests.engine import (MOCK_CONFIG, MOCK_DIR, MOCK_FUNC_TEMPL_NAME,
-                          MOCK_TEMPL_NAME, _test_static_content,
-                          get_event_loop, use_mock_loader)
+from tests.engine import (MOCK_CONFIG, MOCK_DIR, MOCK_TEMPL_NAME,
+                          _test_static_content, get_event_loop,
+                          use_mock_loader)
 
 
 def teardown_module() -> NoReturn:
@@ -67,26 +67,20 @@ class TestArchiver:
         self.arch_name = os.path.join(self.tmp_dir, "arch")
         self.files = tuple(os.path.join(self.tmp_dir, d)
                            for d in ("a", "b", "c"))
-        self.loop = asyncio.new_event_loop()
 
     @staticmethod
-    async def create_file(path: str) -> bool:
+    def create_file(path: str) -> bool:
         logging.debug("Create file: %s", path)
         with open(path, 'wb') as fout:
             pass
         return os.path.exists(path)
 
     def setup_method(self) -> NoReturn:
-        asyncio.set_event_loop(self.loop)
-        tasks = (self.create_file(filepath) for filepath in self.files)
-        for res in self.loop.run_until_complete(asyncio.gather(*tasks)):
-            assert res
+        for filepath in self.files:
+            assert self.create_file(filepath)
 
     def teardown_method(self) -> NoReturn:
         free_test_dir()
-
-    def teardown_class(self) -> NoReturn:
-        self.loop.close()
 
     def test__to_zip(self) -> NoReturn:
         assert asyncio.run(Archiver._to_zip(self.arch_name, *self.files)) > 0
@@ -96,7 +90,6 @@ class TestArchiver:
         assert asyncio.run(Archiver._to_tar(self.arch_name, *self.files)) > 0
         assert os.path.exists(self.arch_name)
 
-    # [minor] BUG can't dispatch class-level event loop
     def test__archive(self) -> NoReturn:
         with pytest.raises(ValueError) as exc:
             asyncio.run(Archiver._archive(
@@ -129,16 +122,15 @@ class TestArchiver:
             assert os.path.exists(zip_kwargs['destination'])
 
             for r in zip(loop.run_until_complete(asyncio.gather(*tasks[1])),
-                        loop.run_until_complete(asyncio.gather(*tasks[2]))):
+                         loop.run_until_complete(asyncio.gather(*tasks[2]))):
                 assert r[0] > 0
                 assert r[1] == -1
 
     def test_to_tar_flow(self) -> NoReturn:
         files = {fn: fn for fn in self.files}
-        res = asyncio.run(Archiver.to_tar_flow(files, self.arch_name))
+        asyncio.run(Archiver.to_tar_flow(files, self.arch_name))
         assert os.path.exists(self.arch_name + ".tar")
 
-    # [dev][minor] TODO make async as in test__archive
     def test_archive(self) -> NoReturn:
         zip_name = self.arch_name + ".zip"
         assert asyncio.run(Archiver.archive(zip_name, *self.files)) > 0
@@ -174,21 +166,15 @@ class TestConvertor:
         self.tmp_dir = TEST_DIR
         self.conf_path = MOCK_CONFIG
         self.fmt = "yml"
-        self.loop = asyncio.new_event_loop()
-
-    def setup_method(self) -> NoReturn:
-        asyncio.set_event_loop(self.loop)
 
     def teardown_method(self) -> NoReturn:
         free_test_dir()
 
-    def teardown_class(self) -> NoReturn:
-        self.loop.close()
-
     def test__load_content(self) -> NoReturn:
-        tasks = (Convertor._load_content(self.conf_path, fmt=self.fmt),
-                 Convertor._load_content(self.conf_path))
-        for res in self.loop.run_until_complete(asyncio.gather(*tasks)):
+        for res in (
+            asyncio.run(Convertor._load_content(self.conf_path, fmt=self.fmt)),
+            asyncio.run(Convertor._load_content(self.conf_path))
+        ):
             _test_static_content(res)
 
     def test_convert(self) -> NoReturn:
@@ -196,13 +182,11 @@ class TestConvertor:
             'from_path': self.conf_path,
             'to_fmt': "json"
         }
-
         end_filenames = (self.conf_path[:-3] + "json",
                          os.path.join(self.tmp_dir, "file.json"))
-        tasks = (Convertor.convert(**kwargs),
-                 Convertor.convert(to_path=end_filenames[1], **kwargs))
-        _ = self.loop.run_until_complete(asyncio.gather(*tasks))
 
+        _ = asyncio.run(Convertor.convert(**kwargs))
+        _ = asyncio.run(Convertor.convert(to_path=end_filenames[1], **kwargs))
         for filename in end_filenames:
             assert os.path.exists(filename)
             with open(filename, "r") as fin:
@@ -217,16 +201,9 @@ class TestLoader:
         self.fullpath = MOCK_CONFIG
         self.filename = "static-board"
         self.fullname = ".".join((self.filename, "yml"))
-        self.loop = asyncio.new_event_loop()
-
-    def setup_method(self) -> NoReturn:
-        asyncio.set_event_loop(self.loop)
 
     def teardown_method(self) -> NoReturn:
         free_test_dir()
-
-    def teardown_class(self) -> NoReturn:
-        self.loop.close()
 
     def test_load(self) -> NoReturn:
         _test_static_content(asyncio.run(Loader.load(self.fullpath)))
@@ -235,10 +212,10 @@ class TestLoader:
         tasks = (Loader.load_static(self.fullpath),
                  Loader.load_static(self.filename, self.path),
                  Loader.load_static(self.fullname, self.path))
-        for res in self.loop.run_until_complete(asyncio.gather(*tasks)):
-            _test_static_content(res)
+        with get_event_loop() as loop:
+            for res in loop.run_until_complete(asyncio.gather(*tasks)):
+                _test_static_content(res)
 
-    # [minor] BUG can't dispatch class-level event loop
     def test_get_static_path(self) -> NoReturn:
         async def _test_static_path(filename: str) -> NoReturn:
             path = await Loader.get_static_path(filename, self.path)
@@ -271,27 +248,22 @@ def test_create_dirs() -> NoReturn:
 class TestRender:
     def setup_class(self) -> NoReturn:
         self.config = asyncio.run(Loader.load(MOCK_CONFIG))
-        self.loop = asyncio.new_event_loop()
-
-    def setup_method(self) -> NoReturn:
-        asyncio.set_event_loop(self.loop)
 
     def teardown_method(self) -> NoReturn:
         free_test_dir()
-
-    def teardown_class(self) -> NoReturn:
-        self.loop.close()
 
     @staticmethod
     def _check_rendered(render_res: str, params: dict) -> NoReturn:
         assert render_res and isinstance(render_res, str)
         for val in params.values():
             if not isinstance(val, (dict, list)):
+                logging.debug("Check rendered value: %s", val)
                 assert val in render_res
 
     def make_params(self, filetype: str) -> dict:
         params = {'project_name': "test-proj"}
         params.update(self.config[filetype])
+        logging.debug("Make params: %s", params)
         return params
 
     def test__render(self) -> NoReturn:
@@ -335,12 +307,18 @@ class TestRender:
 
     def test_functions(self) -> NoReturn:
         params = self.make_params('func')
-        params['name'] = MOCK_FUNC_TEMPL_NAME
         params['a'] = "alO@)IW)IJW)EWJ)FIJ"
+
+        def check_rendered(data: str) -> NoReturn:
+            assert data
+            assert isinstance(data, str)
+            assert params['a'] in data
+
         with use_mock_loader():
-            res = asyncio.run(Render.functions(**params))
-        assert res and isinstance(res, str)
-        assert params['a'] in res
+            for res in (asyncio.run(Render.functions(name="func", **params)),
+                        asyncio.run(Render.functions(name="func.v.jinja",
+                                                     fmt=None, **params))):
+                check_rendered(res)
 
 
 def test_load_template() -> NoReturn:
