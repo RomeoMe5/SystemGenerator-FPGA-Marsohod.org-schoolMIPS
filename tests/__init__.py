@@ -1,7 +1,8 @@
 import logging
 import os
 import shutil
-from typing import NoReturn
+from contextlib import contextmanager
+from typing import Generator, NoReturn
 
 
 logging.basicConfig(
@@ -20,4 +21,14 @@ def free_test_dir() -> NoReturn:
     os.mkdir(TEST_DIR)
 
 
-free_test_dir()
+def remove_test_dir() -> NoReturn:
+    if os.path.exists(TEST_DIR):
+        shutil.rmtree(TEST_DIR)
+    assert not os.path.exists(TEST_DIR)
+
+
+@contextmanager
+def use_test_dir() -> Generator:
+    free_test_dir()
+    yield TEST_DIR
+    remove_test_dir()

@@ -12,16 +12,11 @@ from engine.utils.globals import PATHS
 from engine.utils.misc import none_safe
 from engine.utils.prepare import Archiver, Convertor, Loader, create_dirs
 from engine.utils.render import ENV, Render, load_template
-from tests import TEST_DIR, free_test_dir, logging
+from tests import (TEST_DIR, free_test_dir, logging, remove_test_dir,
+                   use_test_dir)
 from tests.engine import (MOCK_CONFIG, MOCK_DIR, MOCK_TEMPL_NAME,
                           _test_static_content, get_event_loop,
                           use_mock_loader)
-
-
-def teardown_module() -> NoReturn:
-    if os.path.exists(TEST_DIR):
-        shutil.rmtree(TEST_DIR)
-    assert not os.path.exists(TEST_DIR)
 
 
 def test_global_paths() -> NoReturn:
@@ -76,11 +71,12 @@ class TestArchiver:
         return os.path.exists(path)
 
     def setup_method(self) -> NoReturn:
+        free_test_dir()
         for filepath in self.files:
             assert self.create_file(filepath)
 
     def teardown_method(self) -> NoReturn:
-        free_test_dir()
+        remove_test_dir()
 
     def test__to_zip(self) -> NoReturn:
         assert asyncio.run(Archiver._to_zip(self.arch_name, *self.files)) > 0
@@ -167,9 +163,6 @@ class TestConvertor:
         self.conf_path = MOCK_CONFIG
         self.fmt = "yml"
 
-    def teardown_method(self) -> NoReturn:
-        free_test_dir()
-
     def test__load_content(self) -> NoReturn:
         for res in (
             asyncio.run(Convertor._load_content(self.conf_path, fmt=self.fmt)),
@@ -185,14 +178,16 @@ class TestConvertor:
         end_filenames = (self.conf_path[:-3] + "json",
                          os.path.join(self.tmp_dir, "file.json"))
 
-        _ = asyncio.run(Convertor.convert(**kwargs))
-        _ = asyncio.run(Convertor.convert(to_path=end_filenames[1], **kwargs))
-        for filename in end_filenames:
-            assert os.path.exists(filename)
-            with open(filename, "r") as fin:
-                _test_static_content(json.load(fin))
-            os.remove(filename)
-            assert not os.path.exists(filename)
+        with use_test_dir():
+            _ = asyncio.run(Convertor.convert(**kwargs))
+            _ = asyncio.run(Convertor.convert(to_path=end_filenames[1],
+                                              **kwargs))
+            for filename in end_filenames:
+                assert os.path.exists(filename)
+                with open(filename, "r") as fin:
+                    _test_static_content(json.load(fin))
+                os.remove(filename)
+                assert not os.path.exists(filename)
 
 
 class TestLoader:
@@ -201,9 +196,6 @@ class TestLoader:
         self.fullpath = MOCK_CONFIG
         self.filename = "static-board"
         self.fullname = ".".join((self.filename, "yml"))
-
-    def teardown_method(self) -> NoReturn:
-        free_test_dir()
 
     def test_load(self) -> NoReturn:
         _test_static_content(asyncio.run(Loader.load(self.fullpath)))
@@ -235,22 +227,19 @@ class TestLoader:
 
 
 def test_create_dirs() -> NoReturn:
-    dirs = tuple(os.path.join(TEST_DIR, d) for d in ("a", "b", "c"))
-    with get_event_loop():
-        assert create_dirs(*dirs) == 0
-        for d in dirs:
-            assert os.path.exists(d)
-        assert create_dirs(*dirs) == 3
-        assert create_dirs(*dirs, rewrite=True) == 0
-    free_test_dir()
+    with use_test_dir() as test_dir:
+        dirs = tuple(os.path.join(test_dir, d) for d in ("a", "b", "c"))
+        with get_event_loop():
+            assert create_dirs(*dirs) == 0
+            for d in dirs:
+                assert os.path.exists(d)
+            assert create_dirs(*dirs) == 3
+            assert create_dirs(*dirs, rewrite=True) == 0
 
 
 class TestRender:
     def setup_class(self) -> NoReturn:
         self.config = asyncio.run(Loader.load(MOCK_CONFIG))
-
-    def teardown_method(self) -> NoReturn:
-        free_test_dir()
 
     @staticmethod
     def _check_rendered(render_res: str, params: dict) -> NoReturn:

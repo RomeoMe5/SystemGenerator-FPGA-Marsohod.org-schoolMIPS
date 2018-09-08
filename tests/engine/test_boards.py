@@ -5,23 +5,19 @@ from typing import NoReturn
 import pytest
 
 from engine.boards import BOARDS, Board, GenericBoard
-from tests import TEST_DIR, free_test_dir
+from tests import TEST_DIR, use_test_dir
 from tests.engine import MOCK_CONFIG, get_event_loop
 
 
 class TestGenericBoard(object):
     def setup_class(self) -> NoReturn:
-        self.tmp_dir = TEST_DIR
         self.conf_path = MOCK_CONFIG
         self.message = "This is test board configuration"
         self.p_name = "tmp"
-        self.res_path = os.path.join(self.tmp_dir, self.p_name)
+        self.res_path = os.path.join(TEST_DIR, self.p_name)
 
     def setup_method(self) -> NoReturn:
         self.board = GenericBoard(self.conf_path, message=self.message)
-
-    def teardown_method(self) -> NoReturn:
-        free_test_dir()
 
     def test_GenericBoard(self) -> NoReturn:
         with pytest.raises(AttributeError):
@@ -84,16 +80,18 @@ class TestGenericBoard(object):
         with get_event_loop():
             with pytest.raises(AttributeError):
                 self.board.dump()
-        self.board.generate().dump(self.res_path)
-        assert os.path.exists(self.res_path)
-        for filename in self.board.configs:
-            assert os.path.exists(os.path.join(self.res_path, filename))
+        with use_test_dir():
+            self.board.generate().dump(self.res_path)
+            assert os.path.exists(self.res_path)
+            for filename in self.board.configs:
+                assert os.path.exists(os.path.join(self.res_path, filename))
 
     def test_archive(self) -> NoReturn:
         with pytest.raises(AttributeError):
             self.board.archive()
-        self.board.generate().archive(self.res_path)
-        assert os.path.exists(self.res_path + ".tar")
+        with use_test_dir():
+            self.board.generate().archive(self.res_path)
+            assert os.path.exists(self.res_path + ".tar")
 
 
 class TestBoard(object):
