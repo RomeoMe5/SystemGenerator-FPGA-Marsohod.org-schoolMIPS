@@ -11,17 +11,12 @@ from flask_mail import Message
 
 from web_client import mail
 
-INVALID_CHARS = re.compile(r'[\/:*?"><|]')
+
+INVALID_CHARS = re.compile(r"[\\<>[\]?:*\"|/]")
 VALID_EMAIL_DOMAIN = re.compile(r"(?i)@((gmail|outlook)\.com|(mail|rambler)\."
                                 r"ru|ya(ndex)?\.(ru|com|ua|kz|by))")
-
-
-class PERMISSIONS(object):
-    ADMIN = 100
-    MODERATOR = 50
-    USER = 1
-
-    values = {ADMIN, MODERATOR, USER}
+RND_GEN = SystemRandom()
+URI_MIN_LEN = 32
 
 
 def get_gravatar_url(email: str,
@@ -67,18 +62,18 @@ def get_gravatar_url(email: str,
 
 def get_random_str(n: int=25, alphabet: Iterable=None) -> str:
     """ Generate random string with len == n. """
-    if alphabet is None:
-        alphabet = string.ascii_uppercase + string.digits
-    return ''.join(SystemRandom().choice(alphabet) for _ in range(n))
+    alphabet = alphabet or string.ascii_uppercase + string.digits
+    return ''.join(RND_GEN.choices(alphabet, k=n))
 
 
 def get_uri(resource_name: str, length: int=64) -> str:
-    if length - 32 < 0:
-        raise ValueError("length should be >= 32")
-    salt = get_random_str(length - 32)
+    if length - URI_MIN_LEN < 0:
+        raise ValueError(f"length should be >= {URI_MIN_LEN}")
+    salt = get_random_str(length - URI_MIN_LEN)
     return md5(resource_name.encode("utf-8")).hexdigest() + salt
 
 
+# [future] TODO add realization with asyncio
 def send_email(subject: str,
                sender: str,
                recipients: list or tuple,

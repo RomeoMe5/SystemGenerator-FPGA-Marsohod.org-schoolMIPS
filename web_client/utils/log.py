@@ -10,17 +10,17 @@ from flask_babel import lazy_gettext as _l
 def enable_email_error_notifications(app: Flask,
                                      level: int=logging.ERROR,
                                      fmt: str=None) -> NoReturn:
-    auth = (app.config.get('MAIL_USERNAME'), app.config.get('MAIL_PASSWORD'))
+    auth = (app.config.get("MAIL_USERNAME"), app.config.get("MAIL_PASSWORD"))
     if not any(auth):
         auth = None
 
     mail_handler = SMTPHandler(
         mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
         fromaddr=f"no-reply@{app.config['MAIL_SERVER']}",
-        toaddrs=app.config.get('ADMINS'),
-        subject=_l("HSE FPGAMarsohodCAD Failure"),
+        toaddrs=app.config.get("MAIL_ADMINS"),
+        subject=_("[%(header)s] Failure", header=app.config['APP_HEADER']),
         credentials=auth,
-        secure=() if int(app.config.get('MAIL_USE_TLS')) else None
+        secure=() if int(app.config.get("MAIL_USE_TLS")) else None
     )
     mail_handler.setLevel(level)
     if fmt:
@@ -37,7 +37,12 @@ def enable_logging_to_file(app: Flask,
                            max_bytes: int=1024*100,
                            backup_count: int=10) -> NoReturn:
     if not os.path.exists(path):
-        os.mkdir(path)
+        logging.debug("Create missing dir: %s", path)
+        try:
+            os.mkdir(path)
+        except BaseException as exc:
+            logging.error(exc)
+            return
 
     file_handler = RotatingFileHandler(
         os.path.join(path, filename),
