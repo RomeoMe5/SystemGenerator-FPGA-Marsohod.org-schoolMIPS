@@ -11,7 +11,7 @@ def send_password_update_email(user: User,
     current_app.logger.info("Send mail with password to %s", user)
     send_email(
         _('[HSE FPGAMarsohodCAD] Update Your Password'),
-        sender=current_app.config['ADMINS'][0],
+        sender=current_app.config['MAIL_ADMINS'][0],
         recipients=[user.email],
         text_body=render_template('email/set_password.txt',
                                   user=user, token=token),

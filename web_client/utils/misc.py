@@ -12,22 +12,23 @@ from flask_mail import Message
 from web_client import mail
 
 
-INVALID_CHARS = re.compile(r"[\\<>[\]?:*\"|/]")
+INVALID_CHARS = re.compile(r"[^\w _-]")
 VALID_EMAIL_DOMAIN = re.compile(r"(?i)@((gmail|outlook)\.com|(mail|rambler)\."
                                 r"ru|ya(ndex)?\.(ru|com|ua|kz|by))")
 RND_GEN = SystemRandom()
 URI_MIN_LEN = 32
 
 
-def get_gravatar_url(email: str,
+def get_gravatar_url(email: str=None,
                      size: int=80,
                      default: str="retro",
                      rating: str="g",
                      add_type: bool=False,
                      force_default: bool=False,
+                     email_hash: str=None,
                      **kwargs) -> str:
     """
-        Form url for gravatar image for certain email
+        Form url for gravatar image for certain email (or hash directly)
 
         Sizes form 1px to 2048px; images are squared.
         Possible ratings: "g", "pg", "r", "x".
@@ -45,7 +46,7 @@ def get_gravatar_url(email: str,
         raise ValueError(f"Unsupported gravatar rating '{rating}'!")
 
     base_url = kwargs.get("base_url", r"https://secure.gravatar.com/avatar/")
-    email_hash = md5(email.lower().encode("utf-8")).hexdigest()
+    email_hash = email_hash or md5(email.lower().encode("utf-8")).hexdigest()
     params = {
         's': int(size),
         'd': default.lower().strip(),

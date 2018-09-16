@@ -32,6 +32,8 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_ADMINS = ("hell03end@outlook.com", MAIL_USERNAME)
 
+    ADMIN_EMAIL = "hell03end@outlook.com"
+
     LOG_NAME = f"{APP_NAME}.log"
     LOG_PATH = os.path.join(BASE_DIR, "logs")
     LOG_FILE = os.path.join(LOG_PATH, LOG_NAME)

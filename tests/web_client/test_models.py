@@ -7,8 +7,8 @@ import pytest
 from tests import logging
 from tests.web_client import commit_or_rollback, create_mock_app
 from web_client import db
-from web_client.models import (EDITED_TIMEOUT, Comment, File, Image,
-                               Permissions, Post, User)
+from web_client.models import (DEFAULT_ROLE, EDITED_TIMEOUT, ROLES, Comment,
+                               File, Image, Permission, Post, Role, User)
 
 
 class TestModels(object):
@@ -31,9 +31,9 @@ class TestModels(object):
         commit_or_rollback(db)
         assert comment.id is not None
         assert comment.create_dt is not None
-        assert comment.text != text
-        assert comment.raw_text == text
-        assert len(Comment.query.all())
+        assert comment.text == text
+        assert comment.html != text
+        assert Comment.query.count()
         sleep(EDITED_TIMEOUT)
         comment.text = text
         assert not comment.is_edited
@@ -41,7 +41,7 @@ class TestModels(object):
         assert comment.is_edited
         db.session.delete(comment)
         commit_or_rollback(db)
-        assert not len(Comment.query.all())
+        assert not Comment.query.count()
 
     # [minor] TODO finish test as File model will be complete
     def test_File(self) -> NoReturn:
@@ -64,10 +64,10 @@ class TestModels(object):
         assert image.load_count == 0
         assert image.link == image.uri
         assert image.load_count == 1
-        assert len(Image.query.all())
+        assert Image.query.count()
         db.session.delete(image)
         commit_or_rollback(db)
-        assert not len(Image.query.all())
+        assert not Image.query.count()
 
     def test_Post(self) -> NoReturn:
         title = "TEST Post"
@@ -79,14 +79,15 @@ class TestModels(object):
         db.session.add(post)
         commit_or_rollback(db)
         assert post.id is not None
-        assert post.text != text
-        assert post.raw_text == text
+        assert post.text == text
+        assert post.html is not None
+        assert post.html != text
         assert post.create_dt is not None
         assert post.uri is not None
         assert post.title == title
         assert post.watch_count == 0
         assert post.visible is True
-        assert len(Post.query.all())
+        assert Post.query.count()
         sleep(EDITED_TIMEOUT)
         post.text = text
         post.title = title
@@ -100,7 +101,34 @@ class TestModels(object):
         assert post.is_edited
         assert post.uri == uri
         db.session.delete(post)
-        assert not len(Post.query.all())
+        assert not Post.query.count()
+
+    def test_Role(self) -> NoReturn:
+        name = "user"
+        role = Role()
+        logging.debug(role)
+        role.name = name
+        db.session.add(role)
+        commit_or_rollback(db)
+        assert role.id is not None
+        assert role.name == name
+        assert role.default is not None
+        assert role.permissions is not None
+        assert Role.query.count()
+        db.session.delete(role)
+        assert not Role.query.count()
+
+    def test_Role_insert_roles(self) -> NoReturn:
+        Role.insert_roles()
+        for role_name, permissions in ROLES.items():
+            role = Role.query.filter_by(_name=role_name).first()
+            assert role is not None
+            for permission in permissions:
+                assert role.has_permission(permission)
+            if role.name == DEFAULT_ROLE:
+                assert role.default
+            db.session.delete(role)
+        db.session.commit()
 
     def test_User(self) -> NoReturn:
         email = "test@mail.com"
@@ -118,12 +146,12 @@ class TestModels(object):
         assert user.phone == phone
         assert user.check_password(password)
         assert user.reg_dt is not None
-        assert user.permissions == Permissions.USER.value
-        assert len(User.query.all())
-        assert User.verify_token(user.verification_token) is user
+        # assert user.role is not None  # Role model is empty
+        assert User.query.count()
+        assert User.verify_token(user.verification_token()) is user
         db.session.delete(user)
         commit_or_rollback(db)
-        assert not len(User.query.all())
+        assert not User.query.count()
 
 
 # [minor] TODO database shouldn't be dropped on each test case
@@ -143,6 +171,8 @@ class TestModelsConnections(object):
         self.post = Post()
         self.post.title = "TEST Post"
         self.post.text = text
+        self.role = Role()
+        self.role.name = "user"
         self.user = User()
         self.user.email = "test@mail.com"
         self.user.phone = "77777777777"
@@ -186,9 +216,28 @@ class TestModelsConnections(object):
         self.post.comments.append(self.comment)
         self.simple_check(self.post, self.user, self.comment)
 
+    def test_Post_delete_comments(self) -> NoReturn:
+        db.session.add(self.post)
+        for comment in [Comment(_text="abc") for _ in range(10)]:
+            db.session.add(comment)
+            self.post.comments.append(comment)
+        db.session.commit()
+        assert Post.query.count()
+        assert Comment.query.count() == 10
+        db.session.delete(self.post)
+        db.session.commit()
+        assert not Post.query.count()
+        assert not Comment.query.count()
+
+    def test_Role(self) -> NoReturn:
+        self.role.users.append(self.user)
+        self.simple_check(self.role, self.user)
+
     def test_User(self) -> NoReturn:
         self.user.posts.append(self.post)
         # self.user.files = self.file
         self.user.comments.append(self.comment)
         self.user.images.append(self.image)
-        self.simple_check(self.user, self.image, self.post, self.comment)
+        self.user.role = self.role
+        self.simple_check(self.user, self.image, self.post, self.comment,
+                          self.role)

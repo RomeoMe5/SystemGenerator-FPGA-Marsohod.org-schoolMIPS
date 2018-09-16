@@ -3,6 +3,7 @@
 name: fpga
 dependencies:
   - pip:
+    - bleach==2.1.4
     - dill==0.2.8.2
     - Flask==1.0.2
     - Flask-Babel==0.11.2
@@ -14,6 +15,7 @@ dependencies:
     - Flask-Moment==0.6.0
     - Flask-SQLAlchemy==2.3.2
     - Flask-WTF==0.14.2
+    - ForgeryPy==0.1
     - Jinja2==2.10
     - Markdown==2.6.11
     - PyJWT==1.6.4

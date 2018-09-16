@@ -1,5 +1,6 @@
 from web_client import create_app, db
-from web_client.models import Comment, File, Image, Permissions, Post, User
+from web_client.models import (Comment, File, Image, Permission, Post, Role,
+                               User)
 from web_client.utils import cli
 
 
@@ -15,7 +16,8 @@ def make_shell_context() -> dict:
         'Comment': Comment,
         'File': File,
         'Image': Image,
-        'Permissions': Permissions,
+        'Permission': Permission,
         'Post': Post,
+        'Role': Role,
         'User': User
     }

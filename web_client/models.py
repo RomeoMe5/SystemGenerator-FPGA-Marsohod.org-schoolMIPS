@@ -2,13 +2,15 @@ import os
 import shutil
 from datetime import datetime
 from enum import Enum
+from hashlib import md5
 from time import time
-from typing import Dict, Iterable, NoReturn
+from typing import Any, Dict, Iterable, NoReturn
 
+import bleach
 import jwt
 import markdown as md
 from flask import current_app
-from flask_login import UserMixin
+from flask_login import AnonymousUserMixin, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import escape, secure_filename
@@ -25,10 +27,6 @@ def setup_is_edited(obj: object) -> NoReturn:
         return
     if (datetime.utcnow() - obj.create_dt).total_seconds() > EDITED_TIMEOUT:
         obj.edited_dt = datetime.utcnow()
-
-
-def render_as_markdown(text: str) -> str:
-    return md.markdown(escape(text), output_format="html5")
 
 
 class BackupableMixin(object):
@@ -62,11 +60,25 @@ class BackupableMixin(object):
             db.session.add(cls()._fromdict(dump))
 
 
-class Permissions(Enum):
-    ADMIN = 10
-    MODERATOR = 5
-    USER = 1
+class Permission(Enum):
+    NONE = 0b000000
+    READ = 0b000001
+    COMMENT = 0b000010
+    WRITE = 0b000100
+    ADD_FILES = 0b001000
+    ADD_CONFIGS = 0b010000
+    MODERATE = 0b100000
 
+
+ROLES = {
+    'user': (Permission.READ, Permission.COMMENT),
+    'moderator': (Permission.READ, Permission.COMMENT,
+                  Permission.WRITE, Permission.ADD_CONFIGS),
+    'admin': (Permission.READ, Permission.COMMENT, Permission.WRITE,
+              Permission.ADD_FILES, Permission.ADD_CONFIGS,
+              Permission.MODERATE)
+}
+DEFAULT_ROLE = "user"
 
 file_dirs = db.Table(
     "file_dirs",
@@ -76,11 +88,20 @@ file_dirs = db.Table(
 )
 
 
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permission: Permission) -> bool:
+        return False
+
+    def is_administrator(self) -> bool:
+        return False
+
+
 class Comment(BackupableMixin, db.Model):
     __tablename__ = "comment"
     id = db.Column(db.Integer, primary_key=True)
 
     _text = db.Column(db.Text, nullable=False)
+    _text_html = db.Column(db.Text, nullable=False)
     create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     del_dt = db.Column(db.DateTime, index=True)
@@ -103,17 +124,56 @@ class Comment(BackupableMixin, db.Model):
 
     @property
     def text(self) -> str:
-        return render_as_markdown(self._text)
+        return self._text
 
     @property
-    def raw_text(self) -> str:
-        return self._text
+    def html(self) -> str:
+        return self._text_html
 
     @text.setter
     def text(self, value: str) -> NoReturn:
         if self._text != value.strip():
             self._text = value.strip()
             setup_is_edited(self)
+
+    @staticmethod
+    def on_changed_text(target: object,
+                        value: str,
+                        oldvalue: str,
+                        initiator: object) -> NoReturn:
+        if value == oldvalue:
+            return
+        target._text_html = bleach.linkify(bleach.clean(
+            md.markdown(value, output_format="html"),
+            # allowed tags
+            tags=("a", "abbr", "acronym", "b", "code", "em", "i", "strong"),
+            strip=True
+        ))
+
+    def to_json(self) -> Dict[str, object]:
+        payload = {
+            'id': self.id,
+            'post': self.post_id,
+            'author': self.user_id
+        }
+        if self.is_deleted:
+            payload['text'] = "Comment is deleted."
+            payload['html'] = "<p>Comment is deleted.<p>"
+            payload['timestamp'] = self.del_dt
+        else:
+            payload['text'] = self._text
+            payload['html'] = self._text_html
+            payload['timestamp'] = self.create_dt
+        return payload
+
+    @staticmethod
+    def from_json(payload: Dict[str, object]) -> object or NoReturn:
+        text = payload.get("text")
+        if not text:
+            return
+        comment = Comment()
+        comment.text = text
+        return comment
 
     def __repr__(self) -> str:
         return f"<Comment[{self.id}]: {self.create_dt}, {self._text}>"
@@ -138,8 +198,9 @@ class File(BackupableMixin, db.Model):
         secondary=file_dirs,
         primaryjoin=(file_dirs.c.file_id == id),
         secondaryjoin=(file_dirs.c.dir_id == id),
-        backref=db.backref("dirs", lazy="dynamic"),
-        lazy="dynamic"
+        backref=db.backref("dirs", lazy="joined"),  # NOTE may be incorrect
+        lazy="dynamic",
+        # cascade="all, delete-orphan"
     )
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
@@ -232,8 +293,9 @@ class Post(BackupableMixin, db.Model):
     __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
 
-    _title = db.Column(db.String(140), nullable=False, index=True, unique=True)
+    _title = db.Column(db.String(140), nullable=False, index=True)
     _text = db.Column(db.Text, nullable=False)
+    _text_html = db.Column(db.Text, nullable=False)
     uri = db.Column(db.String(325), nullable=False, index=True, unique=True)
     watch_count = db.Column(db.Integer, nullable=False, default=0)
     visible = db.Column(db.Boolean, nullable=False, index=True, default=True)
@@ -242,7 +304,12 @@ class Post(BackupableMixin, db.Model):
     edited_dt = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    comments = db.relationship("Comment", backref="post", lazy="dynamic")
+    comments = db.relationship(
+        "Comment",
+        backref="post",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
+    )
 
     @property
     def is_edited(self) -> bool:
@@ -262,17 +329,17 @@ class Post(BackupableMixin, db.Model):
         if self.create_dt is None:
             self.create_dt = datetime.utcnow()
         self.uri = "-".join((
-            "-".join(INVALID_CHARS.sub(value.strip().lower(), '').split()),
+            "-".join(INVALID_CHARS.sub('', value.strip().lower()).split()),
             self.create_dt.strftime("%Y%m%d-%H%M%S")
         ))
 
     @property
     def text(self) -> str:
-        return render_as_markdown(self._text)
+        return self._text
 
     @property
-    def raw_text(self) -> str:
-        return self._text
+    def html(self) -> str:
+        return self._text_html
 
     @text.setter
     def text(self, value: str) -> NoReturn:
@@ -280,13 +347,99 @@ class Post(BackupableMixin, db.Model):
             self._text = value.strip()
             setup_is_edited(self)
 
-    def delete(self) -> NoReturn:
-        for comment in self.comments:
-            db.session.delete(comment)
-        db.session.delete(self)
+    @staticmethod
+    def on_changed_text(target: object,
+                        value: str,
+                        oldvalue: str,
+                        initiator: object) -> NoReturn:
+        if value == oldvalue:
+            return
+        target._text_html = bleach.linkify(bleach.clean(
+            md.markdown(value, output_format="html"),
+            # allowed tags
+            tags=("a", "abbr", "acronym", "b", "blockquote", "code", "em", "i",
+                  "li", "ol", "pre", "strong", "ul", "h1", "h2", "h3", "p"),
+            strip=True
+        ))
+
+    def to_json(self) -> Dict[str, object] or NoReturn:
+        if self.visible:
+            return {
+                'uri': self.uri,
+                'author': self.user_id,
+                'titile': self._title,
+                'text': self._text,
+                'html': self._text_html,
+                'timestamp': self.create_dt,
+                'edited_dt': self.edited_dt,
+                'watch_count': self.watch_count,
+                'comments': [comment.id for comment in self.comments],
+                'comments_count': self.comments.count()
+            }
+
+    @staticmethod
+    def from_json(payload: Dict[str, object]) -> object or NoReturn:
+        title = payload.get("title")
+        text = payload.get("text")
+        if not text or not title:
+            return
+        post = Post()
+        post.text = text
+        post.title = title
+        return post
 
     def __repr__(self) -> str:
         return f"<Post[{self.id}]: {self.uri}, {self.watch_count}>"
+
+
+class Role(BackupableMixin, db.Model):
+    __tablename__ = "role"
+    id = db.Column(db.Integer, primary_key=True)
+
+    _name = db.Column(db.String(64), nullable=False, unique=True)
+    default = db.Column(db.Boolean, nullable=False, default=False, index=True)
+    permissions = db.Column(db.Integer, nullable=False, default=0)
+
+    users = db.relationship("User", backref="role", lazy="dynamic")
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> NoReturn:
+        self._name = value.strip().lower()
+
+    def add_permission(self, permission: Permission) -> NoReturn:
+        if not self.has_permission(permission):
+            self.permissions += permission.value
+
+    def remove_permission(self, permission: Permission) -> NoReturn:
+        if self.has_permission(permission):
+            self.permissions -= permission.value
+
+    def reset_permissions(self) -> NoReturn:
+        self.permissions = Permission.NONE.value
+
+    def has_permission(self, permission: Permission) -> bool:
+        return self.permissions & permission.value == permission.value
+
+    @staticmethod
+    def insert_roles(roles: Dict[str, Iterable[Permission]] = ROLES,
+                     default_role: str=DEFAULT_ROLE) -> NoReturn:
+        for role_name, role_permissions in roles.items():
+            role = Role.query.filter_by(name=role_name.lower()).first()
+            if role is None:
+                role = Role(name=role_name)
+            role.reset_permissions()
+            for permission in role_permissions:
+                role.add_permission(permission)
+            role.default = (role.name == default_role)
+            db.session.add(role)
+        db.session.commit()
+
+    def __repr__(self) -> str:
+        return f"<Role[{self.id}]: {self.name}, {self.permissions:b}>"
 
 
 class User(UserMixin, BackupableMixin, db.Model):
@@ -296,13 +449,13 @@ class User(UserMixin, BackupableMixin, db.Model):
     _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
     _phone = db.Column(db.String(12), nullable=False, index=True, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
-    _permission_level = db.Column(db.Integer, nullable=False, index=True,
-                                  default=Permissions.USER.value)
     reg_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     name = db.Column(db.String(64))
     del_dt = db.Column(db.DateTime)
     last_seen = db.Column(db.DateTime)
+    avatar_hash = db.Column(db.String(32))
     _city = db.Column(db.String(64), index=True)
     del_reason = db.Column(db.String(256))
     course = db.Column(db.Integer)
@@ -313,24 +466,18 @@ class User(UserMixin, BackupableMixin, db.Model):
     files = db.relationship("File", backref="author", lazy="dynamic")
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
     images = db.relationship("Image", backref="author", lazy="dynamic")
+    role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
+
+    def __init__(self, **kwargs) -> NoReturn:
+        super(User, self).__init__(**kwargs)
+        if self._email == current_app.config['ADMIN_EMAIL']:
+            self.role = Role.query.filter_by(_name="admin").first()
+        if self.role is None:
+            self.role = Role.query.filter_by(default=True).first()
 
     @property
     def is_deleted(self) -> bool:
         return self.del_dt is not None
-
-    @property
-    def can_edit_posts(self) -> bool:
-        return self._permission_level >= Permissions.MODERATOR
-
-    @property
-    def permissions(self) -> int:
-        return self._permission_level
-
-    @permissions.setter
-    def permissions(self, value: Permissions) -> NoReturn:
-        if not isinstance(value, Permissions):
-            raise ValueError("Unknown permission level: %s", value)
-        self._permission_level = value.value
 
     @property
     def email(self) -> str:
@@ -356,28 +503,45 @@ class User(UserMixin, BackupableMixin, db.Model):
     def city(self, value: str) -> NoReturn:
         self._city = value.strip() or None
 
-    @property
-    def verification_token(self) -> str:
+    def verification_token(self, data: Any=None) -> str:
         """ Generate verification token for general proposes. """
+        payload = {
+            'id': self.id,
+            'exp': time() + current_app.config['TOKEN_TTL']
+        }
+        if data is not None:
+            payload['data'] = data
         return jwt.encode(
-            {
-                'verification': self.id,
-                'exp': time() + current_app.config['TOKEN_TTL']
-            },
+            payload,
             current_app.config['SECRET_KEY'],
             algorithm="HS256"
         ).decode("utf-8")
 
     @staticmethod
-    def verify_token(token: bytes) -> object or NoReturn:
+    def verify_token(token: bytes or str) -> object or NoReturn:
         """ Check verification token is correct for current user. """
         try:
-            user_id = jwt.decode(
+            payload = jwt.decode(
                 token,
                 current_app.config['SECRET_KEY'],
                 algorithms=['HS256']
-            )['verification']
-            return User.query.get(user_id)
+            )
+            return User.query.get(payload['id'])
+        except BaseException as exc:
+            current_app.logger.debug("Invalid token:\n%s", exc)
+
+    @staticmethod
+    def update_email(token: bytes or str) -> object or NoReturn:
+        try:
+            payload = jwt.decode(
+                token,
+                current_app.config['SECRET_KEY'],
+                algorithms=['HS256']
+            )
+            user = User.query.get(payload['id'])
+            if user:
+                user.email = payload['data']
+            return user
         except BaseException as exc:
             current_app.logger.debug("Invalid token:\n%s", exc)
 
@@ -392,7 +556,15 @@ class User(UserMixin, BackupableMixin, db.Model):
         self.del_dt = datetime.utcnow()
 
     def avatar(self, size: int) -> str:
-        return get_gravatar_url(self._email, size=size)
+        if not self.avatar_hash:
+            self.avatar_hash = md5(email.lower().encode("utf-8")).hexdigest()
+        return get_gravatar_url(email_hash=self.avatar_hash, size=size)
+
+    def can(self, permission: Permission) -> bool:
+        return self.role is not None and self.role.has_permission(permission)
+
+    def is_administrator(self) -> bool:
+        return self.can(Permission.MODERATE)
 
     def __repr__(self) -> str:
         return f"<User[{self.id}]: {self.email}, {self.phone}, {self.name}>"
@@ -404,4 +576,9 @@ def load_user(user_id: str) -> User:
     return User.query.get(int(user_id))
 
 
-MODELS = (Comment, File, Image, Post, User)
+login_manager.anonymous_user = AnonymousUser
+
+db.event.listen(Post._text, "set", Post.on_changed_text)
+db.event.listen(Comment._text, "set", Comment.on_changed_text)
+
+MODELS = (Comment, File, Image, Post, Role, User)
