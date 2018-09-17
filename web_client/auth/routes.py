@@ -1,19 +1,22 @@
+from datetime import datetime
 from functools import wraps
-from typing import Callable
+from typing import Callable, NoReturn
 
 from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
 from flask_babel import _
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.urls import url_parse
 
 from web_client import db
 from web_client.auth import bp
-from web_client.auth.forms import (LoginForm, RegistrationForm,
+from web_client.auth.forms import (ChangeEmailForm, ChangePasswordForm,
+                                   LoginForm, RegistrationForm,
                                    ResetPasswordRequestForm, SetPasswordForm)
-from web_client.auth.utils import send_password_update_email
+from web_client.auth.utils import (send_email_update_email,
+                                   send_password_update_email)
 from web_client.models import User
-from web_client.utils import get_random_str
+from web_client.utils.misc import get_random_str
 
 
 def filter_authenticated(func: Callable) -> Callable:
@@ -27,10 +30,17 @@ def filter_authenticated(func: Callable) -> Callable:
 
 
 def get_debug_token(user: User) -> object:
-    token = user.verification_token
+    token = user.get_verification_token()
     current_app.logger.debug("[debug session] verification token: %s", token)
     flash("This is a debug session: mailing is not supported")
     return redirect(url_for("auth.update_password", token=token))
+
+
+@bp.before_request
+def before_request() -> NoReturn:
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -38,16 +48,17 @@ def get_debug_token(user: User) -> object:
 def login() -> object:
     form = LoginForm()
     if form.validate_on_submit():
-        email = form.email.data.strip().lower()
-        user = User.query.filter_by(is_deleted=False, _email=email).first()
+        user = User.query.filter_by(
+            is_deleted=False,
+            _email=form.email.data.strip().lower()
+        ).first()
 
-        if not user or not user.check_password(form.password.data):
-            msg = "Invalid password: %s"
-            if not user:
-                msg = "User not found: %s"
-            current_app.logger.info(msg, email)
-            flash(_("Invalid username or password"))
-            del msg
+        if user is None or not user.check_password(form.password.data):
+            if user is None:
+                current_app.logger.info("User not found: %s", form.email.data)
+            else:
+                current_app.logger.info("Wrong password: %s", form.email.data)
+            flash(_("Invalid email or password"))
             return redirect(url_for("auth.login"))
 
         current_app.logger.info("Sign in user: %s", user)
@@ -55,9 +66,8 @@ def login() -> object:
 
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc:
-            next_page = url_for("main.index")
+            next_page = url_for("auth.login")
         return redirect(next_page)
-
     return render_template("auth/login.html", title=_("Sign In"), form=form)
 
 
@@ -65,6 +75,7 @@ def login() -> object:
 def logout() -> object:
     current_app.logger.info("Logout user: %s", current_user)
     logout_user()
+    flash(_("You have been logged out"))
     return redirect(url_for("auth.login"))
 
 
@@ -83,15 +94,9 @@ def register() -> object:
 
         user = User()
         user.email = email
-        user.password = get_random_str()  # NOTE temporary set random password
-
-        user.username = "_".join((email.split("@")[0], get_random_str(7)))
-        _user = User.query.filter_by(is_deleted=False,
-                                     _username=user.username).first()
-        while _user is not None:
-            user.username = "_".join((email.split("@")[0], get_random_str(7)))
-
-        del _user, email
+        # NOTE temporary set random password
+        user.set_password(get_random_str())
+        del email
 
         current_app.logger.info("Register user with tmp password: %s", user)
         db.session.add(user)
@@ -113,7 +118,7 @@ def register() -> object:
             flash(_("Error occurs while mailing you, please contact support!"))
             return redirect(url_for("auth.register"))
         finally:
-            del old_user
+            del old_user, user
 
         flash(_("Check your email address for setting password link!"))
         return redirect(url_for("auth.login"))
@@ -127,7 +132,7 @@ def register() -> object:
 
 @bp.route("/reset", methods=["GET", "POST"])
 @filter_authenticated
-def reset() -> object:
+def reset_password() -> object:
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(
@@ -142,9 +147,6 @@ def reset() -> object:
             except BaseException as exc:
                 current_app.logger.warning("Can't send email to %s: %s",
                                            user, exc)
-                flash(_("Error occurs while mailing you, "
-                        "please contact support!"))
-                return redirect(url_for("auth.register"))
         flash(_("Check email for the instructions to reset your password"))
         return redirect(url_for("auth.login"))
     return render_template(
@@ -154,17 +156,17 @@ def reset() -> object:
     )
 
 
-@bp.route("/update_password/<token>", methods=["GET", "POST"])
+@bp.route("/update-password/<token>", methods=["GET", "POST"])
 def update_password(token: str) -> object:
     user = User.verify_token(token)
     if user is None:
         current_app.logger.debug("Token %s has expired or invalid", token)
         flash(_("Token expired or invalid."))
-        return redirect(url_for("main.index"))
+        return redirect(url_for("auth.login"))
 
     form = SetPasswordForm()
     if form.validate_on_submit():
-        user.password = form.password.data
+        user.set_password(form.password.data)
         current_app.logger.debug("User %s change password", user)
         db.session.commit()
         flash(_("Your password has been updated!"))
@@ -173,5 +175,60 @@ def update_password(token: str) -> object:
     return render_template(
         "auth/update_password.html",
         title=_("Update Password"),
+        form=form
+    )
+
+
+@bp.route("/confirm/<token>")
+@login_required
+def update_email(token: str) -> object:
+    user = User.update_email(token)
+    if user is None:
+        flash(_("Invalid request"))
+    else:
+        db.session.add(user)
+        db.session.commit()
+        flash(_("You email address has been updated successfully"))
+    return redirect(url_for("auth.login"))
+
+
+@bp.route("/update-password", methods=["GET", "POST"])
+@login_required
+def change_password() -> object:
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.set_password(form.password.data)
+            db.session.add(current_user)
+            db.session.commit()
+            flash("Your password has been updated.")
+            return redirect(url_for("auth.login"))
+        else:
+            flash("Invalid password")
+    return render_template(
+        "auth/change_password.html",
+        title=_("Change Password"),
+        form=form
+    )
+
+
+@bp.route("/update-email", methods=["GET", "POST"])
+@login_required
+def change_email_request() -> object:
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            send_email_update_email(
+                user=current_user,
+                email=form.email.data.strip().lower()
+            )
+            flash("An email with instructions to confirm your new address "
+                  "has been sent to you.")
+            return redirect(url_for("auth.login"))
+        else:
+            flash("Invalid email or password")
+    return render_template(
+        "auth/change_email.html",
+        title=_("Change Email"),
         form=form
     )

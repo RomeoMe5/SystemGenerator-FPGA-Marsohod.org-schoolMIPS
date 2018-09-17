@@ -3,8 +3,8 @@
 {%- block styles -%}
     {{super()}}
     <!-- Custom -->
-    <link href="../static/css/footer.css" rel="stylesheet">
-    <link href="../static/css/base.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/footer.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
 {%- endblock styles -%}
 
 {%- block title -%}
@@ -77,10 +77,11 @@
                 </li>
                 #}
                 <li>
-                    <a href="{{ url_for('profile.user', username=current_user.username) }}">
+                    <a href="{{ url_for('profile.user', uid=current_user.id) }}">
                         {{ _("Profile") }}
                     </a>
                 </li>
+                {#
                 <li>
                     <a href="{{ url_for('blog.posts') }}">
                         {{ _("Articles") }}
@@ -93,6 +94,7 @@
                     </a>
                 </li>
                 {%- endif -%}
+                #}
                 <li>
                     <a href="{{ url_for('auth.logout') }}">
                         {{ _("Logout") }}
@@ -112,6 +114,7 @@
         {%- if messages -%}
             {%- for message in messages -%}
             <div class="alert alert-info" role="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
                 {{ message }}
             </div>
             {%- endfor -%}
@@ -191,4 +194,5 @@
                 }
             )
         });
-</script> {%- endblock -%}
+</script>
+{%- endblock -%}

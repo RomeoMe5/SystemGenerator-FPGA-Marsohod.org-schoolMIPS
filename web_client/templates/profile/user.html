@@ -4,19 +4,39 @@
 <table class="table table-hover">
     <tr valign="top">
         <td width="300px">
-            <a href="{{ url_for('profile.user', username=user.username) }}">
-                <img width="256px" src="{{ user.avatar }}" />
+            <a href="{{ url_for('profile.user', uid=user.id) }}">
+                <img width="256px" src="{{ user.avatar(256) }}" />
             </a>
         </td>
         <td>
             <h1>
-                {{ user.username | capitalize }}
-                {% if user.can_edit_posts %}
+                {{ user.name or _("User") | capitalize }}
+                {% if user.is_admin %}
                     ✔ <!-- is admin -->
+                {%- endif -%}
+                {% if current_user.is_admin %}
+                    {# [minor] BUG url_for('profile.edit', uid=user.id) is not work #}
+                    <a href="{{ url_for('profile.edit') }}/{{ user.id }}">
+                        ✏️
+                    </a>
                 {%- endif -%}
             </h1>
 
-            {%- include "_user_info.jinja" -%}
+            {%-if user.city -%}
+                <p>{{ user.city | capitalize }}</p>
+            {%-endif -%}
+            {%-if user.university -%}
+                <p>{{ user.university }}</p>
+            {%-endif -%}
+            {%-if user.faculty -%}
+                <p>{{ user.faculty }}</p>
+            {%-endif -%}
+            {%-if user.course -%}
+                <p>{{ user.course }} {{ _('course') }}</p>
+            {%-endif -%}
+            {%-if user.last_seen -%}
+                <p> {%-include "_last_seen.jinja" -%} </p>
+            {%-endif -%}
 
             {%- if user == current_user -%}
             <p>

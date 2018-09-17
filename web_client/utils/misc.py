@@ -13,8 +13,8 @@ from web_client import mail
 
 
 INVALID_CHARS = re.compile(r"[^\w _-]")
-VALID_EMAIL_DOMAIN = re.compile(r"(?i)@((gmail|outlook)\.com|(mail|rambler)\."
-                                r"ru|ya(ndex)?\.(ru|com|ua|kz|by))")
+VALID_EMAIL_DOMAIN = r"(?i)[\w\.-]+@((gmail|outlook)\.com|(mail|rambler)\.ru" \
+                     r"|ya(ndex)?\.(ru|com|ua|kz|by)|(edu\.)?hse\.ru)"
 RND_GEN = SystemRandom()
 URI_MIN_LEN = 32
 

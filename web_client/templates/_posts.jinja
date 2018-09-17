@@ -1,3 +1,4 @@
+{%- if posts -%}
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -24,10 +25,10 @@
                 <td>
                     <a href="{{ post.author.link }}">
                         <span class="user_popup">
-                            {{ post.author.username }}
+                            {{ post.author.email }}
                         </span>
                     </a>
-                </td> {# author username #}
+                </td> {# author email #}
                 <td>
                     {{ post.watches }}
                 </td> {# watches count #}
@@ -46,3 +47,4 @@
         </tbody>
     </table>
 </div>
+{%- endif -%}

@@ -36,6 +36,7 @@ login_manager.login_message = _l("Please log in to access this page")
 class PATHS(object):
     BASE = os.path.dirname(__file__)
     STATIC = os.path.join(BASE, "static")
+    TEMPL = os.path.join(BASE, "templates")
     FILES = os.path.join(STATIC, "files")  # [dev] TODO change folder
     TRANSL = os.path.join(BASE, "translations")
 
@@ -43,7 +44,7 @@ class PATHS(object):
 def create_app(config_name: str="default",
                db: object=db,
                name: str=APP_NAME) -> Flask:
-    app = Flask(name or __name__)
+    app = Flask(name or __name__, template_folder=PATHS.TEMPL)
     app.config.from_object(configs[config_name])
 
     app.elasticsearch = None
@@ -63,11 +64,14 @@ def create_app(config_name: str="default",
     from web_client.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
-    # from web_client.auth import bp as auth_bp
-    # app.register_blueprint(auth_bp, url_prefix="/auth")
+    from web_client.auth import bp as auth_bp
+    if app.config['DEBUG']:
+        app.register_blueprint(auth_bp, url_prefix="/auth")
+    else:
+        app.register_blueprint(auth_bp, subdomain="auth")
 
-    # from web_client.profile import bp as profile_bp
-    # app.register_blueprint(profile_bp, url_prefix="/profile")
+    from web_client.profile import bp as profile_bp
+    app.register_blueprint(profile_bp, url_prefix="/profile")
 
     # from web_client.blog import bp as blog_bp
     # app.register_blueprint(blog_bp, url_prefix="/blog")

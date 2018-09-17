@@ -92,7 +92,8 @@ class AnonymousUser(AnonymousUserMixin):
     def can(self, permission: Permission) -> bool:
         return False
 
-    def is_administrator(self) -> bool:
+    @property
+    def is_admin(self) -> bool:
         return False
 
 
@@ -102,8 +103,8 @@ class Comment(BackupableMixin, db.Model):
 
     _text = db.Column(db.Text, nullable=False)
     _text_html = db.Column(db.Text, nullable=False)
-    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    create_dt = db.Column(db.DateTime, default=datetime.utcnow)
     del_dt = db.Column(db.DateTime, index=True)
     edited_dt = db.Column(db.DateTime)
 
@@ -186,9 +187,9 @@ class File(BackupableMixin, db.Model):
     _name = db.Column(db.String(64), nullable=False, index=True)
     uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
     path = db.Column(db.String(64), nullable=False, unique=True, index=True)
-    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    is_dir = db.Column(db.Boolean, nullable=False, default=False)
 
+    create_dt = db.Column(db.DateTime, default=datetime.utcnow)
+    is_dir = db.Column(db.Boolean, default=False)
     _size = db.Column(db.Integer)
     load_count = db.Column(db.Integer, default=0)
 
@@ -253,9 +254,9 @@ class Image(BackupableMixin, db.Model):
 
     _name = db.Column(db.String(128), nullable=False, index=True)
     uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
-    load_count = db.Column(db.Integer, nullable=False, default=0)
-    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    load_count = db.Column(db.Integer, default=0)
+    create_dt = db.Column(db.DateTime, default=datetime.utcnow)
     fmt = db.Column(db.String(8))
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -291,10 +292,10 @@ class Post(BackupableMixin, db.Model):
     _text = db.Column(db.Text, nullable=False)
     _text_html = db.Column(db.Text, nullable=False)
     uri = db.Column(db.String(325), nullable=False, index=True, unique=True)
-    watch_count = db.Column(db.Integer, nullable=False, default=0)
-    visible = db.Column(db.Boolean, nullable=False, index=True, default=True)
-    create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    watch_count = db.Column(db.Integer, default=0)
+    visible = db.Column(db.Boolean, index=True, default=True)
+    create_dt = db.Column(db.DateTime, default=datetime.utcnow)
     edited_dt = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -391,9 +392,9 @@ class Role(BackupableMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     _name = db.Column(db.String(64), nullable=False, unique=True)
-    default = db.Column(db.Boolean, nullable=False, default=False, index=True)
-    permissions = db.Column(db.Integer, nullable=False, default=0)
 
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer, default=0)
     users = db.relationship("User", backref="role", lazy="dynamic")
 
     @property
@@ -442,14 +443,15 @@ class User(UserMixin, BackupableMixin, db.Model):
 
     _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
-    reg_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    reg_dt = db.Column(db.DateTime, default=datetime.utcnow)
+    is_deleted = db.Column(db.Boolean, index=True, default=False)
     name = db.Column(db.String(64))
     del_dt = db.Column(db.DateTime)
     last_seen = db.Column(db.DateTime)
     avatar_hash = db.Column(db.String(32))
     _city = db.Column(db.String(64), index=True)
-    del_reason = db.Column(db.String(256))
+    del_reason = db.Column(db.Text)
     course = db.Column(db.Integer)
     university = db.Column(db.String(128))
     faculty = db.Column(db.String(128))
@@ -466,10 +468,6 @@ class User(UserMixin, BackupableMixin, db.Model):
             self.role = Role.query.filter_by(_name="admin").first()
         if self.role is None:
             self.role = Role.query.filter_by(default=True).first()
-
-    @property
-    def is_deleted(self) -> bool:
-        return self.del_dt is not None
 
     @property
     def email(self) -> str:
@@ -538,18 +536,21 @@ class User(UserMixin, BackupableMixin, db.Model):
         return check_password_hash(self._password_hash, password)
 
     def delete(self, reason: str) -> NoReturn:
+        self.is_deleted = True
         self.del_reason = reason.strip().lower()
         self.del_dt = datetime.utcnow()
 
     def avatar(self, size: int) -> str:
         if not self.avatar_hash:
-            self.avatar_hash = md5(email.lower().encode("utf-8")).hexdigest()
+            self.avatar_hash = \
+                md5(self._email.lower().encode("utf-8")).hexdigest()
         return get_gravatar_url(email_hash=self.avatar_hash, size=size)
 
     def can(self, permission: Permission) -> bool:
         return self.role is not None and self.role.has_permission(permission)
 
-    def is_administrator(self) -> bool:
+    @property
+    def is_admin(self) -> bool:
         return self.can(Permission.MODERATE)
 
     def __repr__(self) -> str:
