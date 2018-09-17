@@ -10,9 +10,11 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_moment import Moment
+from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
+from flask_sslify import SSLify
 
-from configs.web_client import APP_NAME, Config
+from configs.web_client import APP_NAME, configs
 from web_client.utils.log import (enable_email_error_notifications,
                                   enable_logging_to_file,
                                   enable_logging_to_stdout)
@@ -24,6 +26,7 @@ db = SQLAlchemy()
 mail = Mail()
 migrate = Migrate()
 moment = Moment()
+pagedown = PageDown()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
@@ -37,11 +40,11 @@ class PATHS(object):
     TRANSL = os.path.join(BASE, "translations")
 
 
-def create_app(config_class: object=Config,
+def create_app(config_name: str="default",
                db: object=db,
                name: str=APP_NAME) -> Flask:
     app = Flask(name or __name__)
-    app.config.from_object(config_class)
+    app.config.from_object(configs[config_name])
 
     app.elasticsearch = None
 
@@ -52,6 +55,10 @@ def create_app(config_class: object=Config,
     mail.init_app(app)
     migrate.init_app(app, db)
     moment.init_app(app)
+    pagedown.init_app(app)
+
+    if app.config['SSL_REDIRECT']:
+        sslify = SSLify(app)
 
     from web_client.errors import bp as errors_bp
     app.register_blueprint(errors_bp)

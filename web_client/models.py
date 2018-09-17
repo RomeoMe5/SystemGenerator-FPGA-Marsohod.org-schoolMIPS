@@ -179,14 +179,13 @@ class Comment(BackupableMixin, db.Model):
         return f"<Comment[{self.id}]: {self.create_dt}, {self._text}>"
 
 
-# [future] TODO finish File model
 class File(BackupableMixin, db.Model):
     __tablename__ = "file"
     id = db.Column(db.Integer, primary_key=True)
 
     _name = db.Column(db.String(64), nullable=False, index=True)
     uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
-    _path = db.Column(db.String(64), nullable=False, unique=True, index=True)
+    path = db.Column(db.String(64), nullable=False, unique=True, index=True)
     create_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     is_dir = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -199,8 +198,7 @@ class File(BackupableMixin, db.Model):
         primaryjoin=(file_dirs.c.file_id == id),
         secondaryjoin=(file_dirs.c.dir_id == id),
         backref=db.backref("dirs", lazy="joined"),  # NOTE may be incorrect
-        lazy="dynamic",
-        # cascade="all, delete-orphan"
+        lazy="dynamic"
     )
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
@@ -220,17 +218,13 @@ class File(BackupableMixin, db.Model):
     @name.setter
     def name(self, value: str) -> NoReturn:
         self._name = secure_filename(os.path.basename(value))
+        if not self.dirs:
+            self.path = os.path.join(PATHS.FILES, self._name)
+        else:
+            self.path = os.path.join(self.dirs[0].path, self._name)
         self.uri = get_uri(value)
         while File.query.filter_by(uri=self.uri).first() is not None:
             self.uri = get_uri(value)
-
-    @property
-    def path(self) -> str:
-        return os.path.join(PATHS.FILES, self._path)
-
-    @path.setter
-    def path(self, value: str) -> NoReturn:
-        self._path = value.strip()
 
     @staticmethod
     def remove_dir(items: Iterable) -> NoReturn:
@@ -250,7 +244,7 @@ class File(BackupableMixin, db.Model):
         db.session.delete(self)
 
     def __repr__(self) -> str:
-        return f"<File[{self.id}]: {self.name}, {self.uri}, {self.load_count}>"
+        return f"<File[{self.id}]: {self.path}, {self.uri}, {self.load_count}>"
 
 
 class Image(BackupableMixin, db.Model):
@@ -329,7 +323,7 @@ class Post(BackupableMixin, db.Model):
         if self.create_dt is None:
             self.create_dt = datetime.utcnow()
         self.uri = "-".join((
-            "-".join(INVALID_CHARS.sub('', value.strip().lower()).split()),
+            "-".join(INVALID_CHARS.sub("", value.strip().lower()).split()),
             self.create_dt.strftime("%Y%m%d-%H%M%S")
         ))
 
@@ -447,10 +441,8 @@ class User(UserMixin, BackupableMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     _email = db.Column(db.String(128), nullable=False, index=True, unique=True)
-    _phone = db.Column(db.String(12), nullable=False, index=True, unique=True)
     _password_hash = db.Column(db.String(128), nullable=False)
     reg_dt = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     name = db.Column(db.String(64))
     del_dt = db.Column(db.DateTime)
@@ -488,14 +480,6 @@ class User(UserMixin, BackupableMixin, db.Model):
         self._email = value.strip().lower()
 
     @property
-    def phone(self) -> str:
-        return self._phone
-
-    @phone.setter
-    def phone(self, value: str) -> NoReturn:
-        self._phone = value.strip().lower()
-
-    @property
     def city(self) -> str:
         return self._city
 
@@ -503,11 +487,13 @@ class User(UserMixin, BackupableMixin, db.Model):
     def city(self, value: str) -> NoReturn:
         self._city = value.strip() or None
 
-    def verification_token(self, data: Any=None) -> str:
+    def get_verification_token(self,
+                               expires_in: float=None,
+                               data: Any=None) -> str:
         """ Generate verification token for general proposes. """
         payload = {
             'id': self.id,
-            'exp': time() + current_app.config['TOKEN_TTL']
+            'exp': time() + (expires_in or current_app.config['TOKEN_TTL'])
         }
         if data is not None:
             payload['data'] = data
@@ -567,7 +553,7 @@ class User(UserMixin, BackupableMixin, db.Model):
         return self.can(Permission.MODERATE)
 
     def __repr__(self) -> str:
-        return f"<User[{self.id}]: {self.email}, {self.phone}, {self.name}>"
+        return f"<User[{self.id}]: {self.email}, {self.name}>"
 
 
 @login_manager.user_loader

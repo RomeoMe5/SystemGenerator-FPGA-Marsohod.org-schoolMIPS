@@ -6,7 +6,7 @@ import pytest
 
 from tests import logging
 from tests.web_client import commit_or_rollback, create_mock_app
-from web_client import db
+from web_client import PATHS, db
 from web_client.models import (DEFAULT_ROLE, EDITED_TIMEOUT, ROLES, Comment,
                                File, Image, Permission, Post, Role, User)
 
@@ -29,9 +29,10 @@ class TestModels(object):
         comment.text = text
         db.session.add(comment)
         commit_or_rollback(db)
-        assert comment.id is not None
-        assert comment.create_dt is not None
+        assert isinstance(comment.id, int)
+        assert isinstance(comment.create_dt, datetime)
         assert comment.text == text
+        assert isinstance(comment.html, str)
         assert comment.html != text
         assert Comment.query.count()
         sleep(EDITED_TIMEOUT)
@@ -43,10 +44,25 @@ class TestModels(object):
         commit_or_rollback(db)
         assert not Comment.query.count()
 
-    # [minor] TODO finish test as File model will be complete
     def test_File(self) -> NoReturn:
+        name = "file"
         file = File()
         logging.debug(file)
+        file.name = name
+        db.session.add(file)
+        commit_or_rollback(db)
+        assert isinstance(file.id, int)
+        assert file.name == name
+        assert isinstance(file.path, str)
+        assert isinstance(file.uri, str)
+        assert PATHS.FILES in file.path
+        assert isinstance(file.create_dt, datetime)
+        assert file.is_dir is False
+        assert isinstance(file.load_count, int)
+        assert File.query.count()
+        db.session.delete(file)
+        commit_or_rollback(db)
+        assert not File.query.count()
 
     def test_Image(self) -> NoReturn:
         fmt = "png"
@@ -56,11 +72,11 @@ class TestModels(object):
         image.name = name
         db.session.add(image)
         commit_or_rollback(db)
-        assert image.id is not None
+        assert isinstance(image.id, int)
         assert image.name == name
         assert image.fmt == fmt
-        assert image.uri is not None
-        assert image.create_dt is not None
+        assert isinstance(image.uri, str)
+        assert isinstance(image.create_dt, datetime)
         assert image.load_count == 0
         assert image.link == image.uri
         assert image.load_count == 1
@@ -78,12 +94,12 @@ class TestModels(object):
         post.text = text
         db.session.add(post)
         commit_or_rollback(db)
-        assert post.id is not None
+        assert isinstance(post.id, int)
         assert post.text == text
-        assert post.html is not None
+        assert isinstance(post.html, str)
         assert post.html != text
-        assert post.create_dt is not None
-        assert post.uri is not None
+        assert isinstance(post.create_dt, datetime)
+        assert isinstance(post.uri, str)
         assert post.title == title
         assert post.watch_count == 0
         assert post.visible is True
@@ -110,10 +126,10 @@ class TestModels(object):
         role.name = name
         db.session.add(role)
         commit_or_rollback(db)
-        assert role.id is not None
+        assert isinstance(role.id, int)
         assert role.name == name
-        assert role.default is not None
-        assert role.permissions is not None
+        assert role.default is False
+        assert isinstance(role.permissions, int)
         assert Role.query.count()
         db.session.delete(role)
         assert not Role.query.count()
@@ -132,23 +148,21 @@ class TestModels(object):
 
     def test_User(self) -> NoReturn:
         email = "test@mail.com"
-        phone = "77777777777"
         password = "pass123"
         user = User()
         logging.debug(user)
         user.email = email
-        user.phone = phone
         user.set_password(password)
         db.session.add(user)
         commit_or_rollback(db)
-        assert user.id is not None
+        assert isinstance(user.id, int)
         assert user.email == email
-        assert user.phone == phone
         assert user.check_password(password)
-        assert user.reg_dt is not None
+        assert isinstance(user.reg_dt, datetime)
         # assert user.role is not None  # Role model is empty
         assert User.query.count()
-        assert User.verify_token(user.verification_token()) is user
+        token = user.get_verification_token(expires_in=5)
+        assert User.verify_token(token) is user
         db.session.delete(user)
         commit_or_rollback(db)
         assert not User.query.count()
@@ -165,7 +179,8 @@ class TestModelsConnections(object):
         text = "# Some text."
         self.comment = Comment()
         self.comment.text = text
-        # self.file = File()
+        self.file = File()
+        self.file.name = "file"
         self.image = Image()
         self.image.name = "test-name.png"
         self.post = Post()
@@ -175,7 +190,6 @@ class TestModelsConnections(object):
         self.role.name = "user"
         self.user = User()
         self.user.email = "test@mail.com"
-        self.user.phone = "77777777777"
         self.user.set_password("pass123")
 
     def teardown_method(self) -> NoReturn:
@@ -185,7 +199,8 @@ class TestModelsConnections(object):
     def teardown_class(self) -> NoReturn:
         pass  # self.app.app_context().pop()
 
-    def simple_check(self, *items) -> NoReturn:
+    @staticmethod
+    def simple_check(*items) -> NoReturn:
         for item in items:
             db.session.add(item)
         commit_or_rollback(db)
@@ -203,9 +218,10 @@ class TestModelsConnections(object):
         self.comment.post = self.post
         self.simple_check(self.comment, self.user, self.post)
 
-    # [minor] TODO finish test as File model will be complete
-    def _test_File(self) -> NoReturn:
-        raise NotImplementedError
+    def test_File(self) -> NoReturn:
+        self.file.author = self.user
+        self.file.files.append(self.file)
+        self.simple_check(self.file, self.user)
 
     def test_Image(self) -> NoReturn:
         self.image.author = self.user

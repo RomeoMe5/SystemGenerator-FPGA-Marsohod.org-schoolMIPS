@@ -25,15 +25,8 @@ def commit_or_rollback(db: SQLAlchemy) -> NoReturn:
         raise exc
 
 
-class MockConfig(Config):
-    DEBUG = True
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite://"
-    ELASTICSEARCH_URL = None
-
-
 def create_mock_app(db: SQLAlchemy, name: str="test") -> Flask:
-    return create_app(config_class=MockConfig, db=db, name=name)
+    return create_app(config_name="test", db=db, name=name)
 
 
 class MockModel(BackupableMixin, mock_db.Model):
@@ -124,10 +117,8 @@ class MockGenerator(object):
             role = Role.query.offset(randint(0, roles_count - 1)).first()
             user = User()
             user.email = forgery_py.internet.email_address()
-            user.phone = str(randint(79000000000, 79999999999))
             user.role = role
             user.set_password(forgery_py.lorem_ipsum.word())
-            user.confirmed = randint(1, 100) != 1
             user.reg_dt = forgery_py.date.date(past=True)
             user.last_seen = forgery_py.date.date(past=True)
             user.city = forgery_py.address.city()
