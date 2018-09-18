@@ -9,9 +9,8 @@ from flask_login import current_user, login_required
 
 from web_client import db
 from web_client.blog import bp
-from web_client.blog.forms import (EditCommentForm, EditPostForm,
-                                   UploadImageForm)
-from web_client.models import Comment, Post
+from web_client.blog.forms import CommentForm, PostForm, UploadImageForm
+from web_client.models import Comment, Permission, Post
 
 
 @bp.before_request
@@ -19,17 +18,6 @@ def before_request() -> NoReturn:
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
-
-
-def filter_non_admins(func: Callable) -> Callable:
-    @wraps(func)
-    def wrapper(*args, **kwargs) -> object:
-        if not current_user.can_edit_posts:
-            current_app.logger.debug("Access denied: %s", current_user)
-            flash(_("You have no rights to add posts!"))
-            return redirect(url_for("blog.posts"))
-        return func(*args, **kwargs)
-    return wrapper
 
 
 @bp.route("/")
@@ -40,60 +28,60 @@ def posts() -> object:
              .order_by(Post.create_dt.desc())
              .paginate(
                  request.args.get("page", 1, type=int),
-                 current_app.config['POSTS_PER_PAGE'],
+                 current_app.config['ITEMS_PER_PAGE'],
                  True  # enable 404 error
              ))
 
-    next_page_url = None
-    if posts.has_next:
-        next_page_url = url_for("blog.posts", page=posts.next_num)
-    prev_page_url = None
-    if posts.has_prev:
-        prev_page_url = url_for("blog.posts", page=posts.prev_num)
+    next_page = None if not posts.has_next else \
+        url_for("blog.posts", page=posts.next_num)
+    prev_page = None if not posts.has_prev else \
+        url_for("blog.posts", page=posts.prev_num)
 
     return render_template(
         "blog/posts.html",
         title=_("Articles"),
         posts=posts.items,
-        next_page_url=next_page_url,
-        prev_page_url=prev_page_url
+        next_page_url=next_page,
+        prev_page_url=prev_page
     )
 
 
 @bp.route("/drafts")
 @login_required
-@filter_non_admins
 def drafts() -> object:
-    posts = (Post.query
-             .filter_by(author=current_user, visible=False)
-             .order_by(Post.create_dt.desc())
-             .paginate(
-                 request.args.get("page", 1, type=int),
-                 current_app.config['POSTS_PER_PAGE'],
-                 True  # enable 404 error
-             ))
+    if not current_user.can(Permission.WRITE):
+        return abort(403)
+    posts = (
+        Post.query
+        .filter_by(visible=False)
+        .order_by(Post.create_dt.desc())
+    )
+    if not current_user.is_admin:
+        posts = posts.filter_by(author=current_user)
+    posts = posts.paginate(
+        request.args.get("page", 1, type=int),
+        current_app.config['ITEMS_PER_PAGE'],
+        True  # enable 404 error
+    )
 
-    next_page_url = None
-    if posts.has_next:
-        next_page_url = url_for("blog.posts", page=posts.next_num)
-    prev_page_url = None
-    if posts.has_prev:
-        prev_page_url = url_for("blog.posts", page=posts.prev_num)
+    next_page = None if not posts.has_next else \
+        url_for("blog.drafts", page=posts.next_num)
+    prev_page = None if not posts.has_prev else \
+        url_for("blog.drafts", page=posts.prev_num)
 
     return render_template(
-        "blog/posts.html",
+        "blog/drafts.html",
         title=_("Drafts of Articles"),
         posts=posts.items,
-        next_page_url=next_page_url,
-        prev_page_url=prev_page_url
+        next_page_url=next_page,
+        prev_page_url=prev_page
     )
 
 
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
-@filter_non_admins
 def add() -> object:
-    form = EditPostForm()
+    form = PostForm()
     if form.validate_on_submit():
         post = Post()
         post.title = form.title.data
@@ -101,15 +89,15 @@ def add() -> object:
         post.visible = form.visible.data
         post.author = current_user
 
-        current_app.logger.info("Add new post %s", post)
+        current_app.logger.info("User %s add new post %s", current_user, post)
         db.session.add(post)
         db.session.commit()
 
         flash(_("New post created!"))
-        return redirect(post.link)
+        return redirect(url_for("blog.view", uri=post.uri))
 
     return render_template(
-        "blog/edit.html",
+        "blog/add.html",
         title=_("Add Post"),
         form=form
     )
@@ -117,23 +105,26 @@ def add() -> object:
 
 @bp.route("/edit/<uri>", methods=["GET", "POST"])
 @login_required
-@filter_non_admins
 def edit(uri: str) -> object:
-    # NOTE only posts authors can edit their posts
-    post = Post.query.filter_by(_uri=uri,
-                                user_id=current_user.id).first_or_404()
-    form = EditPostForm(original_title=post.title)
+    if not current_user.can(Permission.WRITE):
+        return abort(403)
+    post = Post.query.filter_by(uri=uri).first_or_404()
+    # only posts authors and admins can edit posts
+    if not current_user.is_admin and not post.author == current_user:
+        return abort(403)
+    form = PostForm()
     if form.validate_on_submit():
-        current_app.logger.info("Edit post %s", post)
+        current_app.logger.info("User %s edit post %s", current_user, post)
         post.title = form.title.data
         post.text = form.text.data
         post.visible = form.visible.data
+        db.session.add(post)
         db.session.commit()
         flash(_("Changes were saved!"))
-        return redirect(post.link)
+        return redirect(url_for("blog.view", uri=post.uri))
     elif request.method == "GET":
         form.title.data = post.title
-        form.text.data = post.raw_text
+        form.text.data = post.text
         form.visible.data = post.visible
 
     return render_template(
@@ -146,12 +137,14 @@ def edit(uri: str) -> object:
 
 @bp.route("/delete/<uri>")
 @login_required
-@filter_non_admins
 def delete(uri: str) -> object:
-    # NOTE only posts authors can delete their posts
-    post = Post.query.filter_by(_uri=uri,
-                                user_id=current_user.id).first_or_404()
-    post.delete()
+    if not current_user.can(Permission.WRITE):
+        return abort(403)
+    post = Post.query.filter_by(uri=uri).first_or_404()
+    # only posts authors and admins can delete posts
+    if not current_user.is_admin and not post.author == current_user:
+        return abort(403)
+    current_app.logger.debug("User %s remove post %s", current_user, post)
     db.session.delete(post)
     db.session.commit()
     del post
@@ -162,24 +155,39 @@ def delete(uri: str) -> object:
 @bp.route("/post/<uri>", methods=["GET", "POST"])
 @login_required
 def view(uri: str) -> object:
-    # NOTE only visible posts can be viewed
-    post = Post.query.filter_by(_uri=uri).first_or_404()
-    if not post.visible and post.author != current_user:
-        abort(404)
-    comments = post.comments.order_by(Comment.create_dt.desc()).all()
-    form = EditCommentForm()
-    if form.validate_on_submit():
-        comment = Comment()
-        comment.text = form.text.data
-        comment.post = post
-        comment.author = current_user
-        current_app.logger.info("Add new comment: %s", comment)
-        db.session.add(comment)
-        db.session.commit()
-        del comment
-        flash(_("New comment created!"))
-        return redirect(post.link)
-    elif post.author != current_user:
+    post = Post.query.filter_by(uri=uri).first_or_404()
+    # only visible posts can be viewed for non admins
+    if not post.visible and (post.author != current_user or
+                             not current_user.is_admin):
+        return abort(404)
+    comments = (post.comments
+                .order_by(Comment.create_dt.desc())
+                .paginate(
+                    request.args.get("page", 1, type=int),
+                    current_app.config['ITEMS_PER_PAGE'],
+                    True  # enable 404 error
+                ))
+
+    next_page = None if not comments.has_next else \
+        url_for("blog.view", page=comments.next_num)
+    prev_page = None if not comments.has_prev else \
+        url_for("blog.view", page=comments.prev_num)
+
+    form = None
+    if current_user.can(Permission.COMMENT):
+        form = CommentForm()
+        if form.validate_on_submit():
+            comment = Comment()
+            current_app.logger.info("User %s add new comment: %s",
+                                    current_user, comment)
+            comment.text = form.text.data
+            comment.post = post
+            comment.author = current_user
+            db.session.add(comment)
+            db.session.commit()
+            flash(_("New comment created!"))
+            return redirect(url_for("blog.view", uri=post.uri))
+    if post.author != current_user:
         post.watched()
         db.session.commit()
 
@@ -187,29 +195,66 @@ def view(uri: str) -> object:
         "blog/view.html",
         title=post.title,
         post=post,
-        comments=comments,
+        comments=comments.items,
         form=form
     )
 
 
-@bp.route("/comment/edit/<int:cid>", methods=["GET", "POST"])
+@bp.route("/c/edit/<int:iid>", methods=["GET", "POST"])
 @login_required
-def edit_comment(cid: int) -> object:
-    comment = Comment.query.filter_by(id=cid,
+def edit_comment(iid: int) -> object:
+    comment = Comment.query.filter_by(id=iid,
                                       author=current_user).first_or_404()
-    form = EditCommentForm()
+    form = CommentForm()
     if form.validate_on_submit():
+        current_app.logger.debug("User %s edit comment: %s",
+                                 current_user, comment)
         comment.text = form.text.data
-        current_app.logger.info("Edit comment: %s", comment)
+        db.session.add(comment)
         db.session.commit()
         flash(_("Comment saved!"))
-        return redirect(post.link)
+        return redirect(url_for("blog.view", uri=comment.post.uri))
     elif request.method == "GET":
-        form.text.data = comment.raw_text
+        form.text.data = comment.text
 
-    del comment
     return render_template(
         "blog/edit_comment.html",
         title=_("Edit Comment"),
         form=form
     )
+
+
+@bp.route("/c/delete/<int:iid>")
+@login_required
+def delete_comment(iid: int) -> object:
+    if not current_user.can(Permission.COMMENT):
+        return abort(403)
+    comment = Comment.query.get_or_404(iid)
+    # only posts authors and admins can delete comments
+    if not current_user.is_admin and not comment.author == current_user:
+        return abort(403)
+    current_app.logger.debug("User %s remove comment %s",
+                             current_user, comment)
+    comment.is_deleted = True
+    db.session.add(comment)
+    db.session.commit()
+    flash(_("Comment was removed"))
+    return redirect(request.args.get("next_page", url_for("blog.posts")))
+
+
+@bp.route("/c/restore/<int:iid>")
+@login_required
+def restore_comment(iid: int) -> object:
+    if not current_user.can(Permission.COMMENT):
+        return abort(403)
+    comment = Comment.query.get_or_404(iid)
+    # only posts authors and admins can restore comments
+    if not current_user.is_admin and not comment.author == current_user:
+        return abort(403)
+    current_app.logger.debug("User %s restore comment %s",
+                             current_user, comment)
+    comment.is_deleted = False
+    db.session.add(comment)
+    db.session.commit()
+    flash(_("Comment was restored"))
+    return redirect(request.args.get("next_page", url_for("blog.posts")))

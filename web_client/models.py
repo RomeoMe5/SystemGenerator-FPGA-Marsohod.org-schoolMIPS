@@ -62,20 +62,16 @@ class BackupableMixin(object):
 
 class Permission(Enum):
     NONE = 0b000000
-    READ = 0b000001
-    COMMENT = 0b000010
-    WRITE = 0b000100
-    ADD_FILES = 0b001000
-    ADD_CONFIGS = 0b010000
+    COMMENT = 0b000001
+    WRITE = 0b000010
+    ADD_FILES = 0b000100
     MODERATE = 0b100000
 
 
 ROLES = {
-    'user': (Permission.READ, Permission.COMMENT),
-    'moderator': (Permission.READ, Permission.COMMENT,
-                  Permission.WRITE, Permission.ADD_CONFIGS),
-    'admin': (Permission.READ, Permission.COMMENT, Permission.WRITE,
-              Permission.ADD_FILES, Permission.ADD_CONFIGS,
+    'user': (Permission.COMMENT,),
+    'moderator': (Permission.COMMENT, Permission.WRITE, Permission.ADD_FILES),
+    'admin': (Permission.COMMENT, Permission.WRITE, Permission.ADD_FILES,
               Permission.MODERATE)
 }
 DEFAULT_ROLE = "user"
@@ -102,7 +98,7 @@ class Comment(BackupableMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     _text = db.Column(db.Text, nullable=False)
-    _text_html = db.Column(db.Text, nullable=False)
+    html = db.Column(db.Text, nullable=False)
 
     create_dt = db.Column(db.DateTime, default=datetime.utcnow)
     del_dt = db.Column(db.DateTime, index=True)
@@ -127,10 +123,6 @@ class Comment(BackupableMixin, db.Model):
     def text(self) -> str:
         return self._text
 
-    @property
-    def html(self) -> str:
-        return self._text_html
-
     @text.setter
     def text(self, value: str) -> NoReturn:
         if self._text != value.strip():
@@ -144,10 +136,13 @@ class Comment(BackupableMixin, db.Model):
                         initiator: object) -> NoReturn:
         if value == oldvalue:
             return
-        target._text_html = bleach.linkify(bleach.clean(
+        target.html = bleach.linkify(bleach.clean(
             md.markdown(value, output_format="html"),
             # allowed tags
-            tags=("a", "abbr", "acronym", "b", "code", "em", "i", "strong"),
+            tags=("a", "abbr", "acronym", "b", "blockquote", "code", "em", "i",
+                  "li", "ol", "pre", "strong", "ul", "p", "br", "span", "hr",
+                  "h4", "h5", "h6"),
+            attributes={'*': ["class", "id"], 'a': ["href", "rel"]},
             strip=True
         ))
 
@@ -163,7 +158,7 @@ class Comment(BackupableMixin, db.Model):
             payload['timestamp'] = self.del_dt
         else:
             payload['text'] = self._text
-            payload['html'] = self._text_html
+            payload['html'] = self.html
             payload['timestamp'] = self.create_dt
         return payload
 
@@ -290,7 +285,7 @@ class Post(BackupableMixin, db.Model):
 
     _title = db.Column(db.String(140), nullable=False, index=True)
     _text = db.Column(db.Text, nullable=False)
-    _text_html = db.Column(db.Text, nullable=False)
+    html = db.Column(db.Text, nullable=False)
     uri = db.Column(db.String(325), nullable=False, index=True, unique=True)
 
     watch_count = db.Column(db.Integer, default=0)
@@ -332,10 +327,6 @@ class Post(BackupableMixin, db.Model):
     def text(self) -> str:
         return self._text
 
-    @property
-    def html(self) -> str:
-        return self._text_html
-
     @text.setter
     def text(self, value: str) -> NoReturn:
         if self._text != value.strip():
@@ -349,11 +340,18 @@ class Post(BackupableMixin, db.Model):
                         initiator: object) -> NoReturn:
         if value == oldvalue:
             return
-        target._text_html = bleach.linkify(bleach.clean(
+        target.html = bleach.linkify(bleach.clean(
             md.markdown(value, output_format="html"),
             # allowed tags
             tags=("a", "abbr", "acronym", "b", "blockquote", "code", "em", "i",
-                  "li", "ol", "pre", "strong", "ul", "h1", "h2", "h3", "p"),
+                  "li", "ol", "pre", "strong", "ul", "h1", "h2", "h3", "p",
+                  "img", "video", "div", "iframe", "br", "span", "hr", "src",
+                  "class", "h4", "h5", "h6"),
+            attributes={
+                '*': ["class", "id"],
+                'a': ["href", "rel"],
+                'img': ["src", "alt"]
+            },
             strip=True
         ))
 
@@ -364,7 +362,7 @@ class Post(BackupableMixin, db.Model):
                 'author': self.user_id,
                 'titile': self._title,
                 'text': self._text,
-                'html': self._text_html,
+                'html': self.html,
                 'timestamp': self.create_dt,
                 'edited_dt': self.edited_dt,
                 'watch_count': self.watch_count,
@@ -535,9 +533,9 @@ class User(UserMixin, BackupableMixin, db.Model):
     def check_password(self, password: str) -> bool:
         return check_password_hash(self._password_hash, password)
 
-    def delete(self, reason: str) -> NoReturn:
+    def delete(self, reason: str=None) -> NoReturn:
         self.is_deleted = True
-        self.del_reason = reason.strip().lower()
+        self.del_reason = reason.strip().lower() if reason else None
         self.del_dt = datetime.utcnow()
 
     def avatar(self, size: int) -> str:

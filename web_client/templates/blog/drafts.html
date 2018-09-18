@@ -4,6 +4,12 @@
 {%- block app_content -%}
 <h2 class="sub-header">{{ title }}</h2>
 
+<p>
+    <a class="btn btn-default" rode="button" href="{{ url_for('blog.add') }}">
+        {{ _("Add new article") }}
+    </a>
+</p>
+
 {%- include "_posts.jinja" -%}
 {{ pagginate(prev_page_url, next_page_url) }}
 

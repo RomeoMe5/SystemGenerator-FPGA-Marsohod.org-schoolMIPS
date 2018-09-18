@@ -73,8 +73,8 @@ def create_app(config_name: str="default",
     from web_client.profile import bp as profile_bp
     app.register_blueprint(profile_bp, url_prefix="/profile")
 
-    # from web_client.blog import bp as blog_bp
-    # app.register_blueprint(blog_bp, url_prefix="/blog")
+    from web_client.blog import bp as blog_bp
+    app.register_blueprint(blog_bp, url_prefix="/blog")
 
     # from web_client.files import bp as files_bp
     # app.register_blueprint(files_bp, url_prefix="/files")

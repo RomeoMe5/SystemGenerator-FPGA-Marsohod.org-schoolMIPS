@@ -1,23 +1,22 @@
 from typing import NoReturn
 
-from flask import current_app
 from flask_babel import lazy_gettext as _l
+from flask_pagedown.fields import PageDownField
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, MultipleFileField, StringField, SubmitField,
                      TextAreaField)
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length
 
 from web_client.models import Post
 
 
-class EditPostForm(FlaskForm):
+class PostForm(FlaskForm):
     title = StringField(
         _l("Post Title"),
-        validators=[DataRequired(), Length(min=10, max=140)],
-        description=_l("Post title should be unique")
+        validators=[DataRequired(), Length(min=1, max=140)]
     )
-    text = TextAreaField(
-        _l("Post Text"),
+    text = PageDownField(
+        _l("Article Text"),
         validators=[DataRequired()],
         description=_l("Post content can be formated as markdown")
     )
@@ -27,23 +26,10 @@ class EditPostForm(FlaskForm):
     )
     submit = SubmitField(_l("Submit"))
 
-    def __init__(self, original_title: str=None, *args, **kwargs) -> NoReturn:
-        super(EditPostForm, self).__init__(*args, **kwargs)
-        self.original_title = None
-        if original_title is not None:
-            self.original_title = original_title.strip()
 
-    def validate_title(self, title: StringField) -> NoReturn:
-        title = title.data.strip()
-        if title == self.original_title:
-            del title
-            return
-        post = Post.query.filter_by(_title=title).first()
-        del title
-        if post is not None:
-            current_app.logger.debug("Existing title: %s", post)
-            del post
-            raise ValidationError(_l("Please use a different title"))
+class CommentForm(FlaskForm):
+    text = TextAreaField(_l("Add Comment"), validators=[DataRequired()])
+    submit = SubmitField(_l("Submit"))
 
 
 class UploadImageForm(FlaskForm):
@@ -54,12 +40,7 @@ class UploadImageForm(FlaskForm):
     submit = SubmitField(_l("Upload Image"))
 
 
-class EditCommentForm(FlaskForm):
-    text = TextAreaField(_l("Add Comment"), validators=[DataRequired()])
-    submit = SubmitField(_l("Submit"))
-
-
-# [feature] TODO
+# [future] TODO
 class SearchForm(FlaskForm):
     q = StringField(_l('Search'), validators=[DataRequired()])
 

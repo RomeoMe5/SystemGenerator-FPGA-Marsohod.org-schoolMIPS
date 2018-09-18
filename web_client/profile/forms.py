@@ -66,6 +66,8 @@ class EditProfileAdminForm(FlaskForm):
 
     def validate_email(self, email: StringField) -> NoReturn:
         email = email.data.strip().lower()
+        if email == self.user.email:
+            return
         user = User.query.filter_by(_email=email).first()
         del email
         if user is not None:

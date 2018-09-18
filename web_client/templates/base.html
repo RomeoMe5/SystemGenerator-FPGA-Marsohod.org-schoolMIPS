@@ -11,7 +11,7 @@
     {%- if title -%}
         {{ title }}
     {%- else -%}
-        {{ _("HSE Marsohod CAD") }}
+        {{ config.get("APP_HEADER") or _("HSE Marsohod CAD") }}
     {%- endif -%}
 {%- endblock title -%}
 
@@ -27,7 +27,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
-                {{ _("HSE Marsohod CAD") }}
+                {{ config.get("APP_HEADER") or _("HSE Marsohod CAD") }}
             </a>
         </div>
         {# Navbar content #}
@@ -72,29 +72,31 @@
                 <li>
                     <a href="{{ url_for("files.static") }}">{{ _("Files") }}</a>
                 </li>
-                <li>
-                    <img with="25" height="25" class="img-circle profile-img" alt="Generic placeholder image" src="{{ current_user.avatar_s }}" />
-                </li>
                 #}
                 <li>
-                    <a href="{{ url_for('profile.user', uid=current_user.id) }}">
+                    <a href="{{ url_for('profile.user', iid=current_user.id) }}">
                         {{ _("Profile") }}
                     </a>
                 </li>
-                {#
                 <li>
                     <a href="{{ url_for('blog.posts') }}">
                         {{ _("Articles") }}
                     </a>
                 </li>
-                {%- if current_user.can_edit_posts -%}
+                {%- if current_user.can(Permission.WRITE) -%}
                 <li>
                     <a href="{{ url_for('blog.drafts') }}">
                         {{ _("Drafts") }}
                     </a>
                 </li>
                 {%- endif -%}
-                #}
+                {%- if current_user.is_admin -%}
+                <li>
+                    <a href="{{ url_for('profile.users') }}">
+                        {{ _("Users") }}
+                    </a>
+                </li>
+                {%- endif -%}
                 <li>
                     <a href="{{ url_for('auth.logout') }}">
                         {{ _("Logout") }}
@@ -156,43 +158,4 @@
 {%- block scripts -%}
     {{ super() }}
     {{ moment.include_moment() }}
-
-    <script>
-        $(function () /* startup code */ {
-            var timer = null;
-            var xhr = null;
-            $('.user_popup').hover(
-                function (event) {
-                    var elem = $(event.currentTarget);
-                    timer = setTimeout(function () {
-                        timer = null;
-                        xhr = $.ajax('/profile/' + elem.first().text().trim() + '/popup').done(function (data) {
-                            xhr = null;
-                            elem.popover({
-                                trigger: 'manual',
-                                html: true,
-                                animation: false,
-                                container: elem,
-                                content: data
-                            }).popover('show');
-                            flask_moment_render_all();
-                        });
-                    }, 400);
-                },
-                function (event) {
-                    // mouse out event handler
-                    var elem = $(event.currentTarget);
-                    if (timer) {
-                        clearTimeout(timer);
-                        timer = null;
-                    } else if (xhr) {
-                        xhr.abort();
-                        xhr = null;
-                    } else {
-                        elem.popover('destroy');
-                    }
-                }
-            )
-        });
-</script>
 {%- endblock -%}

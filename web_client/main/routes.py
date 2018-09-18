@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template
+from flask import current_app, render_template
 from flask_login import current_user
 
 from engine.boards import BOARDS
@@ -19,6 +19,6 @@ def before_request() -> None:
 def index() -> object:
     return render_template(
         "index.html",
-        title="HSE System Builder",
+        title=current_app.config['APP_HEADER'],
         boards=BOARDS
     )
