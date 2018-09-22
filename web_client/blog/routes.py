@@ -1,6 +1,5 @@
-from datetime import datetime
 from functools import wraps
-from typing import Callable, NoReturn
+from typing import Callable
 
 from flask import (abort, current_app, flash, redirect, render_template,
                    request, url_for)
@@ -11,13 +10,6 @@ from web_client import db
 from web_client.blog import bp
 from web_client.blog.forms import CommentForm, PostForm, UploadImageForm
 from web_client.models import Comment, Permission, Post
-
-
-@bp.before_request
-def before_request() -> NoReturn:
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
 
 
 @bp.route("/")
@@ -157,11 +149,11 @@ def delete(uri: str) -> object:
 def view(uri: str) -> object:
     post = Post.query.filter_by(uri=uri).first_or_404()
     # only visible posts can be viewed for non admins
-    if not post.visible and (post.author != current_user or
+    if not post.visible and (post.author != current_user and
                              not current_user.is_admin):
         return abort(404)
     comments = (post.comments
-                .order_by(Comment.create_dt.desc())
+                .order_by(Comment.create_dt)
                 .paginate(
                     request.args.get("page", 1, type=int),
                     current_app.config['ITEMS_PER_PAGE'],
@@ -188,7 +180,7 @@ def view(uri: str) -> object:
             flash(_("New comment created!"))
             return redirect(url_for("blog.view", uri=post.uri))
     if post.author != current_user:
-        post.watched()
+        post.watch_count += 1
         db.session.commit()
 
     return render_template(

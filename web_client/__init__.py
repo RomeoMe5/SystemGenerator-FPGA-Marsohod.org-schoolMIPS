@@ -1,4 +1,5 @@
 # [future] TODO delete unused data (optimize memory usage)
+# [dev] BUG static files are not found
 
 import os
 

@@ -1,6 +1,5 @@
-from datetime import datetime
 from functools import wraps
-from typing import Callable, NoReturn
+from typing import Callable
 
 from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
@@ -34,13 +33,6 @@ def get_debug_token(user: User) -> object:
     current_app.logger.debug("[debug session] verification token: %s", token)
     flash("This is a debug session: mailing is not supported")
     return redirect(url_for("auth.update_password", token=token))
-
-
-@bp.before_request
-def before_request() -> NoReturn:
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
 
 
 @bp.route("/login", methods=["GET", "POST"])

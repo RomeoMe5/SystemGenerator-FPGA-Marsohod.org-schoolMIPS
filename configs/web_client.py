@@ -27,7 +27,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DB_PATH}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
-    SLOW_DB_QUERY_TIME = 0.1
+    SLOW_DB_QUERY_TIME = 0.01
 
     MAIL_SERVER = "smtp.googlemail.com"
     MAIL_PORT = 587

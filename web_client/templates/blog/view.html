@@ -46,7 +46,11 @@
             name=user_link, when=moment(comment.create_dt).fromNow()) }}
         <br>
         <span id="comment{{ comment.id }}">
-            {%- if comment.is_deleted -%}
+            {%- if comment.is_deleted and current_user.is_admin -%}
+                <strong>[{{ _("Comment was deleted") }}]</strong>
+                <br/>
+                {{ comment.html | safe }}
+            {%- elif comment.is_deleted -%}
                 <strong>{{ _("Comment was deleted") }}</strong>
             {%- else -%}
                 {{ comment.html | safe }}
@@ -54,10 +58,12 @@
         </span>
     </td>
     <td>
-        {%- if comment.author == current_user or current_user.is_admin -%}
+        {%- if comment.author == current_user -%}
             <a href="{{ url_for('blog.edit_comment', iid=comment.id) }}">
                 {{ _("Edit") }}
             </a>
+        {%- endif -%}
+        {%- if comment.author == current_user or current_user.is_admin -%}
             {%- set next_page = url_for('blog.view', uri=post.uri) -%}
             {%- if comment.is_deleted -%}
                 <a href="{{ url_for('blog.restore_comment', iid=comment.id, next_page=next_page) }}">

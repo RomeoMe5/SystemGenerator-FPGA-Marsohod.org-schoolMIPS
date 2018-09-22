@@ -1,3 +1,4 @@
+import asyncio
 import os
 import shutil
 from datetime import datetime
@@ -9,12 +10,14 @@ from typing import Any, Dict, Iterable, NoReturn
 import bleach
 import jwt
 import markdown as md
+import yaml
 from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import escape, secure_filename
 
+from engine.utils.prepare import Loader
 from web_client import PATHS, db, login_manager
 from web_client.utils.misc import INVALID_CHARS, get_gravatar_url, get_uri
 
@@ -172,20 +175,53 @@ class Comment(BackupableMixin, db.Model):
         return comment
 
     def __repr__(self) -> str:
-        return f"<Comment[{self.id}]: {self.create_dt}, {self._text}>"
+        return f"<Comment[{self.id}]: {self.create_dt}>"
+
+
+class Config(BackupableMixin, db.Model):
+    __tablename__ = "config"
+    id = db.Column(db.Integer, primary_key=True)
+
+    yml = db.Column(db.Text, nullable=False)
+
+    editable = db.Column(db.Boolean, default=True)
+    create_dt = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    @property
+    def data(self) -> object:
+        return yaml.load(self.yml or "")
+
+    @data.setter
+    def data(self, value: object) -> NoReturn:
+        self.yml = yaml.dump(value)
+
+    @staticmethod
+    def load_from_file(filepath: str,
+                       editable: bool=True,
+                       **kwargs) -> NoReturn:
+        config = Config()
+        config.data = asyncio.run(Loader.load(filepath, **kwargs))
+        config.editable = editable
+        db.session.add(config)
+        db.session.commit()
+
+    def __repr__(self) -> str:
+        return f"<Config[{self.id}]: {self.create_dt}, {self.editable}>"
 
 
 class File(BackupableMixin, db.Model):
     __tablename__ = "file"
     id = db.Column(db.Integer, primary_key=True)
 
-    _name = db.Column(db.String(64), nullable=False, index=True)
+    name = db.Column(db.String(64), nullable=False, index=True)
     uri = db.Column(db.String(64), nullable=False, unique=True, index=True)
-    path = db.Column(db.String(64), nullable=False, unique=True, index=True)
+    _path = db.Column(db.String(64), nullable=False, unique=True, index=True)
 
     create_dt = db.Column(db.DateTime, default=datetime.utcnow)
     is_dir = db.Column(db.Boolean, default=False)
-    _size = db.Column(db.Integer)
+    size = db.Column(db.Integer)  # in bytes
     load_count = db.Column(db.Integer, default=0)
 
     files = db.relationship(
@@ -199,25 +235,21 @@ class File(BackupableMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     @property
-    def size(self) -> float:
-        return self._size / 1024  # in bytes
+    def path(self) -> str:
+        return self._path
 
-    @size.setter
-    def size(self, value: int) -> NoReturn:
-        if value > 0:
-            self._size = value
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self, value: str) -> NoReturn:
-        self._name = secure_filename(os.path.basename(value))
-        if not self.dirs:
-            self.path = os.path.join(PATHS.FILES, self._name)
-        else:
-            self.path = os.path.join(self.dirs[0].path, self._name)
+    @path.setter
+    def path(self, value: str) -> NoReturn:
+        if not os.path.exists(value):
+            raise FileNotFoundError(f"{value} isn't exists")
+        self._path = value
+        self.name = secure_filename(os.path.basename(value))
+        self.is_dir = os.path.isdir(self.path)
+        stat = os.stat(value)
+        self.size = stat.st_size
+        self.create_dt = datetime.fromtimestamp(stat.st_ctime)
+        if self.uri:
+            return
         self.uri = get_uri(value)
         while File.query.filter_by(uri=self.uri).first() is not None:
             self.uri = get_uri(value)
@@ -230,6 +262,33 @@ class File(BackupableMixin, db.Model):
             else:
                 db.session.delete(item)
                 os.remove(item.path)
+
+    @staticmethod
+    def reindex() -> NoReturn:
+        for file in File.query.all():
+            if not os.path.exists(file.path):
+                db.session.delete(file)
+                continue
+            file.is_dir = os.path.isdir(file.path)
+            stat = os.stat(file.path)
+            file.size = stat.st_size
+            file.create_dt = datetime.fromtimestamp(stat.st_ctime)
+            db.session.add(file)
+        db.session.commit()
+
+    # [future] TODO add realization
+    @staticmethod
+    def discover(path: str=None) -> NoReturn:
+        """ Recursively add files to table """
+        if not path or not os.path.exists(path):
+            return
+        file = File.query.filter_by(path=path).first()
+        if not file.is_dir:
+            return
+        else:
+            pass
+        if os.path.isfile(path):
+            pass
 
     def delete(self) -> NoReturn:
         if self.is_dir:
@@ -458,6 +517,7 @@ class User(UserMixin, BackupableMixin, db.Model):
     files = db.relationship("File", backref="author", lazy="dynamic")
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
     images = db.relationship("Image", backref="author", lazy="dynamic")
+    configs = db.relationship("Config", backref="author", lazy="dynamic")
     role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
 
     def __init__(self, **kwargs) -> NoReturn:

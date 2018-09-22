@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from time import sleep
 from typing import NoReturn
@@ -5,10 +6,11 @@ from typing import NoReturn
 import pytest
 
 from tests import logging
-from tests.web_client import commit_or_rollback, create_mock_app
+from tests.web_client import MOCK_DIR, commit_or_rollback, create_mock_app
 from web_client import PATHS, db
 from web_client.models import (DEFAULT_ROLE, EDITED_TIMEOUT, ROLES, Comment,
-                               File, Image, Permission, Post, Role, User)
+                               Config, File, Image, Permission, Post, Role,
+                               User)
 
 
 class TestModels(object):
@@ -44,25 +46,76 @@ class TestModels(object):
         commit_or_rollback(db)
         assert not Comment.query.count()
 
+    def test_Config(self) -> NoReturn:
+        yaml = "a: 1"
+        config = Config()
+        logging.debug(config)
+        config.yml = yaml
+        db.session.add(config)
+        commit_or_rollback(db)
+        assert isinstance(config.id, int)
+        assert isinstance(config.create_dt, datetime)
+        assert config.yml == yaml
+        assert isinstance(config.data, dict)
+        assert config.data == {'a': 1}
+        assert Config.query.count()
+        db.session.delete(config)
+        commit_or_rollback(db)
+        assert not Config.query.count()
+
+    def test_Config_load_from_file(self) -> NoReturn:
+        filepath = os.path.join(MOCK_DIR, "config.yml")
+        assert os.path.exists(filepath), "config isn't exist"
+        assert not Config.query.count(), "table isn't empty"
+        Config.load_from_file(filepath)
+        assert Config.query.count(), "table is empty"
+        config = Config.query.first()
+        assert config.data == {'a': 1}, "data isn't loaded correctly"
+        db.session.delete(config)
+        db.session.commit()
+        assert not Config.query.count(), "table isn't empty"
+
     def test_File(self) -> NoReturn:
-        name = "file"
         file = File()
         logging.debug(file)
-        file.name = name
+        file.path = MOCK_DIR
         db.session.add(file)
         commit_or_rollback(db)
         assert isinstance(file.id, int)
-        assert file.name == name
-        assert isinstance(file.path, str)
+        assert file.path == MOCK_DIR
         assert isinstance(file.uri, str)
-        assert PATHS.FILES in file.path
         assert isinstance(file.create_dt, datetime)
-        assert file.is_dir is False
+        assert file.is_dir is True
         assert isinstance(file.load_count, int)
         assert File.query.count()
         db.session.delete(file)
         commit_or_rollback(db)
         assert not File.query.count()
+
+    def test_File_reindex(self) -> NoReturn:
+        assert not File.query.count(), "table isn't empty"
+        filepath = "file"
+        assert not os.path.exists(filepath), "file exists"
+        file = File()
+        file._path = filepath
+        file.name = filepath
+        file.uri = ""
+        db.session.add(file)
+        commit_or_rollback(db)
+        assert File.query.count(), "table is empty"
+        File.reindex()
+        assert not File.query.count(), "table isn't empty"
+        file = File()
+        file.path = MOCK_DIR
+        db.session.add(file)
+        commit_or_rollback(db)
+        assert File.query.count(), "table is empty"
+        File.reindex()
+        assert File.query.count(), "table is empty"
+
+    # [minor] TODO add realization
+    def _test_File_discover(self) -> NoReturn:
+        pass
 
     def test_Image(self) -> NoReturn:
         fmt = "png"
@@ -179,8 +232,10 @@ class TestModelsConnections(object):
         text = "# Some text."
         self.comment = Comment()
         self.comment.text = text
+        self.config = Config()
+        self.config.yml = "a: 1"
         self.file = File()
-        self.file.name = "file"
+        self.file.path = MOCK_DIR
         self.image = Image()
         self.image.name = "test-name.png"
         self.post = Post()
@@ -200,7 +255,7 @@ class TestModelsConnections(object):
         pass  # self.app.app_context().pop()
 
     @staticmethod
-    def simple_check(*items) -> NoReturn:
+    def check_connections(*items) -> NoReturn:
         for item in items:
             db.session.add(item)
         commit_or_rollback(db)
@@ -216,21 +271,25 @@ class TestModelsConnections(object):
     def test_Comment(self) -> NoReturn:
         self.comment.author = self.user
         self.comment.post = self.post
-        self.simple_check(self.comment, self.user, self.post)
+        self.check_connections(self.comment, self.user, self.post)
+
+    def test_Config(self) -> NoReturn:
+        self.config.author = self.user
+        self.check_connections(self.config, self.user)
 
     def test_File(self) -> NoReturn:
         self.file.author = self.user
         self.file.files.append(self.file)
-        self.simple_check(self.file, self.user)
+        self.check_connections(self.file, self.user)
 
     def test_Image(self) -> NoReturn:
         self.image.author = self.user
-        self.simple_check(self.image, self.user)
+        self.check_connections(self.image, self.user)
 
     def test_Post(self) -> NoReturn:
         self.post.author = self.user
         self.post.comments.append(self.comment)
-        self.simple_check(self.post, self.user, self.comment)
+        self.check_connections(self.post, self.user, self.comment)
 
     def test_Post_delete_comments(self) -> NoReturn:
         db.session.add(self.post)
@@ -247,13 +306,14 @@ class TestModelsConnections(object):
 
     def test_Role(self) -> NoReturn:
         self.role.users.append(self.user)
-        self.simple_check(self.role, self.user)
+        self.check_connections(self.role, self.user)
 
     def test_User(self) -> NoReturn:
         self.user.posts.append(self.post)
-        # self.user.files = self.file
         self.user.comments.append(self.comment)
         self.user.images.append(self.image)
         self.user.role = self.role
-        self.simple_check(self.user, self.image, self.post, self.comment,
-                          self.role)
+        self.user.files.append(self.file)
+        self.user.configs.append(self.config)
+        self.check_connections(self.user, self.image, self.post, self.comment,
+                               self.role, self.file, self.config)

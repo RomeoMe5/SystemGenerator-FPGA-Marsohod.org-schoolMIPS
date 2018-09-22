@@ -1,6 +1,3 @@
-from datetime import datetime
-from typing import NoReturn
-
 from flask import (abort, current_app, flash, redirect, render_template,
                    request, url_for)
 from flask_babel import _
@@ -11,13 +8,6 @@ from web_client.models import Post, Role, User
 from web_client.profile import bp
 from web_client.profile.forms import (DeleteProfileForm, EditProfileAdminForm,
                                       EditProfileForm)
-
-
-@bp.before_request
-def before_request() -> NoReturn:
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
 
 
 @bp.route("/<int:iid>")
