@@ -1,0 +1,30 @@
+{%- import 'bootstrap/wtf.html' as wtf -%}
+
+{%- macro pagginate(prev_page_url='', next_page_url='') -%}
+<nav aria-label="...">
+    <ul class="pager">
+        {# also can be 'disabled' instead of 'hidden' #}
+        <li class="previous{% if not prev_page_url %} hidden{%- endif -%}">
+            <a href="{{ prev_page_url or '#' }}">
+                <span aria-hidden="true">&larr;</span> {{ _("Next page") }}
+            </a>
+        </li>
+        {# also can be 'disabled' instead of 'hidden' #}
+        <li class="next{% if not next_page_url %} hidden{%- endif -%}">
+            <a href="{{ next_page_url or '#' }}">
+                {{ _("Previous page") }} <span aria-hidden="true">&rarr;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{%- endmacro %}
+
+{%- macro last_seen(_user, _current_user) -%}
+    {%- if _user.last_seen and (_current_user.last_seen - _user.last_seen).seconds < 60 -%}
+        {{ _("Online") }}
+    {%- elif _user.last_seen and (_current_user.last_seen - _user.last_seen).seconds < 60*60*24 -%}
+        {{ _("Last seen") }} {{ moment(_user.last_seen).calendar() }}
+    {%- else -%}
+        {{ _("Last seen long time ago...") }}
+    {%- endif -%}
+{%- endmacro %}

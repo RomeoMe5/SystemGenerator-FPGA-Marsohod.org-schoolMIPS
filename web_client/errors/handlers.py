@@ -1,24 +1,35 @@
-from flask import current_app, render_template, request, url_for
-from werkzeug.urls import url_parse
+from flask import jsonify, render_template, request
 
 from web_client import db
 from web_client.errors import bp
 
 
+@bp.app_errorhandler(403)
+def forbidden(error: object) -> tuple:
+    if request.accept_mimetypes.accept_json and \
+            not request.accept_mimetypes.accept_html:
+        response = jsonify({'error': "forbidden"})
+        response.status_code = 403
+        return response
+    return render_template("errors/403.html"), 403
+
+
 @bp.app_errorhandler(404)
-def not_found_error(error: object) -> tuple:
-    # current_app.logger.debug("Page not found: %s", error)
-    prev_page = request.args.get("prev")
-    if not prev_page or url_parse(prev_page).netloc:
-        return render_template("errors/404.html"), 404
-    return render_template("errors/404.html", prev_page=prev_page), 404
+def page_not_found(error: object) -> tuple:
+    if request.accept_mimetypes.accept_json and \
+            not request.accept_mimetypes.accept_html:
+        response = jsonify({'error': "not found"})
+        response.status_code = 404
+        return response
+    return render_template("errors/404.html"), 404
 
 
 @bp.app_errorhandler(500)
-def internal_error(error: object) -> tuple:
+def internal_server_error(error: object) -> tuple:
     db.session.rollback()
-    # current_app.logger.error("Internal error occured: %s", error)
-    prev_page = request.args.get("prev")
-    if not prev_page or url_parse(prev_page).netloc:
-        return render_template("errors/500.html"), 500
-    return render_template("errors/500.html", prev_page=prev_page), 500
+    if request.accept_mimetypes.accept_json and \
+            not request.accept_mimetypes.accept_html:
+        response = jsonify({'error': "internal server error"})
+        response.status_code = 500
+        return response
+    return render_template("errors/500.html"), 500

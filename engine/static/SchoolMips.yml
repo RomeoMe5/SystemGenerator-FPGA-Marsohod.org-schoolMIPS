@@ -6,7 +6,6 @@ qsf:
     - "mips/sm_cpu.v"
   SEARCH_PATH:
     - "mips/"
-
 v:
   # bits, name, size, assigname, assigsize
   wires:
@@ -52,4 +51,3 @@ v:
       - - regData
         - regData
 sdc:
-

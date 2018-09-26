@@ -1,6 +1,5 @@
 """ Rendering interface """
 
-import os
 from datetime import datetime
 from functools import wraps
 from typing import Any, Callable
@@ -8,9 +7,9 @@ from typing import Any, Callable
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
-from engine.utils import PATHS
-from engine.utils.log import LOGGER, log
-from engine.utils.misc import none_safe
+from engine.utils.globals import LOGGER, PATHS
+from engine.utils.misc import log, none_safe
+
 
 try:
     from configs.engine import COPYRIGHT
@@ -38,15 +37,13 @@ def load_template(path: str, file_type: str=None) -> Callable:
     def decor(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
-            f_type = file_type  # because of naming scope conflicts
-            if not f_type:
-                f_type = path.split()[0]
-                LOGGER.debug("Assume file type is '%s'.", f_type)
+            if not file_type:
+                LOGGER.debug("Assume file type is '%s'.", func.__name__)
             LOGGER.debug("Loading template '%s'...", path)
             return func(
                 *args,
                 template=ENV.get_template(path),
-                file_type=func.__name__,
+                file_type=file_type or func.__name__,
                 **kwargs
             )
         return wrapper
@@ -57,12 +54,9 @@ class Render(object):
     """ Collection of renders for templates """
 
     @staticmethod
-    def _render(template: Template, **kwargs) -> str:
+    async def _render(template: Template, **kwargs) -> str:
         LOGGER.debug("Rendering '%s' template...", template.filename)
-        return "\n".join(template.generate(
-            company_name=kwargs.pop('copyright', COPYRIGHT),
-            **kwargs
-        ))
+        return "\n".join(template.generate(**kwargs))
 
     @staticmethod
     def format_date(date_t: datetime=None,
@@ -84,11 +78,11 @@ class Render(object):
 
     @staticmethod
     @load_template("qpf.jinja")
-    def qpf(project_name: str,
-            quartus_version: str,
-            meta_info: dict=None,
-            revisions: dict=None,
-            **kwargs) -> str:
+    async def qpf(project_name: str,
+                  quartus_version: str,
+                  meta_info: dict=None,
+                  revisions: dict=None,
+                  **kwargs) -> str:
         """ Template rendering interface for .qpf files """
         meta_info = meta_info or {}
         meta_info.update({
@@ -97,7 +91,7 @@ class Render(object):
         })
         revisions = revisions or {}
         revisions.update({'project_revision': project_name})
-        return Render._render(
+        return await Render._render(
             project_name=project_name,
             meta_info=meta_info,
             revisions=revisions,
@@ -106,17 +100,17 @@ class Render(object):
 
     @staticmethod
     @load_template("qsf.jinja")
-    def qsf(project_name: str,
-            family: str,
-            device: str,
-            func: None,
-            original_quartus_version: str="9.0",
-            last_quartus_version: str="9.0",
-            project_output_directory: str=None,
-            user_assignments: dict=None,
-            global_assignments: dict=None,
-            mips: dict=None,
-            ** kwargs) -> str:
+    async def qsf(project_name: str,
+                  family: str,
+                  device: str,
+                  func: object=None,
+                  original_quartus_version: str="9.0",
+                  last_quartus_version: str="9.0",
+                  project_output_directory: str=None,
+                  user_assignments: dict=None,
+                  global_assignments: dict=None,
+                  mips: dict=None,
+                  **kwargs) -> str:
         """ Template rendering interface for .qsf files """
         global_assignments = global_assignments or {}
         project_output_directory = project_output_directory or "project_output"
@@ -127,9 +121,9 @@ class Render(object):
             'original_quartus_version': f"\"{original_quartus_version}\"",
             'last_quartus_version': f"\"{last_quartus_version}\"",
             'project_output_directory': project_output_directory,
-            # [feature] [minor] TODO 'sdc_file': f"{project_name}.sdc"
+            # [future] [minor] TODO 'sdc_file': f"{project_name}.sdc"
         })
-        return Render._render(
+        return await Render._render(
             project_name=project_name,
             global_assignments=global_assignments,
             user_assignments=user_assignments,
@@ -138,29 +132,32 @@ class Render(object):
             ** kwargs
         )
 
-    # [bug] TODO: fix bug in template rendering instead of using regexes
-    # [feature] TODO: add correct sdc generation
-    # [bug] TODO: fix mips sdc generation
+# [minor] BUG fix bug in template rendering instead of using regexes
+# [future] TODO add correct sdc generation
+# [deb] BUG: fix mips sdc generation
     @staticmethod
     @load_template("sdc.jinja")
-    def sdc(project_name: str, mips: str, **kwargs) -> str:
+    async def sdc(project_name: str, mips: str, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
         import re  # to fix comments rendering
-        rendered = Render._render(
-            project_name=project_name, mips=mips, ** kwargs)
+
+        rendered = await Render._render(
+            project_name=project_name,
+            mips=mips,
+            **kwargs
+        )
         rendered = re.sub(r"(?m)^#\s?\n", "\n# ", rendered)
         return rendered
 
     @staticmethod
     @load_template("v.jinja")
-    def v(project_name: str,
-          assignments: dict=None,
-          wires: dict=None,
-          structures: dict=None,
-          **kwargs) -> str:
+    async def v(project_name: str,
+                assignments: dict=None,
+                wires: dict=None,
+                structures: dict=None,
+                **kwargs) -> str:
         """ Template rendering interface for .v files """
-
-        return Render._render(
+        return await Render._render(
             project_name=project_name,
             assignments=assignments,
             wires=wires,
@@ -169,18 +166,19 @@ class Render(object):
         )
 
     @staticmethod
-    def functions(name: str,
-                  clock_rate: int=100000000,  # eq to clock_freq
-                  clock_freq: int=None,
-                  delay: int=100,  # debouncer (millis)
-                  width: int=2,  # dmx
-                  out_freq: int=1000000,  # generator
-                  baud_rate: int=9600,  # uart
-                  **kwargs) -> str:
+    async def functions(name: str,
+                        clock_rate: int=100000000,  # eq to clock_freq
+                        clock_freq: int=None,
+                        delay: int=100,  # debouncer (millis)
+                        width: int=2,  # dmx
+                        out_freq: int=1000000,  # generator
+                        baud_rate: int=9600,  # uart
+                        fmt: str="v.jinja",
+                        **kwargs) -> str:
         """ Template rendering interface for additional functions """
-        path = f"functions/{name}"
-        return none_safe()(Render._render)(
-            template=ENV.get_template(path),
+        name = f"{name}.{fmt}" if fmt else name
+        return await none_safe()(Render._render)(
+            template=ENV.get_template(f"functions/{name}"),
             clock_rate=clock_rate or clock_freq,
             clock_freq=clock_rate or clock_freq,
             delay=delay,

@@ -1,18 +1,25 @@
+# [future] TODO delete unused data (optimize memory usage)
+# [dev] BUG static files are not found
+
 import os
 
 from flask import Flask, current_app, request
-from flask_babel import lazy_gettext as _l
 from flask_babel import Babel
+from flask_babel import lazy_gettext as _l
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_moment import Moment
+from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
+from flask_sslify import SSLify
 
-from configs.web_client import Config
-from web_client.log import (enable_email_error_notifications,
-                            enable_logging_to_file, enable_logging_to_stdout)
+from configs.web_client import APP_NAME, configs
+from web_client.utils.log import (enable_email_error_notifications,
+                                  enable_logging_to_file,
+                                  enable_logging_to_stdout)
+
 
 babel = Babel()
 bootstrap = Bootstrap()
@@ -20,20 +27,28 @@ db = SQLAlchemy()
 mail = Mail()
 migrate = Migrate()
 moment = Moment()
+pagedown = PageDown()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-login_manager.login_message = _l("Please log in to access this page.")
-
-BASE_DIR = os.path.dirname(__file__)
-STATIC_PATH = os.path.join(BASE_DIR, "static")
-POSTS_PATH = os.path.join(STATIC_PATH, "posts")
-FILES_PATH = os.path.join(STATIC_PATH, "files")
+login_manager.login_message = _l("Please log in to access this page")
 
 
-def create_app(config_class: object=Config) -> Flask:
-    app = Flask(__name__)
-    app.config.from_object(config_class)
+class PATHS(object):
+    BASE = os.path.dirname(__file__)
+    STATIC = os.path.join(BASE, "static")
+    TEMPL = os.path.join(BASE, "templates")
+    FILES = os.path.join(STATIC, "files")  # [dev] TODO change folder
+    TRANSL = os.path.join(BASE, "translations")
+
+
+def create_app(config_name: str="default",
+               db: object=db,
+               name: str=APP_NAME) -> Flask:
+    app = Flask(name or __name__, template_folder=PATHS.TEMPL)
+    app.config.from_object(configs[config_name])
+
+    app.elasticsearch = None
 
     babel.init_app(app)
     bootstrap.init_app(app)
@@ -42,12 +57,19 @@ def create_app(config_class: object=Config) -> Flask:
     mail.init_app(app)
     migrate.init_app(app, db)
     moment.init_app(app)
+    pagedown.init_app(app)
+
+    if app.config['SSL_REDIRECT']:
+        sslify = SSLify(app)
 
     from web_client.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
     from web_client.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    if app.config['DEBUG']:
+        app.register_blueprint(auth_bp, url_prefix="/auth")
+    else:
+        app.register_blueprint(auth_bp, subdomain="auth")
 
     from web_client.profile import bp as profile_bp
     app.register_blueprint(profile_bp, url_prefix="/profile")
@@ -64,29 +86,28 @@ def create_app(config_class: object=Config) -> Flask:
     from web_client.main import bp as main_bp
     app.register_blueprint(main_bp)
 
-    if not app.debug and not app.testing and not app.config['DEBUG']:
+    if not (app.debug or app.testing or app.config['DEBUG']):
         enable_email_error_notifications(
             app,
-            app.config['LOG_LEVEL'],
-            app.config['LOG_FORMAT']
+            level=app.config['LOG_LEVEL'],
+            fmt=app.config['LOG_FORMAT']
         )
     if app.config['LOG_TO_STDOUT']:
         enable_logging_to_stdout(
             app,
-            app.config['LOG_LEVEL'],
-            app.config['LOG_FORMAT']
+            level=app.config['LOG_LEVEL'],
+            fmt=app.config['LOG_FORMAT']
         )
-    else:
+    if app.config['LOG_TO_FILE']:
         enable_logging_to_file(
             app,
-            app.config['LOG_LEVEL'],
-            app.config['LOG_FORMAT'],
-            app.config['LOG_PATH'],
-            app.config['LOG_NAME'],
-            app.config['LOG_MAXBYTES'],
-            app.config['LOG_BACKUPCOUNT']
+            level=app.config['LOG_LEVEL'],
+            fmt=app.config['LOG_FORMAT'],
+            path=app.config['LOG_PATH'],
+            filename=app.config['LOG_NAME'],
+            max_bytes=app.config['LOG_MAXBYTES'],
+            backup_count=app.config['LOG_BACKUPCOUNT']
         )
-
     return app
 
 

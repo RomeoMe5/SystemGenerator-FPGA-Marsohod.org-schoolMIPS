@@ -1,6 +1,7 @@
 # ===== Common =====
 .pytest_cache/
 __pycache__/
+migrations/
 .generated/
 .vscode/
 .cache/
@@ -16,6 +17,7 @@ migrations/
 
 *.env
 *tmp*
+*.db-journal
 
 *.ovpn
 *.ppk

@@ -1,3 +1,4 @@
+{%- if posts -%}
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -17,26 +18,26 @@
                     {{ loop.index }}
                 </td> {# index #}
                 <td>
-                    <a href="{{ post.link }}">
+                    <a href="{{ url_for('blog.view', uri=post.uri) }}">
                         <span id="post{{ post.id }}">{{ post.title }}</span>
                     </a>
                 </td> {# title + link #}
                 <td>
-                    <a href="{{ post.author.link }}">
+                    <a href="{{ url_for('profile.user', iid=post.author.id) }}">
                         <span class="user_popup">
-                            {{ post.author.username }}
+                            {{ post.author.email }}
                         </span>
                     </a>
-                </td> {# author username #}
+                </td> {# author email #}
                 <td>
-                    {{ post.watches }}
+                    {{ post.watch_count }}
                 </td> {# watches count #}
                 <td>
                     {{ _('%(when)s', when=moment(post.create_dt).fromNow()) }}
                 </td> {# created timestamp #}
                 {%- if post.author == current_user -%}
                     <td>
-                        <a href="{{ post.edit_link }}">
+                        <a href="{{ url_for('blog.edit', uri=post.uri) }}">
                             {{ _('edit') }}
                         </a>
                     </td> {# edit / actions #}
@@ -46,3 +47,4 @@
         </tbody>
     </table>
 </div>
+{%- endif -%}

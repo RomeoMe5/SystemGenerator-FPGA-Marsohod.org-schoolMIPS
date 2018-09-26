@@ -22,5 +22,5 @@ def decode_token(token: str or bytes) -> object or None:
         return jwt.decode(
             token, current_app.config['SECRET_KEY'], algorithms=['HS256']
         )['data']
-    except BaseException as err:
-        current_app.logger.info("Invalid token:\n%s", err)
+    except BaseException as exc:
+        current_app.logger.info("Invalid token:\n%s", exc)

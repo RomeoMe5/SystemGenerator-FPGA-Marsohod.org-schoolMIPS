@@ -1,4 +1,4 @@
-# [bug] TODO: add correct clock_rate
+# BUG add correct clock_rate
 qpf:
   quartus_version: '15.1.0'
 qsf:

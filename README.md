@@ -37,11 +37,13 @@ flask db upgrade
 # compile translations (optional)
 flask translate compile
 
-# add existing posts to database
-python3 web_add_existing_posts.py
-
 # finally, run application
 flask run --with-threads
+```
+
+*(optional) clean project directory from previous starts*
+```bash
+rm -r *.db migrations logs __pycache__ $STATIC_PATH
 ```
 
 You also need to create `.env` file to configure mailing.

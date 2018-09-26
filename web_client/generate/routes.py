@@ -16,8 +16,8 @@ def board(board: str) -> object:
     try:
         form = getattr(forms, board + "Form")()
         board = getattr(engine.boards, board)()
-    except BaseException as err:
-        current_app.logger.warning("Can't find board %s:\n%s", board, err)
+    except BaseException as exc:
+        current_app.logger.warning("Can't find board %s:\n%s", board, exc)
         return abort(404)
 
     if board.message:
@@ -37,7 +37,7 @@ def board(board: str) -> object:
             path = current_user.path
         project_path = os.path.join(path, params['project_name'])
         board.generate(**params).archive(project_path=project_path)
-        # [bug] TODO: remove directory after files generation
+        # BUG remove directory after files generation
 
         fmt = "tar"
         return send_file(
