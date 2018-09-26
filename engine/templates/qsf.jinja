@@ -22,14 +22,14 @@ set_global_assignment -name VERILOG_FILE {{project_name}}.v
 
 {%- if func -%}
 	{%- for function in func -%}
-set_global_assignment -name VERILOG_FILE functions/{{function}}.v
+set_global_assignment -name VERILOG_FILE {{ function }}.v
 	{%- endfor -%}
 {%- endif -%}
 
 {%- if mips -%}
 	{%- for key, value in mips.items() -%}
 		{%- for val in value -%}
-set_global_assignment -name {{key}} {{val}}
+set_global_assignment -name {{ key }} {{ val }}
 		{%- endfor -%}
 	{%- endfor -%}
 {%- endif -%}

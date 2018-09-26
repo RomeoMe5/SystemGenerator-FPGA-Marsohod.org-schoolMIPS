@@ -3,6 +3,7 @@
 import io
 import os
 from collections import namedtuple
+from functools import reduce
 from typing import Any, NoReturn, Tuple
 
 from engine.utils.globals import LOGGER, PATHS
@@ -10,7 +11,7 @@ from engine.utils.prepare import Archiver, Loader, create_dirs
 from engine.utils.render import Render
 
 
-# all supported boards
+# native supported boards
 BOARDS = ("marsohod2", "marsohod2b", "marsohod3", "marsohod3b")  # "de1soc"
 
 
@@ -18,7 +19,8 @@ class GenericBoard(object):
     """ Generic board methods (generating configs) """
 
     __slots__ = ("_static_path", "_project_name", "message", "_func", "_misc",
-                 "_qpf", "_qsf", "_sdc", "_v", "_functions", "configs")
+                 "_qpf", "_qsf", "_sdc", "_v", "_functions", "configs",
+                 "_mips_qsf", "_mips_v", "_mips_type", "mips_configs")
 
     MIPS_CONFIG = "SchoolMips.yml"
     FUNC_DIR = "functions"
@@ -48,13 +50,16 @@ class GenericBoard(object):
     @config_path.setter
     def config_path(self, value: str) -> NoReturn:
         if not os.path.exists(value):
-            raise FileNotFoundError(f"Config path isn't exist: {value}")
+            raise FileNotFoundError("Config path not exists: {}".format(value))
         self._static_path = value
         self.reset()  # read config to local variables for convenience
 
     @property
     def FUNCS(_) -> Tuple[str]:
         return tuple(GenericBoard.FUNCTIONS.keys())
+
+    def func_path(self, func_name: str) -> str:
+        return self.FUNC_DIR + "/" + func_name
 
     @property
     def project_name(self) -> str:
@@ -101,18 +106,15 @@ class GenericBoard(object):
         self._v = v.get("assignments", {})
         self._func = v.get("func", {})
         self._misc = configs.get("misc", {})
-        self._functions = self.FUNCS
+        self._functions = tuple(self.func_path(f) for f in self.FUNCS)
 
-        self._mips_qsf = {}
-        self._mips_v = {}
-        if self._mips_type:
-            # HACK dirty trick with unsupported boards, should not exists
-            if self.board_name.find("marsohod2") == -1:
-                mips_configs = Loader.load(
-                    Loader.get_static_path(self.MIPS_CONFIG)
-                )
-                self._mips_qsf = mips_configs.get("qsf", {})
-                self._mips_v = mips_configs.get("v", {})
+        self.mips_configs = {}
+        self._mips_type = None
+        mips_configs = Loader.load(
+            Loader.get_static_path(self.MIPS_CONFIG)
+        )
+        self._mips_qsf = mips_configs.get("qsf", {})
+        self._mips_v = mips_configs.get("v", {})
 
         quartus_version = self._qpf['quartus_version']
         if not self._qsf.get("original_quartus_version"):
@@ -152,7 +154,7 @@ class GenericBoard(object):
             self._qsf['user_assignments'])
         self._v = _filter(self._v)
 
-        self._functions = tuple(os.path.join(self.FUNC_DIR, f)
+        self._functions = tuple(self.func_path(f)
                                 for f in self.FUNCS if func.get(f))
         self.project_name = project_name or self.project_name
         self.message = message or self.message
@@ -170,46 +172,34 @@ class GenericBoard(object):
             'LICENSE': Loader.load_static("LICENSE", encoding="utf-8")
         }
 
-        tasks = (Render.v(self.project_name,
-                          assignments=self._v,
-                          **self._mips_v),
-                 Render.qpf(self.project_name, **self._qpf),
-                 Render.qsf(self.project_name,
-                            func=self._functions,
-                            mips=self._mips_qsf,
-                            **self._qsf),
-                 Render.sdc(self.project_name,
-                            mips=self._mips_type,
-                            **self._sdc))
-        with get_event_loop() as loop:
-            self.configs.update(dict(zip(
-                map(lambda x: ".".join((self.project_name, x)),
-                    ("v", "qpf", "qsf", "sdc")),
-                loop.run_until_complete(asyncio.gather(*tasks))
-            )))
+        self.configs.update(dict(zip(
+            map(lambda x: self.project_name + "." + x,
+                ("v", "qpf", "qsf", "sdc")),
+            (Render.v(self.project_name, assignments=self._v, **self._mips_v),
+             Render.qpf(self.project_name, **self._qpf),
+             Render.qsf(self.project_name, func=self._functions,
+                        mips=self._mips_qsf, **self._qsf),
+             Render.sdc(self.project_name, mips=self._mips_type, **self._sdc))
+        )))
 
-        tasks = map(lambda x: Render.functions(x, **self._func),
-                    self._functions)
-        with get_event_loop() as loop:
-            # NOTE additional modules are placed in separate folder 'functions'
-            self.configs.update(dict(zip(
-                map(lambda x: ".".join((os.path.join(self.FUNC_DIR, x), "v")),
-                    self._functions),  # file paths
-                loop.run_until_complete(asyncio.gather(*tasks))
-            )))
+        # NOTE additional modules are placed in separate folder 'functions'
+        self.configs.update(dict(zip(
+            map(lambda x: x + ".v", self._functions),  # file paths
+            map(lambda x: Render.functions(x, **self._func), self._functions)
+        )))
 
-        # Generate additional configs for SchoolMIPS
-        self.mips_configs = {}
         if self._mips_type:
-            self.mips_configs.update({
+            # Generate additional configs for SchoolMIPS
+            self.mips_configs = {
                 'program.hex': Loader.load_static(os.path.join(PATHS.MIPS,
                                                                "program.hex"))
-            })
+            }
             mips_path = os.path.join(PATHS.MIPS, self._mips_type, "src")
-            for file in os.listdir(mips_path):
-                self.mips_configs.update({
-                    os.path.join(self.MIPS_DIR, file): Loader.load_static(os.path.join(mips_path, file))
-                })
+            files = os.listdir(mips_path)
+            self.mips_configs.update(dict(zip(
+                map(lambda x: os.path.join(self.MIPS_DIR, x), files),
+                map(lambda x: Loader.load_static(x, mips_path), files)
+            )))
         return self
 
     def dump(self, path: str=None) -> object:
@@ -219,28 +209,33 @@ class GenericBoard(object):
 
         if self._functions:
             create_dirs(os.path.join(path, self.FUNC_DIR))
-        if self.mips_configs:
+        if hasattr(self, "mips_configs") and self.mips_configs:
             create_dirs(os.path.join(path, self.MIPS_DIR))
 
-        async def save_to_file(filename: str, content: Any) -> NoReturn:
-            with open(os.path.join(path, filename), "w") as fout:
-                LOGGER.debug("Creating '%s'...", fout.name)
-                fout.write(content)
+        def save_to_file(filename: str, content: Any) -> NoReturn:
+            LOGGER.debug("Creating '%s'...", os.path.join(path, filename))
+            try:
+                with open(os.path.join(path, filename), "w") as fout:
+                    fout.write(content)
+            except BaseException as exc:
+                LOGGER.info("Can't create '%s' due to:\n%s", filename, exc)
+                return False
+            return True
 
-        tasks = [save_to_file(filename, content)
-                 for filename, content in self.configs.items()]
-        tasks.extend([save_to_file(filename, content)
-                      for filename, content in self.mips_configs.items()])
-        with get_event_loop() as loop:
-            loop.run_until_complete(asyncio.gather(*tasks))
+        errors_count = reduce(lambda x, y: x + y, map(
+            lambda x: save_to_file(*x),
+            list(self.configs.items()) + list(self.mips_configs.items())
+        ))
+        if errors_count:
+            LOGGER.warning("%d errors count while dumping to '%s'",
+                           errors_count, path)
         return self
 
     def archive(self, path: str=None) -> object:
         """ Generate tar file with FPGA config files for specific project """
-        if self.mips_configs:
+        if hasattr(self, "mips_configs") and self.mips_configs:
             self.configs.update({'mips': self.mips_configs})
-        Archiver.to_tar_flow(files=self.configs,
-                             path=path or self.project_name)
+        Archiver.to_tar_flow(self.configs, path=path or self.project_name)
         return self
 
 
@@ -254,5 +249,5 @@ class Board(GenericBoard):
         board_name = board_name.lower()
         if board_name not in BOARDS:
             LOGGER.error("Incorrect board name: %s", board_name)
-            raise ValueError(f"Incorrect board name: {board_name}")
+            raise ValueError("Incorrect board name: {}".format(board_name))
         super(Board, self).__init__(Loader.get_static_path(board_name))

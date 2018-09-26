@@ -1,4 +1,3 @@
-import asyncio
 import os
 import shutil
 from datetime import datetime
@@ -202,7 +201,7 @@ class Config(BackupableMixin, db.Model):
                        editable: bool=True,
                        **kwargs) -> NoReturn:
         config = Config()
-        config.data = asyncio.run(Loader.load(filepath, **kwargs))
+        config.data = Loader.load(filepath, **kwargs)
         config.editable = editable
         db.session.add(config)
         db.session.commit()

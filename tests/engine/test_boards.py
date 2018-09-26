@@ -1,3 +1,5 @@
+# [dev] TODO add tests for mips
+
 import io
 import os
 from typing import NoReturn
@@ -6,7 +8,7 @@ import pytest
 
 from engine.boards import BOARDS, Board, GenericBoard
 from tests import TEST_DIR, use_test_dir
-from tests.engine import MOCK_CONFIG, get_event_loop
+from tests.engine import MOCK_CONFIG
 
 
 class TestGenericBoard(object):
@@ -24,9 +26,19 @@ class TestGenericBoard(object):
             self.board.__dict__  # has no dict as __slots__
         assert self.board.__slots__
 
+    def test_config_path(self) -> NoReturn:
+        assert self.board.config_path == self.conf_path, "invalid configs"
+        with pytest.raises(FileNotFoundError):
+            self.board.config_path = self.conf_path + ")@!O##K(D"
+        assert isinstance(self.board._v, dict), "invalid board configuration"
+        v = self.board._v
+        self.board._v = None
+        self.board.config_path = self.conf_path
+        assert self.board._v == v, "board isn't reseted"
+
     # NOTE due to bug with passing params
     def test_project_name(self) -> NoReturn:
-        for name in [self.p_name, [self.p_name], [[self.p_name]]]:
+        for name in (self.p_name, (self.p_name,), ((self.p_name,),)):
             self.board.project_name = name
             assert self.board.project_name == self.p_name
 
@@ -48,12 +60,14 @@ class TestGenericBoard(object):
         assert isinstance(res, io.Bytes)
 
     def test_reset(self) -> NoReturn:
-        del self.board._sdc, self.board._qpf, self.board._qsf, self.board._v, \
-            self.board._func, self.board._functions, self.board._misc
+        attributes = ("_sdc", "_qpf", "_qsf", "_v", "_func", "_functions",
+                      "_misc", "_mips_qsf", "_mips_v")
+        for attr in attributes:
+            delattr(self.board, attr)
+            assert not hasattr(self.board, attr), "attribute wasn't deleted"
         self.board.reset()
-        for attr in ["_sdc", "_qpf", "_qsf", "_v",
-                     "_func", "_functions", "_misc"]:
-            assert hasattr(self.board, attr)
+        for attr in attributes:
+            assert hasattr(self.board, attr), "attributes isn't reseted"
 
     # [minor] TODO finish test
     def test_setup(self) -> NoReturn:
@@ -77,9 +91,8 @@ class TestGenericBoard(object):
         check_generated(self.board.setup().generate())
 
     def test_dump(self) -> NoReturn:
-        with get_event_loop():
-            with pytest.raises(AttributeError):
-                self.board.dump()
+        with pytest.raises(AttributeError):
+            self.board.dump()
         with use_test_dir():
             self.board.generate().dump(self.res_path)
             assert os.path.exists(self.res_path)

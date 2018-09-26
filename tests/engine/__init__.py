@@ -1,4 +1,3 @@
-import asyncio
 import os
 from contextlib import contextmanager
 from typing import Generator, NoReturn
@@ -29,14 +28,3 @@ def use_mock_loader() -> Generator:
     yield
     logging.debug("Rollback to original loader")
     ENV.loader = original_loader
-
-
-@contextmanager
-def get_event_loop() -> Generator:
-    loop = asyncio.new_event_loop()
-    logging.debug("Set new event loop: %s", loop)
-    asyncio.set_event_loop(loop)
-    yield loop
-    logging.debug("Close and remove event loop: %s", loop)
-    loop.close()
-    del loop
