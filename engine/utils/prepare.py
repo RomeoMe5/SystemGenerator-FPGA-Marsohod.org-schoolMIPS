@@ -123,6 +123,9 @@ class Archiver(object):
                         continue
                     LOGGER.debug("Add file '%s' to tar I/O", filename)
                     tarinfo = tarfile.TarInfo(filename)
+                    # BUG some files are loaded as bytes
+                    if not isinstance(file_line, str):
+                        file_line = file_line.decode()
                     tarinfo.size = io.StringIO().write(file_line)
                     tar_fout.addfile(
                         tarinfo,
