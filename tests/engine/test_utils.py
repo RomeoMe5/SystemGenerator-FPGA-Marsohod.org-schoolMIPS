@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, NoReturn
 
 import pytest
 
-from engine.utils.globals import PATHS
+from engine.constants import PATHS
 from engine.utils.misc import none_safe, quote
 from engine.utils.prepare import Archiver, Loader, convert, create_dirs
 from engine.utils.render import ENV, Render, load_template

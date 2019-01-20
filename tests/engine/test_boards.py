@@ -1,4 +1,4 @@
-# [dev] TODO add tests for mips
+# TODO add tests for mips
 
 import io
 import os
@@ -6,7 +6,8 @@ from typing import NoReturn
 
 import pytest
 
-from engine.boards import BOARDS, Board, GenericBoard
+from engine.boards import Board, GenericBoard
+from engine.constants import BOARDS
 from tests import TEST_DIR, use_test_dir
 from tests.engine import MOCK_CONFIG
 
@@ -14,12 +15,11 @@ from tests.engine import MOCK_CONFIG
 class TestGenericBoard(object):
     def setup_class(self) -> NoReturn:
         self.conf_path = MOCK_CONFIG
-        self.message = "This is test board configuration"
         self.p_name = "tmp"
         self.res_path = os.path.join(TEST_DIR, self.p_name)
 
     def setup_method(self) -> NoReturn:
-        self.board = GenericBoard(self.conf_path, message=self.message)
+        self.board = GenericBoard(self.conf_path)
 
     def test_GenericBoard(self) -> NoReturn:
         with pytest.raises(AttributeError):
@@ -61,7 +61,7 @@ class TestGenericBoard(object):
 
     def test_reset(self) -> NoReturn:
         attributes = ("_sdc", "_qpf", "_qsf", "_v", "_func", "_functions",
-                      "_misc", "_mips_qsf", "_mips_v")
+                      "_mips_qsf", "_mips_v")
         for attr in attributes:
             delattr(self.board, attr)
             assert not hasattr(self.board, attr), "attribute wasn't deleted"
