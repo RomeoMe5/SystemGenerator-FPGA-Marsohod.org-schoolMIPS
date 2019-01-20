@@ -1,0 +1,28 @@
+bleach==2.1.4
+Flask==1.0.2
+Flask-Babel==0.11.2
+Flask-Bootstrap==3.3.7.1
+Flask-HTTPAuth==3.2.4
+Flask-Login==0.4.1
+Flask-Mail==0.9.1
+Flask-Migrate==2.2.1
+Flask-Moment==0.6.0
+Flask-PageDown==0.2.2
+Flask-SSLify==0.1.5
+Flask-SQLAlchemy==2.3.2
+Flask-WTF==0.14.2
+ForgeryPy==0.1
+Jinja2==2.10
+Markdown==2.6.11
+PyJWT==1.6.4
+python-dotenv==0.8.2
+PyYaml==3.13
+SQLAlchemy==1.2.9
+WTForms==2.2.1
+
+# Pruposed
+# elasticsearch
+# guess-language-spirit  # unused
+# pyLinguist
+# redis==2.10.6
+# rq==0.11.0
