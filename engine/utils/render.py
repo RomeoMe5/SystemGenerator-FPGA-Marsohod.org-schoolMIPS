@@ -7,8 +7,8 @@ from typing import Any, Callable
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
-from engine.utils.globals import LOGGER, PATHS
-from engine.utils.misc import none_safe, quote
+from engine.constants import PATHS
+from engine.utils.misc import LOGGER, none_safe, quote
 
 
 ENV = Environment(
@@ -128,7 +128,7 @@ class Render(object):
 
     # [minor] BUG fix bug in template rendering instead of using regexes
     # [future] TODO add correct sdc generation
-    # [dev] BUG: fix mips sdc generation
+    # BUG: fix mips sdc generation
     @staticmethod
     @load_template("sdc.jinja")
     def sdc(project_name: str, mips: str=None, **kwargs) -> str:

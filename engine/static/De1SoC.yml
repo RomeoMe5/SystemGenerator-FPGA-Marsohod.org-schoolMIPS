@@ -623,5 +623,3 @@ v:
       - HPS_USB_STP
   func:
     clock_rate: 100000000
-misc:
-  message: "THIS CLASS SHOULD BE USED ONLY FOR DEBUGGING.\nPlease, use the oficial Altera app for generating configs for this type of devices."

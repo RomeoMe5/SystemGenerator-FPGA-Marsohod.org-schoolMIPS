@@ -13,7 +13,8 @@ from typing import Any, Iterable, NoReturn
 import dill
 import yaml
 
-from engine.utils.globals import LOGGER, PATHS
+from engine.constants import PATHS
+from engine.utils.misc import LOGGER
 
 
 class Archiver(object):
@@ -231,13 +232,14 @@ class Loader(object):
             else:
                 LOGGER.debug("Can't detect file format from '%s'", filepath)
                 fmt = None
-            LOGGER.debug("Try to detect file format from loaders")
-            for _fmt in Loader.LOADERS:
-                _path = filepath + "." + _fmt
-                if os.path.exists(_path):
-                    LOGGER.debug("Assume file has '%s' fmt", _fmt)
-                    filepath = _path
-                    fmt = _fmt
+                LOGGER.debug("Try to detect file format from loaders")
+                for _fmt in Loader.LOADERS:
+                    _path = filepath + "." + _fmt
+                    if os.path.exists(_path):
+                        LOGGER.debug("Assume file has '%s' fmt", _fmt)
+                        filepath = _path
+                        fmt = _fmt
+                        break
 
         LOGGER.debug("Loading '%s' content...", filepath)
         with open(filepath, "rb", **kwargs) as fin:
@@ -268,9 +270,9 @@ class Loader(object):
 
         for fmt in Loader.LOADERS:
             LOGGER.debug("Assume file '%s' has '%s' extension.", path, fmt)
-            path = path + "." + fmt
-            if os.path.exists(path):
-                return path
+            _path = path + "." + fmt
+            if os.path.exists(_path):
+                return _path
 
         LOGGER.error("'%s' isn't exists!", path)
 

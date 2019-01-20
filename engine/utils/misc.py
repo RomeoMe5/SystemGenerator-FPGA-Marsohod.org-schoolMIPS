@@ -1,7 +1,11 @@
 from functools import wraps
 from typing import Any, Callable
 
-from engine.utils.globals import LOGGER
+try:
+    from configs.engine import LOGGER
+except ImportError as exc:
+    import logging as LOGGER
+    LOGGER.debug(exc)
 
 
 def log(func: Callable) -> Callable:
