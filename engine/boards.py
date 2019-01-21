@@ -173,9 +173,7 @@ class GenericBoard(object):
         if project_name or kwargs:
             self.setup(project_name=project_name, **kwargs)
 
-        self.configs = {
-            'LICENSE': Loader.load_static("LICENSE", encoding="utf-8")
-        }
+        self.configs = {'LICENSE': Loader.load_static("LICENSE")}
 
         self.configs.update(dict(zip(
             map(lambda x: f"{self.project_name}.{x}",

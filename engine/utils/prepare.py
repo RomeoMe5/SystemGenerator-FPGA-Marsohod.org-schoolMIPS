@@ -123,9 +123,6 @@ class Archiver(object):
                         continue
                     LOGGER.debug("Add file '%s' to tar I/O", filename)
                     tarinfo = tarfile.TarInfo(filename)
-                    # BUG some files are loaded as bytes
-                    if not isinstance(file_line, str):
-                        file_line = file_line.decode()
                     tarinfo.size = io.StringIO().write(file_line)
                     tar_fout.addfile(
                         tarinfo,
@@ -255,7 +252,7 @@ class Loader(object):
     def load_static(path: str,
                     path_to_static: str=None,
                     loader_params: dict=None,
-                    encoding: str=None,
+                    encoding: str="utf-8",
                     **kwargs) -> Any:
         """ Loads content of static file from engine 'static' folder """
         if path_to_static is not None:
