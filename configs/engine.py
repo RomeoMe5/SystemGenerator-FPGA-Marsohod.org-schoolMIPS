@@ -13,8 +13,10 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 LOG_LEVEL = logging.DEBUG
 LOG_NAME = "engine.log"
 LOG_PATH = os.path.join(BASE_DIR, "logs")
-LOG_FORMAT = "[%(asctime)s] %(levelname)s " \
-             "[%(name)s.{%(filename)s}.%(funcName)s:%(lineno)d] %(message)s"
+LOG_FORMAT = (
+    "%(asctime)s.%(msecs)d [%(name)s:%(filename)s.%(funcName)s:%(lineno)d] "
+    "%(levelname)s %(message)s"
+)
 
 logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT, datefmt="%H:%M:%S")
 LOGGER = logging.getLogger(LOG_NAME)
