@@ -1,12 +1,12 @@
 /*
- * schoolMIPS - small MIPS CPU for "Young Russian Chip Architects" 
+ * schoolMIPS - small MIPS CPU for "Young Russian Chip Architects"
  *              summer school ( yrca@googlegroups.com )
  *
- * originally based on Sarah L. Harris MIPS CPU 
- * 
- * Copyright(c) 2017 Stanislav Zhelnio 
- *                   Alexander Romanov 
- */ 
+ * originally based on Sarah L. Harris MIPS CPU
+ *
+ * Copyright(c) 2017 Stanislav Zhelnio
+ *                   Alexander Romanov
+ */
 
 //ALU commands
 `define ALU_ADD     3'b000
@@ -37,9 +37,9 @@
 `define F_OR        6'b100101 // R-type, Logical OR
                               //         Rd = Rs | Rt
 `define F_SRL       6'b000010 // R-type, Shift Right Logical
-                              //         Rd = Rs∅ >> shift
+                              //         Rd = Rs >> shift
 `define F_SLTU      6'b101011 // R-type, Set on Less Than Unsigned
-                              //         Rd = (Rs∅ < Rt∅) ? 1 : 0
+                              //         Rd = (Rs < Rt) ? 1 : 0
 `define F_SUBU      6'b100011 // R-type, Unsigned Subtract
                               //         Rd = Rs – Rt
 `define F_ANY       6'b??????
