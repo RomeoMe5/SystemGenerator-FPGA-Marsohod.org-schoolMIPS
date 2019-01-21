@@ -222,8 +222,8 @@ class GenericBoard(object):
                     fout.write(content)
             except BaseException as exc:
                 LOGGER.info("Can't create '%s' due to:\n%s", filename, exc)
-                return False
-            return True
+                return True
+            return False
 
         errors_count = reduce(
             lambda x, y: x + y,
