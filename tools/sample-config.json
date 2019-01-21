@@ -1,0 +1,11 @@
+{
+    "functions": [
+        "Seven",
+        "Uart8"
+    ],
+    "configs": [
+        "clock",
+        "key",
+        "led"
+    ]
+}
