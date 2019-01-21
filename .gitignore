@@ -39,7 +39,6 @@ db/
 bak/
 rsc/
 
-*.JSON
 *.db
 *.db.journal
 *.pot
