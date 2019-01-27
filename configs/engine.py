@@ -1,4 +1,4 @@
-""" Configuration for engine """
+""" Configuration for fpga_marsohod_generator_engine """
 
 import logging
 import os
@@ -11,7 +11,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 # ===== Logging =====
 LOG_LEVEL = logging.DEBUG
-LOG_NAME = "engine.log"
+LOG_NAME = "fpga_marsohod_generator_engine.log"
 LOG_PATH = os.path.join(BASE_DIR, "logs")
 LOG_FORMAT = (
     "%(asctime)s.%(msecs)d [%(name)s:%(filename)s.%(funcName)s:%(lineno)d] "

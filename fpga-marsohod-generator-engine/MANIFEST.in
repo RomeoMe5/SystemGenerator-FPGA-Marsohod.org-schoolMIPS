@@ -1,0 +1,3 @@
+include requirements.txt
+include LICENSE
+recursive-include fpga_marsohod_generator_engine/templates *.jinja
