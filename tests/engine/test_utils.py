@@ -175,9 +175,10 @@ class TestLoader:
             _test_static_content(res)
 
     def test_load_static(self) -> NoReturn:
-        for res in (Loader.load_static(self.fullpath),
-                    Loader.load_static(self.filename, self.path),
-                    Loader.load_static(self.fullname, self.path)):
+        params = {'encoding': None}
+        for res in (Loader.load_static(self.fullpath, **params),
+                    Loader.load_static(self.filename, self.path, **params),
+                    Loader.load_static(self.fullname, self.path, **params)):
             _test_static_content(res)
 
     def test_get_static_path(self) -> NoReturn:
