@@ -119,10 +119,12 @@ class GenericBoard(object):
         return self
 
     def _reset_mips(self, config_path: str, mips_type: str) -> NoReturn:
+        self._mips_qsf = {}
+        self._mips_v = {}
         if mips_type and mips_type not in MIPS.VERSIONS:
             LOGGER.error("Unsupportable mips type: %s", mips_type)
             mips_type = None
-        if not mips_type:
+        if mips_type:
             mips_configs = Loader.load(config_path)
             self._mips_qsf = mips_configs.get("qsf", {})
             self._mips_v = mips_configs.get("v", {})
