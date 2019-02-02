@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class PATHS:
@@ -38,4 +39,6 @@ FUNCTIONS = {
     'Uart8': "Simple 8-bit UART"
 }
 
-DEFAULT_PROJECT_NAME = "my-project"
+DEFAULT_PROJECT_NAME = "MyFpgaProject"
+
+PROJECT_NAME_PATTERN = re.compile(r"^[a-zA-Z][0-9a-zA-Z_]*$")

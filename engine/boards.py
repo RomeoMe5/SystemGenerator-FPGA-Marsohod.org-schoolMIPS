@@ -6,8 +6,10 @@ from typing import Any, NoReturn, Tuple
 
 from engine.constants import (BOARDS, DEFAULT_PROJECT_NAME, DESTINATIONS,
                               FUNCTIONS, MIPS, PATHS)
+from engine.exceptions import InvalidProjectName
 from engine.utils.misc import LOGGER
-from engine.utils.prepare import Archiver, Loader, create_dirs
+from engine.utils.prepare import (Archiver, Loader, create_dirs,
+                                  validate_project_name)
 from engine.utils.render import Render
 
 
@@ -64,6 +66,8 @@ class GenericBoard(object):
             LOGGER.warning("BUG:\tincorrect project name:\t%s", value)
             value = value[0]
         self._project_name = value or DEFAULT_PROJECT_NAME
+        if not validate_project_name(self._project_name):
+            raise InvalidProjectName(self.project_name)
 
     # NOTE sdc isn't included, because it is generated atomaitcally
     @property

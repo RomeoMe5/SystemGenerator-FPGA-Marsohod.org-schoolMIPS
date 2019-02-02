@@ -13,7 +13,7 @@ from typing import Any, Iterable, NoReturn
 import dill
 import yaml
 
-from engine.constants import PATHS
+from engine.constants import PATHS, PROJECT_NAME_PATTERN
 from engine.utils.misc import LOGGER
 
 
@@ -330,3 +330,7 @@ def create_dirs(*paths: Iterable[str], rewrite: bool=False) -> int:
         return False
 
     return reduce(lambda x, y: x + y, map(create_dir, paths))
+
+
+def validate_project_name(name: str) -> bool:
+    return PROJECT_NAME_PATTERN.match(name)
