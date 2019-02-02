@@ -2,12 +2,14 @@ import json
 import logging
 import os
 from argparse import ArgumentParser, Namespace
+from enum import Enum
 from typing import Any, Dict, Iterable, NoReturn
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s\t%(levelname)s\t%(message)s")
 
 from engine import BOARDS, MIPS, Board
+from engine.exceptions import InvalidProjectName
 
 
 def parse_argv() -> Namespace:
@@ -33,15 +35,33 @@ def parse_argv() -> Namespace:
     return parser.parse_args()
 
 
+class ReturnCode(Enum):
+    OK = 0
+    CONFIG_ERROR = 3
+    INVALID_PROJECT_NAME = 5
+    UNKNOWN_ERROR = 255
+
+
 class Config(object):
-    def __init__(self, config: str) -> NoReturn:
+    def __init__(self,
+                 config: str,
+                 project_name: str=None,
+                 mips_type: str=None,
+                 path: str=None) -> NoReturn:
         self.configs = None
         self.functions = None
-        self.errors = None
+        self.errors = []
+        self.project_name = project_name
+        self.mips_type = mips_type
+
         if not config:
+            logging.debug("No configs loaded.")
             return
+
         if not os.path.exists(config):
-            logging.ERROR(f"Config isn't found at '{args.config}'!")
+            self.errors.append(f"Config isn't found at '{config}'!")
+            return
+
         with open(config) as fin:
             data = json.load(fin)
             self.configs = self._to_dict(data.get("configs", []))
@@ -49,7 +69,7 @@ class Config(object):
 
     @property
     def ok(self) -> bool:
-        return self.errors is None
+        return not self.errors
 
     @staticmethod
     def _to_dict(items: Iterable[Any]) -> Dict[Any, bool]:
@@ -57,29 +77,44 @@ class Config(object):
                 zip(items, (True for _ in range(len(items))))}
 
 
-def main() -> int:
-    args = parse_argv()
-
-    config = Config(args.config)
-    if config.errors:
-        return 1
-
-    board = Board(args.board)
-    _ = board.setup(
-        project_name=args.name,
-        mips_type=args.mips,
+def generate_board_and_save(board_name: str,
+                            config: Config,
+                            path_to_save: str = None,
+                            archive: bool=False) -> NoReturn:
+    board = Board(board_name).setup(
+        project_name=config.project_name,
+        mips_type=config.mips_type,
         flt=config.configs,
         func=config.functions
-    )
-    _ = board.generate()
+    ).generate()
 
-    if args.archive:
-        _ = board.archive(path=args.path)
+    if archive:
+        _ = board.archive(path=path_to_save)
     else:
-        _ = board.dump(path=args.path)
+        _ = board.dump(path=path_to_save)
 
-    return 0
+
+def main(args: Namespace) -> ReturnCode:
+    config = Config(args.config, args.name, args.mips)
+    if not config.ok:
+        for error in config.errors:
+            logging.error(error)
+        return ReturnCode.CONFIG_ERROR
+
+    try:
+        generate_board_and_save(args.board, config, args.path, args.archive)
+    except InvalidProjectName as e:
+        logging.error("%s", e)
+        return ReturnCode.INVALID_PROJECT_NAME
+    except BaseException as e:
+        logging.error("%s", e)
+        return ReturnCode.UNKNOWN_ERROR
+
+    return ReturnCode.OK
 
 
 if __name__ == "__main__":
-    exit(main())
+    args = parse_argv()
+    result = main(args)
+    logging.debug("Exit with result: %s(%s)", result.name, result.value)
+    exit(result.value)
