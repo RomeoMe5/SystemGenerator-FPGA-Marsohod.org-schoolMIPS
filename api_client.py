@@ -1,6 +1,8 @@
 import io
 import logging
 from argparse import ArgumentParser, Namespace
+from enum import Enum
+from functools import lru_cache
 from typing import Any, Dict, Iterable, NoReturn, Tuple
 
 from flask import Flask, Response, abort, jsonify, make_response, request
@@ -21,6 +23,13 @@ logging.basicConfig(
 app = Flask(__name__)
 
 
+class ErrorCode(Enum):
+    UNKNOWN_ERROR = 600
+    INVALID_CONFIG = 601
+    INVALID_PROJECT_NAME = 602
+    UNSUPPORTED_BOARD = 603
+
+
 class Config(object):
     CONFIG_SHEMA = {
         'board': str,
@@ -28,7 +37,8 @@ class Config(object):
         'name': str,
         'conf': list,
         'func': list,
-        'plain': object
+        'plain': object,
+        'params': dict
     }
 
     def __init__(self, data: dict) -> NoReturn:
@@ -37,6 +47,7 @@ class Config(object):
         self.project_name = data.get("name")
         self.configs = self._to_dict(data.get("conf", []))
         self.functions = self._to_dict(data.get("func", []))
+        self.functions_params = data.get("params", {})
 
     @staticmethod
     def validate_config(data: dict) -> str or None:
@@ -54,12 +65,11 @@ class Config(object):
                 zip(items, (True for _ in range(len(items))))}
 
 
-def create_error_response(code: int,
-                          name: str,
+def create_error_response(code: ErrorCode,
                           description: str) -> Tuple[Response, int]:
-    logging.error("%s (%s): '%s'", name, code, description)
+    logging.error("%s (%s): '%s'", code.name, code.value, description)
     return jsonify({
-        'name': name,
+        'name': code.name,
         'info': description
     }), 405
 
@@ -69,15 +79,9 @@ def get_configured_board(config: Config) -> Board:
         project_name=config.project_name,
         mips_type=config.mips_type,
         flt=config.configs,
+        conf=config.functions_params,
         func=config.functions
     ).generate()
-
-
-@app.route("/")
-def ping() -> Response:
-    if request.args:
-        abort(405)
-    return jsonify(0)
 
 
 def send_archive(content: io.BytesIO, filename: str) -> Response:
@@ -88,6 +92,13 @@ def send_archive(content: io.BytesIO, filename: str) -> Response:
     return response
 
 
+@app.route("/")
+def ping() -> Response:
+    if request.args:
+        abort(405)
+    return jsonify(0)
+
+
 @app.route("/generate", methods=["GET", "POST"])
 def generate() -> Response:
     """
@@ -96,39 +107,31 @@ def generate() -> Response:
 
         Required
         --------
-        * board: str - board model
+        * board: str - one of supported boards model
 
         Optional
         --------
         * name: str - project name
-        * mips: str - SchoolMIPS version
+        * mips: str - version of SchoolMIPS core
         * conf: List[str] - board configuration
         * func: List[str] - functions to include
+        * params: Dict[str, int] - functions configurations
     """
     params = request.args
 
     validation_result = Config.validate_config(params)
     if validation_result is not None:
         return create_error_response(
-            code=601,
-            name="Invalid config",
+            ErrorCode.INVALID_CONFIG,
             description=validation_result
         )
 
     try:
         board = get_configured_board(Config(params))
     except InvalidProjectName as e:
-        return create_error_response(
-            code=602,
-            name="Invalid project name",
-            description=str(e)
-        )
+        return create_error_response(ErrorCode.INVALID_PROJECT_NAME, str(e))
     except BaseException as e:
-        return create_error_response(
-            code=600,
-            name="Unknown error",
-            description=str(e)
-        )
+        return create_error_response(ErrorCode.UNKNOWN_ERROR, str(e))
 
     if params.get("plain") and request.method == "POST":
         return jsonify(board.configs)
@@ -138,6 +141,17 @@ def generate() -> Response:
 @app.route("/boards")
 def boards() -> Response:
     return jsonify({'supported boards': BOARDS})
+
+
+@app.route("/board/<board>")
+@lru_cache()
+def board(board: str) -> Response:
+    if board not in BOARDS:
+        return create_error_response(
+            ErrorCode.UNSUPPORTED_BOARD,
+            description=f"There is no '{board}' in supported list: {BOARDS}"
+        )
+    return jsonify({'board': board, 'params': Board(board).params})
 
 
 @app.route("/mips")

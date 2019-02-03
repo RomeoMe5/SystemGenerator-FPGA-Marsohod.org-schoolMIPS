@@ -5,11 +5,12 @@ from argparse import ArgumentParser, Namespace
 from enum import Enum
 from typing import Any, Dict, Iterable, NoReturn
 
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s\t%(levelname)s\t%(message)s")
-
 from engine import BOARDS, MIPS, Board
 from engine.exceptions import InvalidProjectName
+
+
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s\t%(levelname)s\t%(message)s")
 
 
 def parse_argv() -> Namespace:
@@ -50,6 +51,7 @@ class Config(object):
                  path: str=None) -> NoReturn:
         self.configs = None
         self.functions = None
+        self.functions_params = None
         self.errors = []
         self.project_name = project_name
         self.mips_type = mips_type
@@ -64,8 +66,9 @@ class Config(object):
 
         with open(config) as fin:
             data = json.load(fin)
-            self.configs = self._to_dict(data.get("configs", []))
-            self.functions = self._to_dict(data.get("functions", []))
+            self.configs = self._to_dict(data.get("conf", []))
+            self.functions = self._to_dict(data.get("func", []))
+            self.functions_params = data.get("params", {})
 
     @property
     def ok(self) -> bool:

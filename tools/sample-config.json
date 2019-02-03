@@ -1,11 +1,14 @@
 {
-    "functions": [
+    "func": [
         "Seven",
         "Uart8"
     ],
-    "configs": [
+    "conf": [
         "clock",
         "key",
         "led"
-    ]
+    ],
+    "params": {
+        "delay": 100
+    }
 }
