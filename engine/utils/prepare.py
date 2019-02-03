@@ -139,7 +139,7 @@ class Archiver(object):
             path += ".tar"
         LOGGER.debug("Creating '%s' tar file", path)
         with open(path, "wb") as tar_fout:
-            tar_fout.write((Archiver.get_tar_io(files)).getvalue())
+            tar_fout.write(Archiver.get_tar_io(files).getvalue())
             LOGGER.info("'%s' file created", path)
 
     @staticmethod
