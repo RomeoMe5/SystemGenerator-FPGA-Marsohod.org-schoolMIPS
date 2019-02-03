@@ -147,7 +147,10 @@ def mips() -> Response:
 
 @app.route("/functions")
 def functions() -> Response:
-    return jsonify({'supported functions': FUNCTIONS})
+    return jsonify({
+        'supported functions': FUNCTIONS.ITEMS,
+        'configurations': FUNCTIONS.PARAMS
+    })
 
 
 def get_response_from_error(error: Exception) -> Tuple[Response, int]:

@@ -109,7 +109,8 @@ class GenericBoard(object):
         v = configs.get("v", {})
         self._v = v.get("assignments", {})
         self._func = v.get("func", {})
-        self._functions = tuple(self.func_path(f) for f in FUNCTIONS.keys())
+        self._functions = tuple(self.func_path(f)
+                                for f in FUNCTIONS.ITEMS.keys())
 
         self._reset_mips(Loader.get_static_path(MIPS.CONFIG), mips_type)
 
@@ -168,7 +169,7 @@ class GenericBoard(object):
         self._v = _filter(self._v)
 
         self._functions = tuple(self.func_path(f)
-                                for f in FUNCTIONS.keys() if func.get(f))
+                                for f in FUNCTIONS.ITEMS.keys() if func.get(f))
         self._func.update(conf or {})
         self._qsf['project_output_directory'] = \
             project_output_directory or self._qsf['project_output_directory']
