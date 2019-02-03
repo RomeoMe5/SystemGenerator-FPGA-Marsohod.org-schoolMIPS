@@ -70,7 +70,7 @@ def ping() -> Response:
     return jsonify(0)
 
 
-@app.route("/generate", methods=["POST"])
+@app.route("/generate", methods=["GET", "POST"])
 def generate() -> Response:
     """
         API params
@@ -112,7 +112,7 @@ def generate() -> Response:
             description=str(e)
         )
 
-    if params.get("plain"):
+    if params.get("plain") and request.method == "POST":
         return jsonify(board.configs)
     return send_file(
         board.as_archive,
