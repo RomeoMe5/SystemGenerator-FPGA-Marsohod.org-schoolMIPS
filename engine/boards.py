@@ -32,8 +32,6 @@ class GenericBoard(object):
         "_functions"
     )
 
-    Param = namedtuple("Param", ("items", "type"))
-
     def __init__(self, config_path: str) -> NoReturn:
         """ :param config_path - full path to config static file """
         self.config_path = config_path
@@ -73,19 +71,7 @@ class GenericBoard(object):
     @property
     def params(self) -> dict:
         """ Configurable params """
-        return {
-            'project_name': self.Param("Project Name", str),
-            'project_output_directory': self.Param("Project Output Dir", str),
-            'flt': self.Param(tuple(self._qsf['user_assignments'].keys()),
-                              bool),
-            'func': self.Param(FUNCTIONS, bool),
-            'conf': self.Param({
-                'delay': "Delay",
-                'width': "Input Width",
-                'out_freq': "Output Frequency",
-                'baud_rate': "Board Baud Rate",
-            }, int)  # configurations for functions
-        }
+        return self._qsf['user_assignments']
 
     @property
     def as_archive(self) -> io.BytesIO:
