@@ -9,6 +9,15 @@ from engine import BOARDS, FUNCTIONS, MIPS, Board
 from engine.exceptions import InvalidProjectName
 
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s.%(msecs)d "
+           "[%(name)s:%(filename)s.%(funcName)s:%(lineno)d] "
+           "%(levelname)s %(message)s",
+    datefmt="%H:%M:%S"
+)
+
+
 app = Flask(__name__)
 
 
