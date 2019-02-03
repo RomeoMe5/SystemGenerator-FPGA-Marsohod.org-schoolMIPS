@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 from collections import namedtuple
 from functools import reduce
@@ -7,7 +8,6 @@ from typing import Any, NoReturn, Tuple
 from engine.constants import (BOARDS, DEFAULT_PROJECT_NAME, DESTINATIONS,
                               FUNCTIONS, MIPS, PATHS)
 from engine.exceptions import InvalidProjectName
-from engine.utils.misc import LOGGER
 from engine.utils.prepare import (Archiver, Loader, create_dirs,
                                   validate_project_name)
 from engine.utils.render import Render
@@ -45,7 +45,7 @@ class GenericBoard(object):
 
     @config_path.setter
     def config_path(self, value: str) -> NoReturn:
-        LOGGER.debug("Setup board config path: %s", value)
+        logging.debug("Setup board config path: %s", value)
         if not os.path.exists(value):
             raise FileNotFoundError("Config path not exists: {}".format(value))
         self._static_path = value
@@ -63,7 +63,7 @@ class GenericBoard(object):
     @project_name.setter
     def project_name(self, value: str) -> NoReturn:
         while isinstance(value, (list, tuple)):
-            LOGGER.warning("BUG:\tincorrect project name:\t%s", value)
+            logging.warning("BUG:\tincorrect project name:\t%s", value)
             value = value[0]
         self._project_name = value or DEFAULT_PROJECT_NAME
         if not validate_project_name(self._project_name):
@@ -126,7 +126,7 @@ class GenericBoard(object):
         self._mips_qsf = {}
         self._mips_v = {}
         if mips_type and mips_type not in MIPS.VERSIONS:
-            LOGGER.error("Unsupportable mips type: %s", mips_type)
+            logging.error("Unsupportable mips type: %s", mips_type)
             mips_type = None
         if mips_type:
             mips_configs = Loader.load(config_path)
@@ -220,12 +220,12 @@ class GenericBoard(object):
             create_dirs(os.path.join(path, DESTINATIONS.MIPS))
 
         def save_to_file(filename: str, content: Any) -> NoReturn:
-            LOGGER.debug("Creating '%s'...", os.path.join(path, filename))
+            logging.debug("Creating '%s'...", os.path.join(path, filename))
             try:
                 with open(os.path.join(path, filename), "w") as fout:
                     fout.write(content)
             except BaseException as exc:
-                LOGGER.info("Can't create '%s' due to:\n%s", filename, exc)
+                logging.info("Can't create '%s' due to:\n%s", filename, exc)
                 return True
             return False
 
@@ -234,8 +234,8 @@ class GenericBoard(object):
             map(lambda x: save_to_file(*x), self.configs.items())
         )
         if errors_count:
-            LOGGER.warning("%d errors count while dumping to '%s'",
-                           errors_count, path)
+            logging.warning("%d errors count while dumping to '%s'",
+                            errors_count, path)
         return self
 
     def archive(self, path: str=None) -> object:
@@ -254,7 +254,7 @@ class Board(GenericBoard):
         board_name = board_name.lower()
 
         if board_name not in BOARDS:
-            LOGGER.error("Incorrect board name: %s", board_name)
+            logging.error("Incorrect board name: %s", board_name)
             raise ValueError("Incorrect board name: {}".format(board_name))
 
         super(Board, self).__init__(Loader.get_static_path(board_name))

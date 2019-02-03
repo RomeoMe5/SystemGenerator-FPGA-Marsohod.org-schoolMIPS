@@ -2,6 +2,7 @@
 
 import io
 import json
+import logging
 import os
 import shutil
 import tarfile
@@ -14,14 +15,13 @@ import dill
 import yaml
 
 from engine.constants import PATHS, PROJECT_NAME_PATTERN
-from engine.utils.misc import LOGGER
 
 
 class Archiver(object):
     """
         Collection of methods of files' compression.
 
-        Needed to implements specific LOGGER, for more common use
+        Needed to implements specific logging, for more common use
         it's preferable to use shutil.make_archive.
     """
 
@@ -33,11 +33,11 @@ class Archiver(object):
                  **kwargs) -> int:
         """ Run checks and apply files' archiving. """
         if not isinstance(destination, str):
-            LOGGER.warning("Wrong destination value: '%s'!", type(destination))
+            logging.warning("Wrong destination value: '%s'", type(destination))
             return -1
 
         if os.path.exists(destination) and not rewrite:
-            LOGGER.warning("Destination isn't exists: '%s'!", destination)
+            logging.warning("Destination isn't exists: '%s'", destination)
             return -2
 
         if method[0] == "t":
@@ -45,7 +45,7 @@ class Archiver(object):
         if method[0] == "z":
             return Archiver._to_zip(destination, *filenames, **kwargs)
 
-        LOGGER.warning("Wrong method specified: '%s'!", method)
+        logging.warning("Wrong method specified: '%s'", method)
         return -3
 
     @staticmethod
@@ -53,11 +53,11 @@ class Archiver(object):
                 *files: Iterable[str],
                 mode: int=zipfile.ZIP_STORED) -> int:
         def add_to_archive(filename: str, archive: object) -> bool:
-            LOGGER.debug("Add file '%s' to '%s'.", filename, path)
+            logging.debug("Add file '%s' to '%s'", filename, path)
             try:
                 archive.write(filename)
             except tarfile.TarError as exc:
-                LOGGER.warning("'%s' wasn't added!\n%s", filename, exc)
+                logging.warning("'%s' wasn't added\n%s", filename, exc)
                 return True
             return False
 
@@ -65,14 +65,14 @@ class Archiver(object):
         with zipfile.ZipFile(path, "w", compression=mode) as zf_out:
             for filename in files:
                 if not os.path.exists(filename):
-                    LOGGER.debug("File isn't exists: '%s'.", filename)
+                    logging.debug("File isn't exists: '%s'", filename)
                     errors_count += 1
                     continue
                 if not os.path.isdir(filename):
                     errors_count += add_to_archive(filename, zf_out)
                     continue
                 for dirname, subdirs, files in os.walk(filename):
-                    LOGGER.debug("Add dir '%s' to '%s'.", dirname, path)
+                    logging.debug("Add dir '%s' to '%s'", dirname, path)
                     try:
                         zf_out.write(dirname)
                         errors_count += reduce(
@@ -82,8 +82,8 @@ class Archiver(object):
                             ), files)
                         )
                     # [minor] TODO use specific exception
-                    except BaseException as exc:
-                        LOGGER.warning("'%s' wasn't added!\n%s", filename, exc)
+                    except BaseException as e:
+                        logging.warning("'%s' wasn't added:\n%s", filename, e)
                         errors_count += 1
         return errors_count
 
@@ -91,13 +91,13 @@ class Archiver(object):
     def _to_tar(path: str, *files: Iterable[str], mode: str="w") -> int:
         def add_to_archive(filename: str, archive: object) -> bool:
             if not os.path.exists(filename):
-                LOGGER.warning("File isn't exists: '%s'.", filename)
+                logging.warning("File isn't exists: '%s'", filename)
                 return True
-            LOGGER.debug("Add file '%s' to '%s'.", filename, path)
+            logging.debug("Add file '%s' to '%s'", filename, path)
             try:
                 archive.add(filename)
-            except tarfile.TarError as exc:
-                LOGGER.debug("'%s' wasn't added!\n%s", filename, exc)
+            except tarfile.TarError as e:
+                logging.debug("'%s' wasn't added:\n%s", filename, e)
                 return True
             return False
 
@@ -109,27 +109,27 @@ class Archiver(object):
     @staticmethod
     def get_tar_io(files: dict) -> io.BytesIO:
         """ Returns tar file I/O """
-        LOGGER.debug("Create tar I/O")
+        logging.debug("Create tar I/O")
         with tarfile.open(fileobj=io.BytesIO(), mode="w") as tar_fout:
             for filename, file_line in files.items():
                 try:
                     if isinstance(file_line, dict):
                         for fname, fline in file_line.items():
-                            LOGGER.debug("Add '%s' to tar I/O", fname)
+                            logging.debug("Add '%s' to tar I/O", fname)
                             tar_fout.addfile(
                                 tarfile.TarInfo(os.path.join(filename, fname)),
                                 fileobj=io.BytesIO(fline.encode("utf-8"))
                             )
                         continue
-                    LOGGER.debug("Add file '%s' to tar I/O", filename)
+                    logging.debug("Add file '%s' to tar I/O", filename)
                     tarinfo = tarfile.TarInfo(filename)
                     tarinfo.size = io.StringIO().write(file_line)
                     tar_fout.addfile(
                         tarinfo,
                         fileobj=io.BytesIO(file_line.encode("utf-8"))
                     )
-                except tarfile.TarError as exc:
-                    LOGGER.warning("'%s' wasn't added!\n%s", filename, exc)
+                except tarfile.TarError as e:
+                    logging.warning("'%s' wasn't added:\n%s", filename, e)
             return tar_fout.fileobj
 
     @staticmethod
@@ -137,10 +137,10 @@ class Archiver(object):
         """ Write tar I/O to tar file """
         if not path.endswith(".tar"):
             path += ".tar"
-        LOGGER.debug("Creating '%s' tar file", path)
+        logging.debug("Creating '%s' tar file", path)
         with open(path, "wb") as tar_fout:
             tar_fout.write(Archiver.get_tar_io(files).getvalue())
-            LOGGER.info("'%s' file created", path)
+            logging.info("'%s' file created", path)
 
     @staticmethod
     def archive(destination: str,
@@ -158,8 +158,8 @@ class Archiver(object):
         method, compression = destination.lower().split('.')[-2:]
 
         if method[0] not in "zt":
-            LOGGER.debug("'%s' archiving detected [without compression].",
-                         method)
+            logging.debug("'%s' archiving detected [without compression]",
+                          method)
             method, compression = compression, None
 
         params = {
@@ -169,9 +169,9 @@ class Archiver(object):
         }
 
         if compression:
-            LOGGER.debug("'%s' archiving detected [with %s compression].",
-                         method,
-                         compression)
+            logging.debug("'%s' archiving detected [with %s compression]",
+                          method,
+                          compression)
             compression = compression[0]
             if "z" in method:
                 if "d" in compression:
@@ -225,26 +225,26 @@ class Loader(object):
              **kwargs) -> Any:
         """ Loads content of static file from any location """
         if fmt is None or fmt not in Loader.LOADERS:
-            LOGGER.debug("Try to detect file format from file: %s", filepath)
+            logging.debug("Try to detect file format from file '%s'", filepath)
             fmt = filepath.split('.')[-1].lower()
             if fmt in Loader.LOADERS:
-                LOGGER.debug("Detect file format: %s", fmt)
+                logging.debug("Detect file format '%s'", fmt)
             else:
-                LOGGER.debug("Can't detect file format from '%s'", filepath)
+                logging.debug("Can't detect file format from '%s'", filepath)
                 fmt = None
-                LOGGER.debug("Try to detect file format from loaders")
+                logging.debug("Try to detect file format from loaders")
                 for _fmt in Loader.LOADERS:
                     _path = filepath + "." + _fmt
                     if os.path.exists(_path):
-                        LOGGER.debug("Assume file has '%s' fmt", _fmt)
+                        logging.debug("Assume file has '%s' fmt", _fmt)
                         filepath = _path
                         fmt = _fmt
                         break
 
-        LOGGER.debug("Loading '%s' content...", filepath)
+        logging.debug("Loading '%s' content", filepath)
         with open(filepath, "rb", **kwargs) as fin:
             if fmt is None:
-                LOGGER.debug("Read %s as plain text", filepath)
+                logging.debug("Read %s as plain text", filepath)
                 return fin.read()  # read plain text
             return Loader.LOADERS[fmt](fin, **(loader_params or {}))
 
@@ -269,12 +269,12 @@ class Loader(object):
             return path
 
         for fmt in Loader.LOADERS:
-            LOGGER.debug("Assume file '%s' has '%s' extension.", path, fmt)
+            logging.debug("Assume file '%s' has '%s' extension", path, fmt)
             _path = path + "." + fmt
             if os.path.exists(_path):
                 return _path
 
-        LOGGER.error("'%s' isn't exists!", path)
+        logging.error("'%s' isn't exists", path)
 
 
 def convert(from_path: str,
@@ -283,22 +283,22 @@ def convert(from_path: str,
             from_fmt: str=None) -> NoReturn:
     """ Convert static files formats. """
     if not os.path.exists(from_path):
-        LOGGER.error("Target file %s isn't exist", from_path)
+        logging.error("Target file '%s' isn't exist", from_path)
         return
 
     content = Loader.load(from_path, fmt=from_fmt)
 
     if to_path is None:
         to_path = ".".join(from_path.split('.')[:-1])
-        LOGGER.debug("Assume destination path is: '%s'", to_path)
+        logging.debug("Assume destination path is '%s'", to_path)
 
     if not to_path.endswith(to_fmt):
         to_path = to_path + "." + to_fmt
 
-    LOGGER.debug("Save converted file to: '%s'", to_path)
+    logging.debug("Save converted file to '%s'", to_path)
     with open(to_path, ("w" if to_fmt != "bin" else "wb")) as fout:
         Loader.DUMPERS[to_fmt](content, fout)
-        LOGGER.info("Converted file saved to: '%s'", to_path)
+        logging.info("Converted file saved to '%s'", to_path)
 
 
 def create_dirs(*paths: Iterable[str], rewrite: bool=False) -> int:
@@ -307,26 +307,26 @@ def create_dirs(*paths: Iterable[str], rewrite: bool=False) -> int:
     def create_dir(path: str) -> bool:
         """ :return error occures """
         if not isinstance(path, str):
-            LOGGER.error("Wrong path specified: '%s'", path)
+            logging.error("Wrong path specified '%s'", path)
             return True
         elif os.path.exists(path) and rewrite:
-            LOGGER.debug("Remove '%s'.", path)
+            logging.debug("Remove '%s'", path)
             try:
                 shutil.rmtree(path)
-            except BaseException as exc:
-                LOGGER.warning("Can't remove '%s'!\n%s", path, exc)
+            except BaseException as e:
+                logging.warning("Can't remove '%s':\n%s", path, e)
                 return True
         elif os.path.exists(path):
-            LOGGER.debug("Skip '%s' as it's exists.", path)
+            logging.debug("Skip '%s' as it's exists", path)
             return True
 
-        LOGGER.debug("Create '%s' folder.", path)
+        logging.debug("Create '%s' folder", path)
         try:
             os.mkdir(path)
-        except BaseException as exc:
-            LOGGER.warning("Can't create '%s'!\n%s", path, exc)
+        except BaseException as e:
+            logging.warning("Can't create '%s':\n%s", path, e)
             return True
-        LOGGER.info("Folder created: '%s'.", path)
+        logging.info("Folder created '%s'", path)
         return False
 
     return reduce(lambda x, y: x + y, map(create_dir, paths))

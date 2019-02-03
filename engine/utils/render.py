@@ -1,5 +1,6 @@
 """ Rendering interface """
 
+import logging
 from datetime import datetime
 from functools import wraps
 from typing import Any, Callable
@@ -8,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Environment, Template
 
 from engine.constants import PATHS
-from engine.utils.misc import LOGGER, none_safe, quote
+from engine.utils.misc import none_safe, quote
 
 
 ENV = Environment(
@@ -32,8 +33,8 @@ def load_template(path: str, file_type: str=None) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             if not file_type:
-                LOGGER.debug("Assume file type is '%s'.", func.__name__)
-            LOGGER.debug("Loading template '%s'...", path)
+                logging.debug("Assume file type is '%s'.", func.__name__)
+            logging.debug("Loading template '%s'...", path)
             return func(
                 *args,
                 template=ENV.get_template(path),
@@ -49,7 +50,7 @@ class Render(object):
 
     @staticmethod
     def _render(template: Template, **kwargs) -> str:
-        LOGGER.debug("Rendering '%s' template...", template.filename)
+        logging.debug("Rendering '%s' template...", template.filename)
         return "\n".join(template.generate(**kwargs))
 
     @staticmethod
