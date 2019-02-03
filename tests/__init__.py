@@ -15,7 +15,7 @@ logging.basicConfig(
 TEST_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
 
 
-def free_test_dir() -> NoReturn:
+def create_test_dir() -> NoReturn:
     if os.path.exists(TEST_DIR):
         shutil.rmtree(TEST_DIR)
     os.mkdir(TEST_DIR)
@@ -29,6 +29,6 @@ def remove_test_dir() -> NoReturn:
 
 @contextmanager
 def use_test_dir() -> Generator:
-    free_test_dir()
+    create_test_dir()
     yield TEST_DIR
     remove_test_dir()

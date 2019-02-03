@@ -1,17 +1,14 @@
 """ Additional methods for preparing engine workflow. """
 
 import io
-import json
 import logging
 import os
 import shutil
 import tarfile
 import zipfile
-from collections import OrderedDict
 from functools import reduce
 from typing import Any, Iterable, NoReturn
 
-import dill
 import yaml
 
 from engine.constants import PATHS, PROJECT_NAME_PATTERN
@@ -207,127 +204,60 @@ class Archiver(object):
 class Loader(object):
     """ Implements file content loading """
 
-    LOADERS = OrderedDict(
-        yml=yaml.load,
-        json=json.load,
-        bin=dill.load
-    )
-    DUMPERS = OrderedDict(
-        yml=yaml.dump,
-        json=json.dump,
-        bin=dill.dump
-    )
+    @staticmethod
+    def _is_file(path: str) -> bool:
+        if not os.path.exists(path):
+            raise FileNotFoundError("File '%s' isn't exist", path)
+        if not os.path.isfile(path):
+            raise ValueError("Is not a file '%s'", path)
 
     @staticmethod
-    def load(filepath: str,
-             fmt: str=None,
-             loader_params: dict=None,
-             **kwargs) -> Any:
-        """ Loads content of static file from any location """
-        if fmt is None or fmt not in Loader.LOADERS:
-            logging.debug("Try to detect file format from file '%s'", filepath)
-            fmt = filepath.split('.')[-1].lower()
-            if fmt in Loader.LOADERS:
-                logging.debug("Detect file format '%s'", fmt)
-            else:
-                logging.debug("Can't detect file format from '%s'", filepath)
-                fmt = None
-                logging.debug("Try to detect file format from loaders")
-                for _fmt in Loader.LOADERS:
-                    _path = filepath + "." + _fmt
-                    if os.path.exists(_path):
-                        logging.debug("Assume file has '%s' fmt", _fmt)
-                        filepath = _path
-                        fmt = _fmt
-                        break
-
-        logging.debug("Loading '%s' content", filepath)
-        with open(filepath, "rb", **kwargs) as fin:
-            if fmt is None:
-                logging.debug("Read %s as plain text", filepath)
-                return fin.read()  # read plain text
-            return Loader.LOADERS[fmt](fin, **(loader_params or {}))
-
-    @staticmethod
-    def load_static(path: str,
-                    path_to_static: str=None,
-                    loader_params: dict=None,
-                    encoding: str="utf-8",
-                    **kwargs) -> Any:
-        """ Loads content of static file from engine 'static' folder """
-        if path_to_static is not None:
-            path = Loader.get_static_path(path, path_to_static)
-        content = Loader.load(path, loader_params, **kwargs)
-        return content.decode(encoding) if encoding is not None else content
+    def load(path: str, encoding: str="utf-8", **kwargs) -> Any:
+        """ Loads content of static file (yaml or plain text if encoding) """
+        logging.debug("Loading content from '%s'", path)
+        Loader._is_file(path)
+        with open(path, "rb", **kwargs) as fin:
+            if encoding:
+                logging.debug("Load '%s' as plain text with '%s' encoding",
+                              path, encoding)
+                return fin.read().decode(encoding)
+            logging.debug("Load '%s' as yaml", path)
+            return yaml.load(fin)
 
     @staticmethod
     def get_static_path(filename: str,
                         path_to_static: str=PATHS.STATIC) -> str or NoReturn:
         """ Return path for static object (if it exists) """
         path = os.path.join(path_to_static, filename)
-        if os.path.exists(path):
-            return path
-
-        for fmt in Loader.LOADERS:
-            logging.debug("Assume file '%s' has '%s' extension", path, fmt)
-            _path = path + "." + fmt
-            if os.path.exists(_path):
-                return _path
-
-        logging.error("'%s' isn't exists", path)
-
-
-def convert(from_path: str,
-            to_fmt: str,
-            to_path: str=None,
-            from_fmt: str=None) -> NoReturn:
-    """ Convert static files formats. """
-    if not os.path.exists(from_path):
-        logging.error("Target file '%s' isn't exist", from_path)
-        return
-
-    content = Loader.load(from_path, fmt=from_fmt)
-
-    if to_path is None:
-        to_path = ".".join(from_path.split('.')[:-1])
-        logging.debug("Assume destination path is '%s'", to_path)
-
-    if not to_path.endswith(to_fmt):
-        to_path = to_path + "." + to_fmt
-
-    logging.debug("Save converted file to '%s'", to_path)
-    with open(to_path, ("w" if to_fmt != "bin" else "wb")) as fout:
-        Loader.DUMPERS[to_fmt](content, fout)
-        logging.info("Converted file saved to '%s'", to_path)
+        logging.debug("Static path is '%s'", path)
+        Loader._is_file(path)
+        return path
 
 
 def create_dirs(*paths: Iterable[str], rewrite: bool=False) -> int:
     """ :return number of errors """
 
-    def create_dir(path: str) -> bool:
+    def create_dir(path: str) -> int:
         """ :return error occures """
-        if not isinstance(path, str):
-            logging.error("Wrong path specified '%s'", path)
-            return True
-        elif os.path.exists(path) and rewrite:
-            logging.debug("Remove '%s'", path)
+        if os.path.exists(path) and rewrite:
+            logging.debug("Remove folder '%s'", path)
             try:
                 shutil.rmtree(path)
             except BaseException as e:
-                logging.warning("Can't remove '%s':\n%s", path, e)
-                return True
+                logging.error("Can't remove folder '%s': %s", path, e)
+                return 1
         elif os.path.exists(path):
-            logging.debug("Skip '%s' as it's exists", path)
-            return True
+            logging.debug("Skip folder '%s' as it already exists", path)
+            return 1
 
         logging.debug("Create '%s' folder", path)
         try:
             os.mkdir(path)
         except BaseException as e:
-            logging.warning("Can't create '%s':\n%s", path, e)
-            return True
-        logging.info("Folder created '%s'", path)
-        return False
+            logging.error("Can't create folder '%s': %s", path, e)
+            return 1
+        logging.info("Folder '%s' created", path)
+        return 0
 
     return reduce(lambda x, y: x + y, map(create_dir, paths))
 

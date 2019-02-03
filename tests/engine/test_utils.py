@@ -9,9 +9,10 @@ import pytest
 
 from engine.constants import PATHS
 from engine.utils.misc import none_safe, quote
-from engine.utils.prepare import Archiver, Loader, convert, create_dirs
+from engine.utils.prepare import (Archiver, Loader, create_dirs,
+                                  validate_project_name)
 from engine.utils.render import ENV, Render, load_template
-from tests import (TEST_DIR, free_test_dir, logging, remove_test_dir,
+from tests import (TEST_DIR, create_test_dir, logging, remove_test_dir,
                    use_test_dir)
 from tests.engine import (MOCK_CONFIG, MOCK_DIR, MOCK_TEMPL_NAME,
                           _test_static_content, use_mock_loader)
@@ -68,7 +69,7 @@ class TestArchiver:
         return os.path.exists(path)
 
     def setup_method(self) -> NoReturn:
-        free_test_dir()
+        create_test_dir()
         for filepath in self.files:
             assert self.create_file(filepath), "file not created" + filepath
 
@@ -143,25 +144,6 @@ class TestArchiver:
         assert Archiver.archive(tar_name, *self.files, rewrite=False) < 0
 
 
-def test_convert() -> NoReturn:
-    kwargs = {
-        'from_path': MOCK_CONFIG,
-        'to_fmt': "json"
-    }
-    end_filenames = (MOCK_CONFIG[:-3] + "json",
-                     os.path.join(TEST_DIR, "file.json"))
-
-    with use_test_dir():
-        _ = convert(**kwargs)
-        _ = convert(to_path=end_filenames[1], **kwargs)
-        for filename in end_filenames:
-            assert os.path.exists(filename), "file isn't exist"
-            with open(filename, "r") as fin:
-                _test_static_content(json.load(fin))
-            os.remove(filename)
-            assert not os.path.exists(filename), "file wasn't removed"
-
-
 class TestLoader:
     def setup_class(self) -> NoReturn:
         self.path = MOCK_DIR
@@ -181,28 +163,22 @@ class TestLoader:
                     Loader.load_static(self.fullname, self.path, **params)):
             _test_static_content(res)
 
-    def test_get_static_path(self) -> NoReturn:
-        def _test_static_path(filename: str) -> NoReturn:
+    def test_get_static_path_valid(self) -> NoReturn:
+        filenames = (self.fullname, self.fullpath)
+        for filename in filenames:
             path = Loader.get_static_path(filename, self.path)
             assert path and isinstance(path, str)
             assert os.path.exists(path)
 
-        for filename in ("__tmp", self.filename + ".tmp"):
-            assert Loader.get_static_path(filename, self.path) is None
+    def test_get_static_path_invalid(self) -> NoReturn:
+        filenames = (self.filename + ".tmp", self.fullname + ".tmp",
+                     self.fullpath + ".tmp", "__tmp", self.filename)
+        for filename in filenames:
+            with pytest.raises(FileNotFoundError):
+                Loader.get_static_path(filename, self.path)
 
-        _test_static_path(self.filename)
-        _test_static_path(self.fullname)
-        _test_static_path(self.fullpath)
-
-
-def test_create_dirs() -> NoReturn:
-    with use_test_dir() as test_dir:
-        dirs = tuple(os.path.join(test_dir, d) for d in ("a", "b", "c"))
-        assert not create_dirs(*dirs), "errors while creating dirs"
-        for d in dirs:
-            assert os.path.exists(d), "dir isn't exist" + d
-        assert create_dirs(*dirs) == 3, "false rewrite"
-        assert not create_dirs(*dirs, rewrite=True), "rewrite isn't work"
+        with pytest.raises(ValueError):
+            Loader.get_static_path("", self.path)
 
 
 class TestRender:
@@ -294,3 +270,62 @@ def test_load_template() -> NoReturn:
         res = load_template(path=MOCK_TEMPL_NAME, file_type="v")(func)(b=1)
     assert "b" in res and res['b'] == 1
     assert res['file_type'] == "v", "isn't auto-detected"
+
+
+class TestCreateDirs(object):
+    def setup_class(self) -> NoReturn:
+        self.dirs = tuple(os.path.join(TEST_DIR, d) for d in ("a", "b", "c"))
+
+    def setup_method(self) -> NoReturn:
+        create_test_dir()
+
+    def teardown_method(self) -> NoReturn:
+        remove_test_dir()
+
+    def test_create_dirs(self) -> NoReturn:
+        assert create_dirs(*self.dirs) == 0, "no errors while creating dirs"
+        for d in self.dirs:
+            assert os.path.exists(d), "directory was created " + d
+
+    def test_create_dirs_false_rewrite(self) -> NoReturn:
+        self.test_create_dirs()
+
+        files = [os.path.join(d, "1") for d in self.dirs]
+        # create files inside directories
+        for file in files:
+            with open(file, 'w') as _:
+                pass
+            assert os.path.exists(file), "file was created " + file
+
+        assert create_dirs(*self.dirs, rewrite=False) == 3, \
+            "directories were rewritten"
+        for file in files:
+            assert os.path.exists(file), "file inside wasn't rewritten " + file
+
+    def test_create_dirs_rewrite(self) -> NoReturn:
+        self.test_create_dirs()
+
+        files = [os.path.join(d, "1") for d in self.dirs]
+        # create files inside directories
+        for file in files:
+            with open(file, 'w') as _:
+                pass
+            assert os.path.exists(file), "file was created " + file
+
+        assert create_dirs(*self.dirs, rewrite=True) == 0, \
+            "directories were rewritten"
+        for file in files:
+            assert not os.path.exists(file), \
+                "file inside was rewritten " + file
+
+
+def test_validate_project_name_valid() -> NoReturn:
+    project_names = ("", "1", "1a", "a-b", "a b", "a.b", "a+b")
+    for project_name in project_names:
+        assert not validate_project_name(project_name)
+
+
+def test_validate_project_name_invalid() -> NoReturn:
+    project_names = ("a", "ab", "AB", "a_b")
+    for project_name in project_names:
+        assert validate_project_name(project_name)
