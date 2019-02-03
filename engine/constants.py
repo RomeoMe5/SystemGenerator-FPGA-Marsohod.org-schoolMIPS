@@ -2,7 +2,7 @@ import os
 import re
 
 
-class PATHS:
+class PATHS(object):
     ROOT = os.path.dirname(__file__)
     BASE = os.path.abspath(os.path.dirname(ROOT))
     STATIC = os.path.join(ROOT, "static")
@@ -10,13 +10,13 @@ class PATHS:
     MIPS = os.path.join(STATIC, "school_mips")
 
 
-class DESTINATIONS:
+class DESTINATIONS(object):
     OUTPUT = "output_files"
     FUNC = "functions"
     MIPS = "mips"
 
 
-class MIPS:
+class MIPS(object):
     CONFIG = "SchoolMips.yml"
     VERSIONS = (
         "simple",
@@ -29,7 +29,7 @@ class MIPS:
 
 
 # native supported boards
-BOARDS = ("marsohod2", "marsohod2b", "marsohod3", "marsohod3b")  # "de1soc"
+BOARDS = ("marsohod2", "marsohod2b", "marsohod3", "marsohod3b", "de1soc")
 
 FUNCTIONS = {
     'ButtonDebouncer': "Button Debouncer: add delay between button inputs",
