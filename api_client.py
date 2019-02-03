@@ -1,8 +1,9 @@
+import io
 import logging
 from argparse import ArgumentParser, Namespace
 from typing import Any, Dict, Iterable, NoReturn, Tuple
 
-from flask import Flask, Response, abort, jsonify, request, send_file
+from flask import Flask, Response, abort, jsonify, make_response, request
 
 from engine import BOARDS, FUNCTIONS, MIPS, Board
 from engine.exceptions import InvalidProjectName
@@ -70,6 +71,14 @@ def ping() -> Response:
     return jsonify(0)
 
 
+def send_archive(content: io.BytesIO, filename: str) -> Response:
+    response = make_response(content.getvalue())
+    response.headers['Content-Type'] = "application/octet-stream"
+    response.headers['Content-Disposition'] = \
+        f"attachment; filename={filename}"
+    return response
+
+
 @app.route("/generate", methods=["GET", "POST"])
 def generate() -> Response:
     """
@@ -114,12 +123,7 @@ def generate() -> Response:
 
     if params.get("plain") and request.method == "POST":
         return jsonify(board.configs)
-    return send_file(
-        board.as_archive,
-        mimetype="application/octet-stream",
-        as_attachment=True,
-        attachment_filename=f"{board.project_name}.tar"
-    )
+    return send_archive(board.as_archive, f"{board.project_name}.tar")
 
 
 @app.route("/boards")
