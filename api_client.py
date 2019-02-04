@@ -37,7 +37,6 @@ class Config(object):
         'name': str,
         'conf': list,
         'func': list,
-        'plain': object,
         'params': dict
     }
 
@@ -102,8 +101,11 @@ def ping() -> Response:
 @app.route("/generate", methods=["GET", "POST"])
 def generate() -> Response:
     """
-        API params
-        ==========
+        API
+        ===
+
+        Returns generated files as internal representation (json object)
+            for POST requests.
 
         Required
         --------
@@ -133,7 +135,7 @@ def generate() -> Response:
     except BaseException as e:
         return create_error_response(ErrorCode.UNKNOWN_ERROR, str(e))
 
-    if params.get("plain") and request.method == "POST":
+    if request.method == "POST":
         return jsonify(board.configs)
     return send_archive(board.as_archive, f"{board.project_name}.tar")
 
