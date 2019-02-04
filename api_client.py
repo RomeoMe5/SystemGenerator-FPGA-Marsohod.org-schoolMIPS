@@ -1,11 +1,14 @@
 import io
 import logging
+import os
 from argparse import ArgumentParser, Namespace
 from enum import Enum
 from functools import lru_cache
 from typing import Any, Dict, Iterable, NoReturn, Tuple
 
 from flask import Flask, Response, abort, jsonify, make_response, request
+from flask_sslify import SSLify
+from werkzeug.contrib.profiler import ProfilerMiddleware
 
 from engine import BOARDS, FUNCTIONS, MIPS, Board
 from engine.exceptions import InvalidProjectName
@@ -20,7 +23,22 @@ logging.basicConfig(
 )
 
 
-app = Flask(__name__)
+class AppConfig(object):
+    SECRET_KEY = "no-one-knows"
+    SSL_REDIRECT = False  # NOTE not working in debug mode
+
+
+def create_app(config: AppConfig, name: str=None) -> Flask:
+    app = Flask(name or __name__)
+    app.config.from_object(config)
+
+    if app.config['SSL_REDIRECT']:
+        sslify = SSLify(app)
+
+    return app
+
+
+app = create_app(AppConfig, "api-client")
 
 
 class ErrorCode(Enum):
@@ -206,14 +224,41 @@ def not_implemented(error: Exception) -> Tuple[Response, int]:
     return get_response_from_error(error)
 
 
+@app.shell_context_processor
+def make_shell_context() -> dict:
+    return {
+        'app': app,
+        'Board': Board
+    }
+
+
+def enable_profiling(app: Flask, path: str) -> NoReturn:
+    if not os.path.exists(path):
+        logging.info(f"Create '{path}'.")
+        os.mkdir(path)
+
+    app.config['PROFILE'] = True
+    logging.warning("Profiler is running!")
+    app.wsgi_app = ProfilerMiddleware(
+        app.wsgi_app,
+        restrictions=[30],  # length
+        profile_dir=path
+    )
+
+
 def parse_argv() -> Namespace:
     parser = ArgumentParser(description="")
     parser.add_argument('host', type=str, default=None, nargs="?")
     parser.add_argument('--port', '-p', type=int, default=None)
     parser.add_argument('--debug', '-d', action="store_true")
+    parser.add_argument('--profile', '-P', action="store_true")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_argv()
+
+    if args.profile:
+        enable_profiling(app, path="perf-logs")
+
     app.run(host=args.host, port=args.port, debug=args.debug)

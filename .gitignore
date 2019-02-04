@@ -11,6 +11,7 @@ build/
 .gen/
 .env/
 temp/
+*-logs/
 logs/
 log/
 migrations/
