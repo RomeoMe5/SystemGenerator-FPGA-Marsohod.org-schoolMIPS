@@ -1,0 +1,142 @@
+{%- extends 'bootstrap/base.html' -%}
+{%- import 'bootstrap/wtf.html' as wtf -%}
+
+{%- block styles -%}
+  {{super()}}
+  <style>
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      margin-bottom: 60px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #f5f5f5;
+    }
+    .container .text-muted {
+      margin: 20px 0;
+    }
+    .footer > .container {
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+  </style>
+{%- endblock styles -%}
+
+{%- block title -%}
+  {{"HSE Marsohod CAD"}}
+{%- endblock title -%}
+
+{%- block navbar -%}
+  <nav class="navbar navbar-default">
+    <div class="container">
+      {# For brand and colapsed navbar. #}
+      <div class="navbar-header">
+        <button type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1"
+            aria-expanded="false">
+          <span class="sr-only">
+            {{"Toggle navigation"}}
+          </span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{{url_for('index')}}">
+          {{"HSE Marsohod CAD"}}
+        </a>
+      </div>
+      {# Navbar content #}
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        {# render links to all available borders #}
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#"
+                class="dropdown-toggle"
+                data-toggle="dropdown"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded="false">
+              {{"Target board type"}}
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">
+                {{"Select board"}}
+              </li>
+              <li role="separator" class="divider"></li>
+              {%- for board in boards -%}
+                <li>
+                  <a href="{{url_for('index', board=board)}}">
+                    {{board}}
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+{%- endblock navbar -%}
+
+{%- block content -%}
+  {{super()}}
+  <div class="container">
+    {%- with messages = get_flashed_messages() -%}
+      {%- if messages -%}
+        {%- for message in messages -%}
+          <div class="alert alert-info" role="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{message}}
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endwith -%}
+
+    {%- if form -%}
+      <div class="row">
+        <div class="col-md-4">
+          <h1>{{"Configure"}} {{board | capitalize}}</h1>
+          <br/>
+          <img class="img-responsive" src="{{url_for('board_picture')}}">
+        </div>
+        <div class="col-md-8">
+          {{wtf.quick_form(form)}}
+        </div>
+      </div>
+    {%- else -%}
+      <h1 class="cover-heading">
+        {{"HSE University System Builder for Marsohod FPGA boards."}}
+      </h1>
+      <div class="lead">
+        <p>{{"<b>NOTE:</b> this is just a draft of index page."}}</p>
+        <p>{{"Select board type on top of the page, configure selected board and press 'Generate' button to save generated project."}}</p>
+      </div>
+    {%- endif -%}
+  </div>
+  <br/>
+
+  {%- block footer -%}
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">
+          {{"Created by HSE University students"}}
+          <a href="mailto:dapchelkin@edu.hse.ru?Subject=FPGAMarsohodCAD%20Question" target="_top">
+            {{"Dmitriy Pchelkin"}}
+          </a> {{"and"}}
+          <a href="mailto:aaivanov_5@edu.hse.ru?Subject=FPGAMarsohodCAD%20Question" target="_top">
+            {{"Alexey Ivanov"}}
+          </a>
+        </p>
+      </div>
+    </footer>
+  {%- endblock footer -%}
+{%- endblock content -%}
