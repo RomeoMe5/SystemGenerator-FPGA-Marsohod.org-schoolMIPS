@@ -6,7 +6,7 @@ from enum import Enum
 from functools import lru_cache
 from typing import Any, Dict, Iterable, NoReturn, Tuple
 
-from flask import Flask, Response, abort, jsonify, make_response, request
+from flask import Flask, Response, jsonify, make_response, request
 from flask_sslify import SSLify
 from werkzeug.contrib.profiler import ProfilerMiddleware
 
@@ -107,13 +107,6 @@ def send_archive(content: io.BytesIO, filename: str) -> Response:
     response.headers['Content-Disposition'] = \
         f"attachment; filename={filename}"
     return response
-
-
-@app.route("/")
-def ping() -> Response:
-    if request.args:
-        abort(405)
-    return jsonify(0)
 
 
 @app.route("/generate", methods=["GET", "POST"])
@@ -247,7 +240,7 @@ def enable_profiling(app: Flask, path: str) -> NoReturn:
 
 
 def parse_argv() -> Namespace:
-    parser = ArgumentParser(description="")
+    parser = ArgumentParser(description="Starter for API client")
     parser.add_argument('host', type=str, default=None, nargs="?")
     parser.add_argument('--port', '-p', type=int, default=None)
     parser.add_argument('--debug', '-d', action="store_true")
@@ -255,10 +248,16 @@ def parse_argv() -> Namespace:
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main() -> int:
     args = parse_argv()
 
     if args.profile:
         enable_profiling(app, path="perf-logs")
 
     app.run(host=args.host, port=args.port, debug=args.debug)
+
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())
