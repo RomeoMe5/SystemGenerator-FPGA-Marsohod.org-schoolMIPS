@@ -88,6 +88,7 @@ def generate_board_and_save(board_name: str,
         project_name=config.project_name,
         mips_type=config.mips_type,
         flt=config.configs,
+        conf=config.functions_params,
         func=config.functions
     ).generate()
 
