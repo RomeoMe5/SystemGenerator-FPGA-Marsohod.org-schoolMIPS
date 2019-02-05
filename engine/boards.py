@@ -146,7 +146,7 @@ class GenericBoard(object):
 
         def _filter(params: dict) -> dict:
             for key in set(params).copy():
-                if not flt.get(key.lower()):
+                if not flt.get(key) and not flt.get(key.lower()):
                     del params[key]
             return params
 
