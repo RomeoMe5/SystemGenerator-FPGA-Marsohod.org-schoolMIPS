@@ -24,7 +24,7 @@ logging.basicConfig(
 
 
 class AppConfig(object):
-    SECRET_KEY = "no-one-knows"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "no-one-knows"
     SSL_REDIRECT = False  # NOTE not working in debug mode
 
 
