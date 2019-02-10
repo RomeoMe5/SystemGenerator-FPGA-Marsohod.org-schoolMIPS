@@ -17,6 +17,7 @@ Werkzeug>=0.14.1
 WTForms>=2.1
 
 # engine
+dill>=0.2.8.2
 Jinja2>=2.10
 PyYAML>=3.12
 
