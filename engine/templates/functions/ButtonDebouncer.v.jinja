@@ -3,9 +3,9 @@
 	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
 	and should be distribured without any warranty ("as is")
 #}
-{%- extends "../BaseC_.jinja" -%}
+{%- extends "BaseC_.jinja" -%}
 {%- block message -%}
-{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- include "licenses/_IntelLicense.jinja" -%}
 {%- endblock message -%}
 {%- block content -%}
 {# verilog file content #}
@@ -14,8 +14,8 @@
  * Can be customized for different board's internal clocks by parameters.
  */
 module ButtonDebouncer  #(
-	parameter CLOCK_RATE = {%- if clock_rate -%}{{ clock_rate }}{%- else -%}100000000{%- endif -%}, // board internal clock
-	parameter MILLIS_DELAY = {%- if delay -%}{{ delay }}{%- else -%}100{%- endif -%} // length of delay (in milliseconds)
+	parameter CLOCK_RATE = {{ clock_rate }}, // board internal clock
+	parameter MILLIS_DELAY = {{ delay }} // length of delay (in milliseconds)
 )(
 	input wire clk, // internal board's clock
 	input wire in, // signal from button

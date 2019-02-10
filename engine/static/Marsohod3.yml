@@ -1,16 +1,17 @@
 qpf:
-  quartus_version: 15.1.0
+  quartus_version: '15.1.0'
 qsf:
-  family: '"MAX 10"'
+  family: 'MAX 10'
   device: 10M50SAE144C8GES
-  original_quartus_version: '"15.1.0"'
-  last_quartus_version: '"15.1.0"'
+  original_quartus_version: '15.1.0'
+  last_quartus_version: '15.1.0'
   project_output_directory: output_files
   global_assignments:
     min_core_junction_temp: 0
     max_core_junction_temp: 85
     device_filter_package: EQFP
     error_check_frequency_divisor: 2
+    enable_configuration_pins: 'OFF'
   user_assignments:
     FTDI:
       location:
@@ -22,11 +23,11 @@ qsf:
         - FTDI_BD2
       - - PIN_136
         - FTDI_BD3
-    CLOCK:
+    Clock:
       location:
       - - PIN_26
         - CLK100MHZ
-    KEY:
+    Key:
       location:
       - - PIN_130
         - KEY0
@@ -106,7 +107,7 @@ qsf:
         - SDRAM_WE
       - - PIN_41
         - SDRAM_CLK
-    LED:
+    Led:
       location:
       - - PIN_81
         - LED[7]
@@ -178,7 +179,7 @@ qsf:
         - FTC[6]
       - - PIN_6
         - FTC[7]
-    I/O:
+    i/o:
       location:
       - - PIN_89
         - IO[0]
@@ -220,7 +221,7 @@ qsf:
         - IO[18]
       - - PIN_118
         - IO[19]
-    OTHERS:
+    Others:
       location:
       - - PIN_123
         - RESERVED
@@ -240,7 +241,7 @@ sdc:
   set_minimum_delay: []
   set_load: []
 v:
-  assigments:
+  assignments:
     FTDI:
     - - input
       - ''
@@ -254,11 +255,11 @@ v:
     - - output
       - ''
       - FTDI_BD3
-    CLOCK:
+    Clock:
     - - input
       - ''
       - CLK100MHZ
-    KEY:
+    Key:
     - - input
       - ''
       - KEY0
@@ -302,7 +303,7 @@ v:
     - - input
       - ''
       - SDRAM_CLK
-    LED:
+    Led:
     - - output
       - "[7:0]"
       - LED
@@ -318,14 +319,16 @@ v:
     - - output
       - "[7:0]"
       - FTC
-    I/0:
+    i/o:
     - - output
       - "[19:0]"
       - IO
-    OTHERS:
+    Others:
     - - input
       - ''
       - BOOT_SEL
     - - input
       - ''
       - RESERVED
+func:
+  clock_rate: 100000000

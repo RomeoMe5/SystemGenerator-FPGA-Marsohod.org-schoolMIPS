@@ -3,9 +3,9 @@
 	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
 	and should be distribured without any warranty ("as is")
 #}
-{%- extends "../BaseC_.jinja" -%}
+{%- extends "BaseC_.jinja" -%}
 {%- block message -%}
-{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- include "licenses/_IntelLicense.jinja" -%}
 {%- endblock message -%}
 {%- block content -%}
 {# verilog file content #}
@@ -14,7 +14,7 @@
  * Route input signal to one of the outputs.
  */
 module Demultiplexer  #(
-	parameter WIDTH = {%- if width -%}{{ width }}{%- else -%}2{%- endif -%}
+	parameter WIDTH = {{ width }}
 )(
 	input wire [WIDTH-1:0] in,
 	output reg [WIDTH*WIDTH-1:0] out

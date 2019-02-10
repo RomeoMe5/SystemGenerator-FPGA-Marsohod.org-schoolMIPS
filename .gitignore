@@ -1,18 +1,28 @@
 # ===== Common =====
+.pytest_cache/
 __pycache__/
+migrations/
 .generated/
 .vscode/
 .cache/
 build/
 .idea/
 .venv/
+.gen/
 .env/
 temp/
+*-logs/
 logs/
 log/
+migrations/
 
-.env
+*.env
 *tmp*
+*.db-journal
+
+*.ovpn
+*.ppk
+*.key
 
 *.py[cod]
 *.log
@@ -30,7 +40,6 @@ db/
 bak/
 rsc/
 
-*.JSON
 *.db
 *.db.journal
 *.pot

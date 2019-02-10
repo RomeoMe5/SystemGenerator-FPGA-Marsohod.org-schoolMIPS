@@ -1,17 +1,18 @@
+# BUG add correct clock_rate
 qpf:
-  quartus_version: 15.1.0
+  quartus_version: '15.1.0'
 qsf:
-  family: '"Cyclone V"'
+  family: 'Cyclone V'
   device: 5CSEMA5F31C6
-  original_quartus_version: '"15.1.0"'
-  last_quartus_version: '"15.1.0"'
+  original_quartus_version: '15.1.0'
+  last_quartus_version: '15.1.0'
   project_output_directory: output_files
   global_assignments:
     device_filter_package: FBGA
     device_filter_pin_count: 896
     device_filter_speed_grade: 6
   user_assignments:
-    audio:
+    Audio:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -44,7 +45,7 @@ qsf:
         - AUD_DACLRCK
       - - PIN_G7
         - AUD_XCK
-    clock:
+    Clock:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -67,7 +68,7 @@ qsf:
         - CLOCK4_50
       - - PIN_AF14
         - CLOCK_50
-    i2c for audio and video-in:
+    I2C for Audio and Video-In:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -80,7 +81,7 @@ qsf:
         - FPGA_I2C_SCLK
       - - PIN_K12
         - FPGA_I2C_SDAT
-    key:
+    Key:
       instance:
       - - IO_STANDARD
         - 3.3-V LVTTL
@@ -620,3 +621,5 @@ v:
     - - output
       - ''
       - HPS_USB_STP
+  func:
+    clock_rate: 100000000

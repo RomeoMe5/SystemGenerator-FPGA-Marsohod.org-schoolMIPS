@@ -3,9 +3,9 @@
 	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
 	and should be distribured without any warranty ("as is")
 #}
-{%- extends "../BaseC_.jinja" -%}
+{%- extends "BaseC_.jinja" -%}
 {%- block message -%}
-{%- include "../licenses/_IntelLicense.jinja" -%}
+{%- include "licenses/_IntelLicense.jinja" -%}
 {%- endblock message -%}
 {%- block content -%}
 {# verilog file content #}
@@ -14,8 +14,8 @@
  * to {OUT_FREQ}.
  */
 module Generator  #(
-	parameter CLOCK_FREQ = {%- if clock_freq -%}{{ clock_freq }}{%- else -%}100000000{%- endif -%}, // board internal clock
-	parameter OUT_FREQ = {%- if out_freq -%}{{ out_freq }}{%- else -%}1000000{%- endif -%} // output frequency
+	parameter CLOCK_FREQ = {{ clock_freq }}, // board internal clock
+	parameter OUT_FREQ = {{ out_freq }} // output frequency
 )(
 	input wire clk, // board clock
 	output reg out

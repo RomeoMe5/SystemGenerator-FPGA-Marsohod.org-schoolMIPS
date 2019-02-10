@@ -1,7 +1,8 @@
 """ Rendering engine. """
 
 # to simplify imports from top level module
-from engine.boards import *
+from engine.boards import BOARDS, Board, GenericBoard
+from engine.constants import FUNCTIONS, MIPS
 
-__version__ = (0, 0, 1)
+
 __author__ = ("Dmitriy Pchelkin", "Alexey Ivanov")

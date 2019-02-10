@@ -3,12 +3,27 @@
 	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
 	and should be distribured without any warranty ("as is")
 #}
-{# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
-{# [bug] TODO: fix template rendering result: strings are incorrectly separated with \n #}
+{# [minor] [enhancement] TODO remove weird {{ "" }} line separators if possible #}
+{# BUG fix template rendering result: strings are incorrectly separated with \n #}
 {%- extends "Base_.jinja" -%}
 
 {%- block message -%}
 # Users are recommended to modify this file to match users logic.
+
+{%- if mips -%}
+{{ "" }}
+# ------------------------ #
+#        SchoolMIPS        #
+# ------------------------ #
+create_clock -period "100.0 MHz" [get_ports CLK100MHZ]
+derive_clock_uncertainty
+create_generated_clock -name {clk} -divide_by 2 -source [get_ports {CLK100MHZ}] [get_registers {sm_top:sm_top|sm_clk_divider:sm_clk_divider|sm_register_we:r_cntr|q[*]}]
+set_false_path -from * -to [get_ports {LED[*]}]
+set_false_path -from [get_ports {KEY0}] -to [all_clocks]
+set_false_path -from [get_ports {KEY1}] -to [all_clocks]
+{{ "" }}
+{%- endif -%}
+
 {%- endblock message -%}
 
 {%- block body %}
@@ -48,7 +63,7 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -62,7 +77,7 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -76,7 +91,7 @@ create_clock -period {{ c['period'] }} {{ c.get('etc', "") }}
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -138,7 +153,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -152,7 +167,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -166,7 +181,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -180,7 +195,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -194,7 +209,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -208,7 +223,7 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
 {%- endif -%}
@@ -222,9 +237,9 @@ set_output_delay -{{ c['type'] }} -clock {{ c['clock'] }}{{ "\t" }}[get_ports {{
 {{ "" }}
 		{%- elif 'deriv' in c -%}
 {{ c['deriv'] }}
-{# [feature] TODO #}{%- else -%}
+{# [future] TODO #}{%- else -%}
 		{%- endif -%}
 	{%- endfor -%}
-{%- endif %}
+{%- endif -%}
 
 {% endblock body -%}

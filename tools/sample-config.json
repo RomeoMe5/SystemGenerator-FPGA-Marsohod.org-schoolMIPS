@@ -1,0 +1,14 @@
+{
+    "func": [
+        "Seven",
+        "Uart8"
+    ],
+    "conf": [
+        "clock",
+        "key",
+        "led"
+    ],
+    "params": {
+        "delay": 100
+    }
+}

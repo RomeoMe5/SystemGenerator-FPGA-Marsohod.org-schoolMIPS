@@ -1,0 +1,80 @@
+qpf:
+  quartus_version: '0'
+qsf:
+  family: '0'
+  device: '0'
+  original_quartus_version: '0'
+  last_quartus_version: '0'
+  project_output_directory: '0'
+  global_assignments:
+    min_core_junction_temp: 0
+    max_core_junction_temp: 10
+    device_filter_package: '0'
+    error_check_frequency_divisor: 0
+  user_assignments:
+    FTDI:
+      location:
+      - - PIN_0
+        - FTDI
+    Key:
+      location:
+      - - PIN_1
+        - KEY0
+      - - PIN_2
+        - KEY1
+    Led:
+      location:
+      - - PIN_10
+        - LED[10]
+      - - PIN_11
+        - LED[9]
+      - - PIN_12
+        - LED[8]
+      - - PIN_13
+        - LED[7]
+      - - PIN_14
+        - LED[6]
+      - - PIN_15
+        - LED[5]
+      - - PIN_16
+        - LED[4]
+      - - PIN_17
+        - LED[3]
+      - - PIN_18
+        - LED[2]
+      - - PIN_19
+        - LED[1]
+      - - PIN_20
+        - LED[0]
+sdc:
+  create_clock: []
+  create_generated_clock: []
+  set_clock_latency: []
+  set_clock_uncertainty: []
+  set_input_delay: []
+  set_output_delay: []
+  set_clock_groups: []
+  set_false_path: []
+  set_multicycle_path: []
+  set_maximum_delay: []
+  set_minimum_delay: []
+  set_load: []
+v:
+  assigments:
+    FTDI:
+    - - input
+      - ''
+      - 'FTDI'
+    - - output
+      - ''
+      - 'FTDI'
+    Key:
+    - - input
+      - ''
+      - 'KEY'
+    Led:
+    - - output
+      - "[10:0]"
+      - 'LED'
+func:
+  clock_rate: 10

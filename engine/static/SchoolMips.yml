@@ -1,0 +1,53 @@
+qsf:
+  VERILOG_FILE:
+    - "mips/sm_rom.v"
+    - "mips/sm_register.v"
+    - "mips/sm_hex_display.v"
+    - "mips/sm_cpu.v"
+  SEARCH_PATH:
+    - "mips/"
+v:
+  # bits, name, size, assigname, assigsize
+  wires:
+    - - ''
+      - clk
+      - ''
+      - ''
+      - ''
+    - - ''
+      - clkIn
+      - ''
+      - CLK100MHZ
+      - ''
+    - - ''
+      - 'rst_n'
+      - ''
+      - 'KEY0'
+      - ''
+    - - ''
+      - clkEnable
+      - ''
+      - ~KEY1
+      - ''
+    - - "[31:0]"
+      - ''
+      - regData
+      - ''
+      - ''
+  structures:
+    sm_top:
+      - - clkIn
+        - clkIn
+      - - rst_n
+        - rst_n
+      - - clkDevide
+        - "4'b1000"
+      - - clkEnable
+        - clkEnable
+      - - clk
+        - clk
+      - - regAddr
+        - 4'b0010
+      - - regData
+        - regData
+sdc:

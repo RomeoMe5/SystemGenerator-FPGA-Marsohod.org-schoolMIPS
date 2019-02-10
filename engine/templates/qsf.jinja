@@ -3,8 +3,8 @@
 	Dmitriy Pchelkin (hell03end) and Alexey Ivanov (DigiDon)
 	and should be distribured without any warranty ("as is")
 #}
-{# [minor] [enhancement] TODO: remove weird {{ "" }} line separators if possible #}
-{# [minor] [enhancement] TODO: use dictionary in instance/location user assignments #}
+{# [minor] [enhancement] TODO remove weird {{ "" }} line separators if possible #}
+{# [minor] [enhancement] TODO use dictionary in instance/location user assignments #}
 {%- extends "Base_.jinja" -%}
 
 {%- block content -%}
@@ -18,6 +18,22 @@ set_global_assignment -name {{ key|upper }} {{ value }}
 {%- endif -%}
 set_global_assignment -name TOP_LEVEL_ENTITY {{ project_name }}
 set_global_assignment -name SDC_FILE {{ project_name }}.sdc
+set_global_assignment -name VERILOG_FILE {{project_name}}.v
+
+{%- if func -%}
+	{%- for function in func -%}
+set_global_assignment -name VERILOG_FILE {{ function }}.v
+	{%- endfor -%}
+{%- endif -%}
+
+{%- if mips -%}
+	{%- for key, value in mips.items() -%}
+		{%- for val in value -%}
+set_global_assignment -name {{ key }} {{ val }}
+		{%- endfor -%}
+	{%- endfor -%}
+{%- endif -%}
+
 {{ "\n" }}
 {%- if user_assignments -%}
 	{%- for part_name, assignments in user_assignments.items() -%}

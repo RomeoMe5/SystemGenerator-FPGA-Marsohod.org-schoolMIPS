@@ -1,10 +1,10 @@
 qpf:
   quartus_version: '9.0'
 qsf:
-  family: '"Cyclone IV"'
+  family: 'Cyclone IV'
   device: EP4CE6E22C8N
-  original_quartus_version: '"9.0 SP2"'
-  last_quartus_version: '"9.0 SP2"'
+  original_quartus_version: '9.0 SP2'
+  last_quartus_version: '9.0 SP2'
   project_output_directory: output_files
   global_assignments:
     min_core_junction_temp: 0
@@ -22,11 +22,11 @@ qsf:
         - FTDI_BD2
       - - PIN_10
         - FTDI_BD3
-    CLOCK:
+    Clock:
       location:
       - - PIN_25
         - CLK100MHZ
-    KEY:
+    Key:
       location:
       - - PIN_23
         - KEY0
@@ -108,7 +108,7 @@ qsf:
         - SDRAM_WE
       - - PIN_44
         - SDRAM_CLK
-    LED:
+    Led:
       location:
       - - PIN_79
         - LED[3]
@@ -176,7 +176,7 @@ qsf:
         - ADC_D[7]
       - - PIN_86
         - ADC_CLK
-    I/O:
+    i/o:
       location:
       - - PIN_101
         - IO[0]
@@ -210,7 +210,7 @@ qsf:
         - IO[14]
       - - PIN_125
         - IO[15]
-    OTHERS:
+    Others:
       location:
       - - PIN_12
         - DCLK
@@ -234,7 +234,7 @@ sdc:
   set_minimum_delay: []
   set_load: []
 v:
-  assigments:
+  assignments:
     FTDI:
     - - input
       - ''
@@ -248,11 +248,11 @@ v:
     - - output
       - ''
       - FTDI_BD3
-    CLOCK:
+    Clock:
     - - input
       - ''
       - CLK100MHZ
-    KEY:
+    Key:
     - - input
       - ''
       - KEY0
@@ -290,7 +290,7 @@ v:
     - - input
       - ''
       - SDRAM_CLK
-    LED:
+    Led:
     - - output
       - "[3:0]"
       - LED
@@ -317,11 +317,11 @@ v:
     - - output
       - ''
       - ADC_CLK
-    I/0:
+    i/o:
     - - output
       - "[15:0]"
       - IO
-    OTHERS:
+    Others:
     - - output
       - ''
       - DCLK
@@ -334,3 +334,5 @@ v:
     - - output
       - ''
       - ASDO
+func:
+  clock_rate: 100000000
