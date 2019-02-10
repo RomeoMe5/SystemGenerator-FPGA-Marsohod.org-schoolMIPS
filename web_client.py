@@ -29,7 +29,7 @@ logging.basicConfig(
 
 class AppConfig(object):
     SECRET_KEY = os.environ.get("SECRET_KEY") or "no-one-knows"
-    SSL_REDIRECT = False  # NOTE not working in debug mode
+    SSL_REDIRECT = True  # NOTE not working in debug mode
 
 
 def create_app(config: AppConfig, name: str=None) -> Flask:
