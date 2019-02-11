@@ -44,7 +44,7 @@ def create_app(config: AppConfig, name: str=None) -> Flask:
     bootstrap = Bootstrap()
     bootstrap.init_app(app)
 
-    if app.config['SSL_REDIRECT']:
+    if app.config['SSL_REDIRECT'] and not app.debug:
         sslify = SSLify(app)
 
     return app

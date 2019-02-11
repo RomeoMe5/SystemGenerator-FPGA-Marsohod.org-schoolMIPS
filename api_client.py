@@ -32,7 +32,7 @@ def create_app(config: AppConfig, name: str=None) -> Flask:
     app = Flask(name or __name__)
     app.config.from_object(config)
 
-    if app.config['SSL_REDIRECT']:
+    if app.config['SSL_REDIRECT'] and not app.debug:
         sslify = SSLify(app)
 
     return app
