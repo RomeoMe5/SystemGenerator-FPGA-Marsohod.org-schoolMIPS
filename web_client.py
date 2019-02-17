@@ -63,23 +63,20 @@ class BoardForm(FlaskForm):
     )
     conf = SelectMultipleField(
         "Board configurations",
+        description="Use Ctrl + MouseClick to select multiple items",
         validators=[Optional()],
         id="board-form-enable-conf"
     )
-    enable_mips = BooleanField(
-        "Include SchoolMIPS core to generated project",
-        default=False,
-        validators=[Optional()],
-        id="board-form-enable-mips"
-    )
     mips = SelectField(
         "Version of SchoolMIPS core",
-        choices=tuple((v, v) for v in MIPS.VERSIONS),
+        description="Version of SchoolMIPS core to include in project",
+        choices=[("", "none")] + [(v, v) for v in MIPS.VERSIONS],
         validators=[Optional()],
         id="board-form-mips"
     )
     func = SelectMultipleField(
         "Additional functions",
+        description="Use Ctrl + MouseClick to select multiple items",
         choices=tuple(FUNCTIONS.ITEMS.items()),
         validators=[Optional()],
         id="board-form-enable-func"
@@ -93,14 +90,24 @@ class BoardForm(FlaskForm):
             logging.debug(f"Invalid project name '{name}'")
             raise ValidationError(f"Invalid project name '{name}'")
 
+    def validate_mips(self, mips: StringField) -> NoReturn:
+        mips = mips.data.strip()
+        if mips and mips not in MIPS.VERSIONS:
+            logging.debug(f"Invalid mips type '{mips}'")
+            raise ValidationError(f"Invalid mips type '{mips}'")
+
 
 class Config(object):
     def __init__(self, board: str, form: BoardForm) -> NoReturn:
         self.board = board
-        self.mips_type = form.mips.data if form.enable_mips.data else None
+        self.mips_type = None
+        if form.mips.data and form.mips.data in MIPS.VERSIONS:
+            self.mips_type = form.mips.data
         self.project_name = form.name.data.strip()
         self.configs = self._to_dict(form.conf.data)
-        self.functions = self._to_dict(form.func.data)
+        self.functions = self._to_dict(
+            tuple(filter(lambda x: x in FUNCTIONS.ITEMS, form.func.data))
+        )
         self.functions_params = {}  # TODO
 
     @staticmethod
