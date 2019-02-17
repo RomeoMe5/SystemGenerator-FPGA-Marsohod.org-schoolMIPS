@@ -1,5 +1,11 @@
 {%- extends 'bootstrap/base.html' -%}
 {%- import 'bootstrap/wtf.html' as wtf -%}
+{%- import 'bootstrap/fixes.html' as fixes -%}
+
+{%- block metas %}
+  {{super()}}
+  {{fixes.ie8()}}
+{%- endblock metas %}
 
 {%- block styles -%}
   {{super()}}
@@ -64,14 +70,10 @@
                 role="button"
                 aria-haspopup="true"
                 aria-expanded="false">
-              {{"Target board type"}}
+              {{"Select target board type"}}
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li class="dropdown-header">
-                {{"Select board"}}
-              </li>
-              <li role="separator" class="divider"></li>
               {%- for board in boards -%}
                 <li>
                   <a href="{{url_for('index', board=board)}}">
