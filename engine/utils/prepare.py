@@ -208,7 +208,8 @@ class Loader(object):
     """ Implements file content loading """
 
     LOADERS = OrderedDict(
-        yml=yaml.load,
+        # HACK: Please read https://msg.pyyaml.org/load for full details.
+        yml=yaml.safe_load,
         json=json.load,
         bin=dill.load
     )
