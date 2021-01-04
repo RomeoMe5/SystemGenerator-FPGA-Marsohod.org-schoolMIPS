@@ -7,9 +7,5 @@ source .venv/bin/activate
 # Install dependencies
 sudo pip3 install --no-cache -r requirements.txt
 
-# Set environment variables
-export FLASK_APP=api_client.py
-export FLASK_ENV=development
-
-# Run application
-flask run --with-threads
+# Run web client application in debug
+python3 web_client.py -d
