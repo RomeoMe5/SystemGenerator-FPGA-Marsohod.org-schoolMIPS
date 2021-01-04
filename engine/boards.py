@@ -231,6 +231,8 @@ class GenericBoard(object):
         return self
 
 
+# TODO: handle 130 pin for Marsohod3
+# BUG: incorrect clock rate (WTF??? I don't remember what does it mean)
 class Board(GenericBoard):
     """ Predefined board interface """
 
