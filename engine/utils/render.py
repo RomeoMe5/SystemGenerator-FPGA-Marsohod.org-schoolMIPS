@@ -60,7 +60,7 @@ class Render(object):
         """
             Return date in Quartus compatible format
 
-            F.i. "12:40:01 DECEMBER 27,2017"
+            E.g. "12:40:01 DECEMBER 27,2017"
         """
         if date_t is None:
             date_t = datetime.utcnow()

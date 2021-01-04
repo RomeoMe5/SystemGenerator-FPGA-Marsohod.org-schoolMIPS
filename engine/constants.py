@@ -10,6 +10,7 @@ class PATHS(object):
     MIPS = os.path.join(STATIC, "school_mips")
 
 
+# Configure output paths
 class DESTINATIONS(object):
     OUTPUT = "output_files"
     FUNC = "functions"
@@ -28,10 +29,11 @@ class MIPS(object):
     )
 
 
-# native supported boards
+# 'natively' supported boards
 BOARDS = ("marsohod2", "marsohod2b", "marsohod3", "marsohod3b", "de1soc")
 
 
+# Mappings for descriptions
 class FUNCTIONS(object):
     ITEMS = {
         'ButtonDebouncer': "Button Debouncer: add delay between button inputs",
