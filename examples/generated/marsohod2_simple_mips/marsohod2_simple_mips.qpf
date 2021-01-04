@@ -1,0 +1,13 @@
+# -------------------------------------------------------------------------- #
+# This 'qpf' file was created by HSE University System Builder.
+# -------------------------------------------------------------------------- #
+
+DATE = "22:57:26 January 04, 2021"
+QUARTUS_VERSION = "9.0"
+
+# Revisions
+PROJECT_REVISION = "marsohod2_simple_mips"
+
+# -------------------------------------------------------------------------- #
+# End of 'qpf' file created by HSE University System Builder.
+# -------------------------------------------------------------------------- #
