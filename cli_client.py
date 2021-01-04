@@ -46,9 +46,9 @@ class ReturnCode(Enum):
 class Config(object):
     def __init__(self,
                  config: str,
-                 project_name: str=None,
-                 mips_type: str=None,
-                 path: str=None) -> NoReturn:
+                 project_name: str = None,
+                 mips_type: str = None,
+                 path: str = None) -> NoReturn:
         self.configs = None
         self.functions = None
         self.functions_params = None
@@ -83,7 +83,7 @@ class Config(object):
 def generate_board_and_save(board_name: str,
                             config: Config,
                             path_to_save: str = None,
-                            archive: bool=False) -> NoReturn:
+                            archive: bool = False) -> NoReturn:
     board = Board(board_name).setup(
         project_name=config.project_name,
         mips_type=config.mips_type,

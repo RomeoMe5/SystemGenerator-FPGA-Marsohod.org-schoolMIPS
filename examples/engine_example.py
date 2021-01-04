@@ -3,13 +3,12 @@
     of the project and can be used in debug purposes.
 """
 
+from engine import BOARDS, Board
 import os
 import sys
 from pprint import pprint
 
 sys.path.append(os.getcwd())
-
-from engine import BOARDS, Board
 
 
 if __name__ == "__main__":

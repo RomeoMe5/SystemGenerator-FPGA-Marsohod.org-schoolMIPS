@@ -29,7 +29,7 @@ class Archiver(object):
     def _archive(*filenames: Iterable[str],
                  method: str,
                  destination: str,
-                 rewrite: bool=True,
+                 rewrite: bool = True,
                  **kwargs) -> int:
         """ Run checks and apply files' archiving. """
         if not isinstance(destination, str):
@@ -51,7 +51,7 @@ class Archiver(object):
     @staticmethod
     def _to_zip(path: str,
                 *files: Iterable[str],
-                mode: int=zipfile.ZIP_STORED) -> int:
+                mode: int = zipfile.ZIP_STORED) -> int:
         def add_to_archive(filename: str, archive: object) -> bool:
             logging.debug("Add file '%s' to '%s'", filename, path)
             try:
@@ -88,7 +88,7 @@ class Archiver(object):
         return errors_count
 
     @staticmethod
-    def _to_tar(path: str, *files: Iterable[str], mode: str="w") -> int:
+    def _to_tar(path: str, *files: Iterable[str], mode: str = "w") -> int:
         def add_to_archive(filename: str, archive: object) -> bool:
             if not os.path.exists(filename):
                 logging.warning("File isn't exists: '%s'", filename)
@@ -145,7 +145,7 @@ class Archiver(object):
     @staticmethod
     def archive(destination: str,
                 *filenames: Iterable[str],
-                rewrite: bool=True) -> int:
+                rewrite: bool = True) -> int:
         """
             Archive files to destination path.
 
@@ -194,7 +194,7 @@ class Archiver(object):
     # NOTE this function signature refer to public method
     #      but was hidden until method will be finished
     @staticmethod
-    def _extract(path: str, destination: str=".", **kwargs) -> int:
+    def _extract(path: str, destination: str = ".", **kwargs) -> int:
         """
             Extracs files from archive.
 
@@ -208,7 +208,8 @@ class Loader(object):
     """ Implements file content loading """
 
     LOADERS = OrderedDict(
-        yml=yaml.load,
+        # HACK: Please read https://msg.pyyaml.org/load for full details.
+        yml=yaml.safe_load,
         json=json.load,
         bin=dill.load
     )
@@ -220,8 +221,8 @@ class Loader(object):
 
     @staticmethod
     def load(filepath: str,
-             fmt: str=None,
-             loader_params: dict=None,
+             fmt: str = None,
+             loader_params: dict = None,
              **kwargs) -> Any:
         """ Loads content of static file from any location """
         if fmt is None or fmt not in Loader.LOADERS:
@@ -250,9 +251,9 @@ class Loader(object):
 
     @staticmethod
     def load_static(path: str,
-                    path_to_static: str=None,
-                    loader_params: dict=None,
-                    encoding: str="utf-8",
+                    path_to_static: str = None,
+                    loader_params: dict = None,
+                    encoding: str = "utf-8",
                     **kwargs) -> Any:
         """ Loads content of static file from engine 'static' folder """
         if path_to_static is not None:
@@ -262,7 +263,7 @@ class Loader(object):
 
     @staticmethod
     def get_static_path(filename: str,
-                        path_to_static: str=PATHS.STATIC) -> str or NoReturn:
+                        path_to_static: str = PATHS.STATIC) -> str or NoReturn:
         """ Return path for static object (if it exists) """
         path = os.path.join(path_to_static, filename)
         if os.path.exists(path):
@@ -279,8 +280,8 @@ class Loader(object):
 
 def convert(from_path: str,
             to_fmt: str,
-            to_path: str=None,
-            from_fmt: str=None) -> NoReturn:
+            to_path: str = None,
+            from_fmt: str = None) -> NoReturn:
     """ Convert static files formats. """
     if not os.path.exists(from_path):
         logging.error("Target file '%s' isn't exist", from_path)
@@ -301,7 +302,7 @@ def convert(from_path: str,
         logging.info("Converted file saved to '%s'", to_path)
 
 
-def create_dirs(*paths: Iterable[str], rewrite: bool=False) -> int:
+def create_dirs(*paths: Iterable[str], rewrite: bool = False) -> int:
     """ :return number of errors """
 
     def create_dir(path: str) -> bool:

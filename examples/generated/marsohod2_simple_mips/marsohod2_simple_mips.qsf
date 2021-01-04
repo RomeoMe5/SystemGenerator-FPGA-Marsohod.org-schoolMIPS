@@ -1,0 +1,28 @@
+# -------------------------------------------------------------------------- #
+# This 'qsf' file was created by HSE University System Builder.
+# -------------------------------------------------------------------------- #
+
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name DEVICE_FILTER_PACKAGE EQFP
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:57:26 JANUARY 04,2021"
+set_global_assignment -name FAMILY "Cyclone III"
+set_global_assignment -name DEVICE EP3C10E144C8
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.0 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION "9.0 SP2"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name TOP_LEVEL_ENTITY marsohod2_simple_mips
+set_global_assignment -name SDC_FILE marsohod2_simple_mips.sdc
+set_global_assignment -name VERILOG_FILE marsohod2_simple_mips.v
+set_global_assignment -name VERILOG_FILE mips/sm_rom.v
+set_global_assignment -name VERILOG_FILE mips/sm_register.v
+set_global_assignment -name VERILOG_FILE mips/sm_hex_display.v
+set_global_assignment -name VERILOG_FILE mips/sm_cpu.v
+set_global_assignment -name SEARCH_PATH mips/
+
+
+# Place USER assignments here
+# -------------------------------------------------------------------------- #
+# End of 'qsf' file created by HSE University System Builder.
+# -------------------------------------------------------------------------- #

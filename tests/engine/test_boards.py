@@ -43,14 +43,11 @@ class TestGenericBoard(object):
             assert self.board.project_name == self.p_name
 
     def test_params(self) -> NoReturn:
-        assert GenericBoard.Param.items
-        assert GenericBoard.Param.type
         params = self.board.params
         assert params
         assert isinstance(params, dict)
-        for key, param in params.items():
+        for key in params.keys():
             assert isinstance(key, str)
-            assert isinstance(param, GenericBoard.Param)
 
     def _test_as_archive(self) -> NoReturn:
         with pytest.raises(AttributeError):

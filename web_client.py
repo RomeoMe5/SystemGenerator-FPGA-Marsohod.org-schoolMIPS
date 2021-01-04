@@ -9,9 +9,7 @@ from flask import (Flask, Response, abort, flash, make_response, redirect,
 from flask_bootstrap import Bootstrap
 from flask_sslify import SSLify
 from flask_wtf import FlaskForm
-from werkzeug.contrib.profiler import ProfilerMiddleware
-from wtforms import (BooleanField, SelectField, SelectMultipleField,
-                     StringField, SubmitField)
+from wtforms import SelectField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import DataRequired, Optional, ValidationError
 
 from engine import BOARDS, FUNCTIONS, MIPS, Board
@@ -32,7 +30,7 @@ class AppConfig(object):
     SSL_REDIRECT = True  # NOTE not working in debug mode
 
 
-def create_app(config: AppConfig, name: str=None) -> Flask:
+def create_app(config: AppConfig, name: str = None) -> Flask:
     current_folder = os.path.dirname(__file__)
     app = Flask(
         name or __name__,
@@ -210,34 +208,16 @@ def make_shell_context() -> dict:
     }
 
 
-def enable_profiling(app: Flask, path: str) -> NoReturn:
-    if not os.path.exists(path):
-        logging.info(f"Create '{path}'.")
-        os.mkdir(path)
-
-    app.config['PROFILE'] = True
-    logging.warning("Profiler is running!")
-    app.wsgi_app = ProfilerMiddleware(
-        app.wsgi_app,
-        restrictions=[30],  # length
-        profile_dir=path
-    )
-
-
 def parse_argv() -> Namespace:
     parser = ArgumentParser(description="Starter for WEB client")
     parser.add_argument('host', type=str, default=None, nargs="?")
     parser.add_argument('--port', '-p', type=int, default=None)
     parser.add_argument('--debug', '-d', action="store_true")
-    parser.add_argument('--profile', '-P', action="store_true")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_argv()
-
-    if args.profile:
-        enable_profiling(app, path="perf-logs")
 
     app.run(host=args.host, port=args.port, debug=args.debug)
 
