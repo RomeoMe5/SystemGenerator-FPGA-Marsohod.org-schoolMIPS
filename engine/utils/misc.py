@@ -19,7 +19,7 @@ def log(func: Callable) -> Callable:
     return wrapper
 
 
-def none_safe(to_args: bool=True, to_kwargs: bool=True) -> Callable:
+def none_safe(to_args: bool = True, to_kwargs: bool = True) -> Callable:
     """
         Pass only not None args/kwargs to function
         Doesn't handle exceptions.

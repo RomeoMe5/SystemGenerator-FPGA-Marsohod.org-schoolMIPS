@@ -28,7 +28,7 @@ class AppConfig(object):
     SSL_REDIRECT = True  # NOTE not working in debug mode
 
 
-def create_app(config: AppConfig, name: str=None) -> Flask:
+def create_app(config: AppConfig, name: str = None) -> Flask:
     app = Flask(name or __name__)
     app.config.from_object(config)
 

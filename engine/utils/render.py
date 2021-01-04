@@ -23,7 +23,7 @@ ENV = Environment(
 )
 
 
-def load_template(path: str, file_type: str=None) -> Callable:
+def load_template(path: str, file_type: str = None) -> Callable:
     """
         Load template and pass it as named argument 'template' to function
 
@@ -54,9 +54,9 @@ class Render(object):
         return "\n".join(template.generate(**kwargs))
 
     @staticmethod
-    def format_date(date_t: datetime=None,
-                    quoted: bool=True,
-                    sep: bool=False) -> str:
+    def format_date(date_t: datetime = None,
+                    quoted: bool = True,
+                    sep: bool = False) -> str:
         """
             Return date in Quartus compatible format
 
@@ -75,8 +75,8 @@ class Render(object):
     @load_template("qpf.jinja")
     def qpf(project_name: str,
             quartus_version: str,
-            meta_info: dict=None,
-            revisions: dict=None,
+            meta_info: dict = None,
+            revisions: dict = None,
             **kwargs) -> str:
         """ Template rendering interface for .qpf files """
         meta_info = meta_info or {}
@@ -98,13 +98,13 @@ class Render(object):
     def qsf(project_name: str,
             family: str,
             device: str,
-            func: object=None,
-            original_quartus_version: str="9.0",
-            last_quartus_version: str="9.0",
-            project_output_directory: str=None,
-            user_assignments: dict=None,
-            global_assignments: dict=None,
-            mips: dict=None,
+            func: object = None,
+            original_quartus_version: str = "9.0",
+            last_quartus_version: str = "9.0",
+            project_output_directory: str = None,
+            user_assignments: dict = None,
+            global_assignments: dict = None,
+            mips: dict = None,
             **kwargs) -> str:
         """ Template rendering interface for .qsf files """
         global_assignments = global_assignments or {}
@@ -132,7 +132,7 @@ class Render(object):
     # BUG: fix mips sdc generation
     @staticmethod
     @load_template("sdc.jinja")
-    def sdc(project_name: str, mips: str=None, **kwargs) -> str:
+    def sdc(project_name: str, mips: str = None, **kwargs) -> str:
         """ Template rendering interface for .sdc files """
         import re  # to fix comments rendering
 
@@ -147,9 +147,9 @@ class Render(object):
     @staticmethod
     @load_template("v.jinja")
     def v(project_name: str,
-          assignments: dict=None,
-          wires: dict=None,
-          structures: dict=None,
+          assignments: dict = None,
+          wires: dict = None,
+          structures: dict = None,
           **kwargs) -> str:
         """ Template rendering interface for .v files """
         return Render._render(
@@ -162,13 +162,13 @@ class Render(object):
 
     @staticmethod
     def functions(name: str,
-                  clock_rate: int=100000000,  # eq to clock_freq
-                  clock_freq: int=None,
-                  delay: int=100,  # debouncer (millis)
-                  width: int=2,  # dmx
-                  out_freq: int=1000000,  # generator
-                  baud_rate: int=9600,  # uart
-                  fmt: str="v.jinja",
+                  clock_rate: int = 100000000,  # eq to clock_freq
+                  clock_freq: int = None,
+                  delay: int = 100,  # debouncer (millis)
+                  width: int = 2,  # dmx
+                  out_freq: int = 1000000,  # generator
+                  baud_rate: int = 9600,  # uart
+                  fmt: str = "v.jinja",
                   **kwargs) -> str:
         """ Template rendering interface for additional functions """
         name = (name + "." + fmt) if fmt else name

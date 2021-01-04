@@ -78,7 +78,7 @@ class GenericBoard(object):
         """ Returns generated configs as archive. """
         return Archiver.get_tar_io(self.configs)
 
-    def reset(self, path: str=None, mips_type: str=None) -> object:
+    def reset(self, path: str = None, mips_type: str = None) -> object:
         """
             Reloads board configuration from static file
 
@@ -122,13 +122,13 @@ class GenericBoard(object):
         self._mips_type = mips_type
 
     def setup(self,
-              project_name: str=None,
-              flt: dict=None,
-              conf: dict=None,
-              func: dict=None,
-              mips_type: str=None,
-              project_output_directory: str=None,
-              reset: bool=True) -> object:
+              project_name: str = None,
+              flt: dict = None,
+              conf: dict = None,
+              func: dict = None,
+              mips_type: str = None,
+              project_output_directory: str = None,
+              reset: bool = True) -> object:
         """
             Setup board configuration
 
@@ -161,7 +161,7 @@ class GenericBoard(object):
             project_output_directory or self._qsf['project_output_directory']
         return self
 
-    def generate(self, project_name: str=None, **kwargs) -> object:
+    def generate(self, project_name: str = None, **kwargs) -> object:
         """ Generates FPGA configs """
         if project_name or kwargs:
             self.setup(project_name=project_name, **kwargs)
@@ -196,7 +196,7 @@ class GenericBoard(object):
             )))
         return self
 
-    def dump(self, path: str=None) -> object:
+    def dump(self, path: str = None) -> object:
         """ Save FPGA config files to separate folder """
         path = path or self.project_name
         create_dirs(path, rewrite=False)
@@ -225,7 +225,7 @@ class GenericBoard(object):
                             errors_count, path)
         return self
 
-    def archive(self, path: str=None) -> object:
+    def archive(self, path: str = None) -> object:
         """ Generate tar file with FPGA config files for specific project """
         Archiver.to_tar_flow(self.configs, path=path or self.project_name)
         return self

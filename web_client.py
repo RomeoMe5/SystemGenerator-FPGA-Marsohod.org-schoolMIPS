@@ -32,7 +32,7 @@ class AppConfig(object):
     SSL_REDIRECT = True  # NOTE not working in debug mode
 
 
-def create_app(config: AppConfig, name: str=None) -> Flask:
+def create_app(config: AppConfig, name: str = None) -> Flask:
     current_folder = os.path.dirname(__file__)
     app = Flask(
         name or __name__,
