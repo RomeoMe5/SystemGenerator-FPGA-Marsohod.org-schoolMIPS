@@ -8,7 +8,6 @@ from typing import Any, Dict, Iterable, NoReturn, Tuple
 
 from flask import Flask, Response, jsonify, make_response, request
 from flask_sslify import SSLify
-from werkzeug.contrib.profiler import ProfilerMiddleware
 
 from engine import BOARDS, FUNCTIONS, MIPS, Board
 from engine.exceptions import InvalidProjectName
@@ -225,34 +224,16 @@ def make_shell_context() -> dict:
     }
 
 
-def enable_profiling(app: Flask, path: str) -> NoReturn:
-    if not os.path.exists(path):
-        logging.info(f"Create '{path}'.")
-        os.mkdir(path)
-
-    app.config['PROFILE'] = True
-    logging.warning("Profiler is running!")
-    app.wsgi_app = ProfilerMiddleware(
-        app.wsgi_app,
-        restrictions=[30],  # length
-        profile_dir=path
-    )
-
-
 def parse_argv() -> Namespace:
     parser = ArgumentParser(description="Starter for API client")
     parser.add_argument('host', type=str, default=None, nargs="?")
     parser.add_argument('--port', '-p', type=int, default=None)
     parser.add_argument('--debug', '-d', action="store_true")
-    parser.add_argument('--profile', '-P', action="store_true")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_argv()
-
-    if args.profile:
-        enable_profiling(app, path="perf-logs")
 
     app.run(host=args.host, port=args.port, debug=args.debug)
 
