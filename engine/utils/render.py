@@ -51,7 +51,7 @@ class Render(object):
     @staticmethod
     def _render(template: Template, **kwargs) -> str:
         logging.debug("Rendering '%s' template...", template.filename)
-        return "".join(template.generate(**kwargs))
+        return "\n".join(template.generate(**kwargs))
 
     @staticmethod
     def format_date(date_t: datetime = None,
