@@ -1,7 +1,9 @@
-FPGAMarsohodCAD
+FPGAMarsohod System Generator
 ===============
-CAD for generating base configurations for FPGA "Marsohod".
-
+CAD for generating base configurations (system generator) for FPGA development boards from "Marsohod.org" (Марсоход2, Марсоход3, Марсоход2bis, Марсоход3bis, et. al).   
+Demo:     
+https://fpga-marsohod-generator.herokuapp.com/    
+    
 Structure:
 * `engine` - core logic of generating FPGA Quartus-compatible configurations.
 * `api_client.py` - simple rest-like API.
