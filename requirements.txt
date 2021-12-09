@@ -1,6 +1,6 @@
 # engine
 dill==0.3.4
-Jinja2==2.10.3 # TODO: Switch to higher version && fix difference in behaviour
+Jinja2==2.11.3 # TODO: Switch to higher version && fix difference in behaviour
 PyYAML==6.0
 
 # web
