@@ -1,16 +1,15 @@
 # engine
-dill==0.3.3
-Jinja2==2.10.1
-PyYAML==5.3.1
+dill==0.3.4
+Jinja2==2.10.3 # TODO: Switch to higher version && fix difference in behaviour
+PyYAML==6.0
 
 # web
-Flask==1.0.2
+Flask==1.1.4
 Flask-Bootstrap==3.3.7.1
 Flask-SSLify==0.1.5
-Flask-WTF==0.14.2
-Jinja2==2.10.1
-Werkzeug==0.15.3
-WTForms==2.1
+Flask-WTF==1.0.0
+Werkzeug==1.0.1
+WTForms==3.0.0
 
 # deployment to heroku
 gunicorn>=19.7.1
