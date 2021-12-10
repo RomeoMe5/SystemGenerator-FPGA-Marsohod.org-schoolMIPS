@@ -139,7 +139,7 @@ def index() -> Response:
     form = None
     if board in BOARDS:
         form = BoardForm()
-        form.conf.choices = ((v, v) for v in Board(board).params.keys())
+        form.conf.choices = [(v, v) for v in Board(board).params.keys()]
 
         if form.validate_on_submit():
             try:
