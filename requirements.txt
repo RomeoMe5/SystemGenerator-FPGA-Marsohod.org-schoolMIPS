@@ -4,7 +4,7 @@ Jinja2==2.10.3 # TODO: Switch to higher version && fix difference in behaviour
 PyYAML==6.0
 
 # web
-Flask==1.1.4
+Flask==2.3.2
 Flask-Bootstrap==3.3.7.1
 Flask-SSLify==0.1.5
 Flask-WTF==1.0.0
